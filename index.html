@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResearchFlow · Work & Task Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f0eeea;--s:#fff;--s2:#f8f7f4;--bd:#e2dfd7;--tx:#19180f;--tx2:#78756a;--tx3:#b3b0a5;--ac:#4338ca;--ac2:#6366f1;--acbg:#eef2ff;--acbd:#c7d2fe;--red:#dc2626;--redbg:#fef2f2;--grn:#16a34a;--grnbg:#f0fdf4;--blu:#2563eb;--blubg:#eff6ff;--ylw:#d97706;--ylwbg:#fffbeb;--pnk:#db2777;--mono:'JetBrains Mono',monospace;--sans:'Plus Jakarta Sans',sans-serif;--sh:0 1px 3px rgba(0,0,0,0.04);--sh2:0 4px 16px rgba(0,0,0,0.07);--sh3:0 12px 40px rgba(0,0,0,0.12);--r:10px;--r2:14px;--r3:18px}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--tx);font-family:var(--sans);min-height:100vh}button{cursor:pointer;font-family:inherit}select,input,textarea{font-family:inherit}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#d5d2c8;border-radius:3px}.hide{display:none!important}
+
+#LS{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#19180f;position:relative;overflow:hidden}
+#LS::before{content:'';position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(67,56,202,0.12),transparent 70%);top:-150px;right:-150px}
+.lc{background:rgba(255,255,255,0.03);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.07);border-radius:24px;padding:44px 40px;width:min(420px,92vw);position:relative;z-index:1;box-shadow:0 40px 80px rgba(0,0,0,0.4)}
+.lc .ll{display:flex;align-items:center;gap:12px;margin-bottom:32px}.lc .ll .lb{width:42px;height:42px;border-radius:12px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;font-family:var(--mono)}
+.lc .ll h1{font-size:19px;font-weight:800;color:#fff;letter-spacing:-0.03em}.lc .ll span{font-size:10px;color:rgba(255,255,255,0.3);font-family:var(--mono);letter-spacing:0.1em}
+.lf{margin-bottom:18px}.lf label{display:block;font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.06em}
+.lf input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 15px;color:#fff;font-size:13px;outline:none;transition:border 0.2s}.lf input:focus{border-color:var(--ac)}
+.lbt{width:100%;padding:13px;border:none;border-radius:10px;background:var(--ac);color:#fff;font-size:14px;font-weight:700;transition:all 0.2s;margin-top:6px}.lbt:hover{background:var(--ac2)}
+.le{color:var(--red);font-size:12px;margin-top:8px;display:none}
+.lh{margin-top:18px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)}.lh p{font-size:11px;color:rgba(255,255,255,0.28);line-height:1.7;font-family:var(--mono)}
+.lconn{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:11px;display:flex;align-items:center;gap:8px;font-weight:600}
+.lconn.ok{background:rgba(22,163,106,0.1);color:#22c55e;border:1px solid rgba(22,163,106,0.2)}.lconn.err{background:rgba(220,38,38,0.1);color:#f87171;border:1px solid rgba(220,38,38,0.2)}.lconn.load{background:rgba(99,102,241,0.1);color:#a5b4fc;border:1px solid rgba(99,102,241,0.2)}
+
+#AP{display:none;min-height:100vh}
+.sb{position:fixed;left:0;top:0;bottom:0;width:246px;background:#19180f;color:#fff;display:flex;flex-direction:column;z-index:40;transition:transform 0.3s}
+.sb .sl{padding:18px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06)}.sb .sl .bd{width:32px;height:32px;border-radius:9px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;font-family:var(--mono)}
+.sb .sl h2{font-size:14px;font-weight:700}.sb .sl small{display:block;font-size:9px;color:rgba(255,255,255,0.25);font-family:var(--mono);letter-spacing:0.08em}
+.su{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px}.su .un{font-size:12px;font-weight:600}.su .ur{font-size:10px;color:rgba(255,255,255,0.3)}
+.sn{flex:1;padding:10px 8px;overflow-y:auto}.ss{font-size:9px;font-weight:700;color:rgba(255,255,255,0.18);text-transform:uppercase;letter-spacing:0.1em;padding:12px 12px 5px}
+.sk{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;border:none;background:transparent;color:rgba(255,255,255,0.4);font-size:12px;font-weight:500;width:100%;text-align:left;transition:all 0.15s;position:relative}.sk:hover{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.8)}.sk.on{background:rgba(67,56,202,0.15);color:#fff}.sk.on::before{content:'';position:absolute;left:0;top:7px;bottom:7px;width:3px;border-radius:0 2px 2px 0;background:var(--ac)}
+.sk svg{width:15px;height:15px;flex-shrink:0}.sk .ct{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:99px;padding:1px 6px}
+.sk.sub{padding-left:36px;font-size:11px}
+.sf{padding:12px 20px;border-top:1px solid rgba(255,255,255,0.06)}.sf .sst{font-size:9px;color:rgba(255,255,255,0.2);margin-bottom:6px;font-family:var(--mono)}
+.so{display:flex;align-items:center;gap:8px;background:none;border:none;color:rgba(255,255,255,0.3);font-size:11px;font-weight:500;padding:6px 0;width:100%}.so:hover{color:var(--red)}
+
+.tb{position:fixed;top:0;left:246px;right:0;height:56px;background:rgba(240,238,234,0.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:30}
+.tb h2{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}.tb h2 small{font-size:11px;font-weight:500;color:var(--tx2);background:var(--s2);padding:2px 10px;border-radius:6px;border:1px solid var(--bd)}
+.tbr{display:flex;align-items:center;gap:10px}
+.tbb{width:36px;height:36px;border-radius:9px;border:1px solid var(--bd);background:var(--s);display:flex;align-items:center;justify-content:center;position:relative;transition:all 0.15s}.tbb:hover{border-color:var(--acbd);background:var(--acbg)}
+.tbd{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:99px;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center}
+.ctt{margin-left:246px;padding:76px 24px 36px}
+
+.cd{background:var(--s);border-radius:var(--r2);border:1px solid var(--bd);overflow:hidden;box-shadow:var(--sh)}.cdh{padding:14px 20px;border-bottom:1px solid #eeece6;display:flex;justify-content:space-between;align-items:center}.cdh h3{font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px}
+.inp{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:9px 13px;color:var(--tx);font-size:13px;outline:none;transition:border 0.2s}.inp:focus{border-color:var(--ac)}textarea.inp{resize:vertical}
+.lbl{font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:5px;display:block}.lbl .rq{color:var(--red)}
+.btn{padding:8px 18px;border-radius:8px;border:none;font-size:12px;font-weight:600;transition:all 0.15s;display:inline-flex;align-items:center;gap:5px}
+.ba{background:var(--ac);color:#fff}.ba:hover{background:var(--ac2)}.bg{background:var(--grn);color:#fff}.br{background:var(--red);color:#fff}.bo{background:var(--s);border:1px solid var(--bd);color:var(--tx2)}.bo:hover{border-color:var(--acbd);background:var(--acbg);color:var(--ac)}.bgh{background:transparent;border:none;color:var(--tx2);padding:5px 8px}.bgh:hover{color:var(--ac)}.bsm{padding:5px 12px;font-size:10px}
+.bdg{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:18px;font-size:10px;font-weight:600;white-space:nowrap}.bdg .dt{width:5px;height:5px;border-radius:50%;display:inline-block}
+.av{border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-family:var(--mono);flex-shrink:0}
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;margin-bottom:18px}
+.sc{background:var(--s);border-radius:var(--r2);padding:16px 18px;border:1px solid var(--bd);position:relative;overflow:hidden;box-shadow:var(--sh);transition:transform 0.15s,box-shadow 0.15s}.sc:hover{transform:translateY(-2px);box-shadow:var(--sh2)}.sc .ob{position:absolute;top:-18px;right:-18px;width:65px;height:65px;border-radius:50%;opacity:0.06}
+.urg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:18px}
+.urg-card{border-radius:var(--r2);padding:18px 20px;border:1px solid;position:relative;overflow:hidden}.urg-card h4{font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}.urg-card .urg-count{font-size:28px;font-weight:800;font-family:var(--mono)}.urg-task{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid rgba(0,0,0,0.05);font-size:12px;cursor:pointer}.urg-task .urg-time{font-size:10px;font-family:var(--mono);font-weight:600;margin-left:auto;white-space:nowrap}
+.met-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:18px}.met-card{background:var(--s);border-radius:var(--r2);padding:18px 20px;border:1px solid var(--bd);display:flex;align-items:center;gap:16px;box-shadow:var(--sh)}.met-ring{width:56px;height:56px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}.met-ring svg{position:absolute;top:0;left:0;transform:rotate(-90deg)}.met-ring .mr-val{font-size:14px;font-weight:800;font-family:var(--mono)}
+.mdc{background:var(--s);border-radius:var(--r2);border:1px solid var(--bd);overflow:hidden;box-shadow:var(--sh);transition:transform 0.15s,box-shadow 0.15s;cursor:pointer}.mdc:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.mdc-h{padding:16px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #f0efe8}
+.mdc-s{display:grid;grid-template-columns:repeat(4,1fr)}.mdc-si{padding:12px;text-align:center;border-right:1px solid #f0efe8}.mdc-si:last-child{border-right:none}.mdc-si .v{font-size:18px;font-weight:800;font-family:var(--mono)}.mdc-si .l{font-size:9px;color:var(--tx3);margin-top:2px}
+.mdc-t{padding:10px 14px;border-top:1px solid #f0efe8;background:var(--s2)}.mdc-ti{display:flex;align-items:center;gap:6px;padding:5px 0;font-size:11px}
+.mdh{display:flex;align-items:center;gap:18px;padding:22px;background:var(--s);border-radius:var(--r2);border:1px solid var(--bd);margin-bottom:18px}.mdh .mda{width:58px;height:58px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;font-family:var(--mono)}
+.fb{display:flex;gap:3px;flex-wrap:wrap}.fbt{padding:5px 12px;border-radius:6px;font-size:10px;font-weight:600;border:1px solid var(--bd);background:var(--s);color:var(--tx2);transition:all 0.12s}.fbt.on{background:#19180f;color:#fff;border-color:#19180f}
+.rw{background:var(--s);border-radius:var(--r);border:1px solid var(--bd);padding:14px 20px;display:flex;align-items:center;gap:12px;transition:all 0.15s;margin-bottom:7px;box-shadow:var(--sh)}.rw:hover{box-shadow:var(--sh2);transform:translateY(-1px)}.rw.ck{cursor:pointer}
+.pb{width:4px;border-radius:2px;flex-shrink:0}
+.rt{width:100%;border-collapse:collapse;font-size:12px}.rt th{padding:10px 16px;text-align:left;font-weight:700;color:var(--tx2);font-size:10px;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid #eee;background:var(--s2)}.rt td{padding:12px 16px;border-bottom:1px solid #f5f5f0}.rt tr:hover td{background:var(--s2)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,0.35);backdrop-filter:blur(6px);z-index:100;display:flex;align-items:center;justify-content:center;padding:14px}
+.mdl{background:var(--s);border-radius:var(--r3);border:1px solid var(--bd);box-shadow:0 24px 60px rgba(0,0,0,0.14);max-height:88vh;overflow:auto}.mdlh{padding:20px 24px;border-bottom:1px solid #eee}.mdlb{padding:22px 24px}.mdlf{padding:14px 24px;border-top:1px solid #eee;display:flex;justify-content:flex-end;gap:10px}
+.tl{position:relative;padding-left:20px}.tl::before{content:'';position:absolute;left:5px;top:4px;bottom:4px;width:2px;background:#ece9e0;border-radius:1px}.tli{position:relative;margin-bottom:12px}.tld{position:absolute;left:-18px;top:5px;width:9px;height:9px;border-radius:50%;border:2px solid #fff;background:#ddd}.tld.on{background:var(--ac)}
+.flw{display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center}.flwn{padding:8px 14px;border-radius:8px;text-align:center;min-width:80px}.flwn .fv{font-size:18px;font-weight:800;font-family:var(--mono)}.flwn .fl{font-size:9px;color:#999;margin-top:1px;font-weight:600}.flwa{padding:0 3px;color:#ccc;font-size:14px}
+.wg{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;padding:16px}.wc{padding:14px;border-radius:11px;border:1px solid #eee;background:var(--s2)}.cpb{height:4px;border-radius:2px;background:#eee;margin-top:8px}.cpf{height:100%;border-radius:2px;transition:width 0.4s}
+.kb{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}.kbc{background:var(--s2);border-radius:var(--r2);border:1px solid var(--bd);min-height:160px}.kbch{padding:11px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:7px}.kbcc{margin:7px;padding:12px;background:var(--s);border-radius:9px;border:1px solid var(--bd);cursor:pointer;transition:all 0.15s;box-shadow:var(--sh)}.kbcc:hover{box-shadow:var(--sh2);transform:translateY(-1px)}
+.acg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.aci{padding:10px;border-radius:9px;border:2px solid var(--bd);background:var(--s);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:9px}.aci.on{border-color:var(--ac);background:var(--acbg)}.atg{width:36px;height:19px;border-radius:10px;background:#ddd;position:relative;transition:background 0.2s;margin-left:auto;flex-shrink:0}.atg.on{background:var(--ac)}.atg::after{content:'';position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:transform 0.2s;box-shadow:0 1px 2px rgba(0,0,0,0.15)}.atg.on::after{transform:translateX(17px)}
+.tpk{padding:9px 12px;border-radius:9px;border:2px solid var(--bd);background:var(--s);cursor:pointer;display:flex;align-items:center;gap:9px;transition:all 0.15s;margin-bottom:5px}.tpk:hover{border-color:var(--acbd)}.tpk.sel{border-color:var(--ac);background:var(--acbg)}
+.brt{display:flex;height:18px;border-radius:5px;overflow:hidden;background:#f0efe8;margin-left:36px}.brs{min-width:3px;transition:width 0.5s}
+.pbs{display:flex;gap:6px}.pbt{flex:1;padding:9px 0;border-radius:7px;border:2px solid var(--bd);background:var(--s);font-size:11px;font-weight:600;color:var(--tx2);transition:all 0.15s}
+.tbs{display:flex;gap:3px;margin-bottom:16px;border-bottom:1px solid var(--bd)}.tbt{padding:8px 16px;border:none;background:transparent;font-size:12px;font-weight:600;color:var(--tx2);border-bottom:2px solid transparent;margin-bottom:-1px}.tbt.on{color:var(--ac);border-bottom-color:var(--ac)}
+.srch{position:relative}.srch input{padding-left:34px}.srch svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--tx3)}
+.twp{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:7px}.tst{padding:12px 18px;border-radius:9px;background:#19180f;color:#fff;font-size:12px;font-weight:500;box-shadow:var(--sh3);display:flex;align-items:center;gap:8px;animation:tin 0.3s;max-width:360px}.tst.ok{border-left:4px solid var(--grn)}.tst.er{border-left:4px solid var(--red)}.tst.in{border-left:4px solid var(--blu)}
+.ldov{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+.ldov .spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes tin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}.ai{animation:fi 0.2s ease-out}
+@media(max-width:900px){.sb{transform:translateX(-100%)}.sb.open{transform:translateX(0)}.tb{left:0}.ctt{margin-left:0}.kb{grid-template-columns:1fr}.acg{grid-template-columns:1fr}.urg{grid-template-columns:1fr}.mdc-s{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="LS">
+  <div class="lc ai">
+    <div class="ll"><div class="lb">RF</div><div><h1>ResearchFlow</h1><span>WORK & TASK MANAGEMENT</span></div></div>
+    <div class="lf"><label>Username</label><input id="lU" placeholder="Enter username" autocomplete="username"></div>
+    <div class="lf"><label>Password</label><input type="password" id="lP" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLI()" autocomplete="current-password"></div>
+    <div class="le" id="lE">Invalid credentials</div>
+    <button class="lbt" onclick="doLI()">Sign In</button>
+    <div id="connStatus" class="lconn load">⏳ Checking connection...</div>
+    <div class="lh"><p>Master Admin: <b style="color:rgba(255,255,255,0.6)">sioniqadmin</b> / <b style="color:rgba(255,255,255,0.6)">sio@123</b><br>Other users login with their email prefix as username.</p></div>
+  </div>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div id="ldOv" class="ldov hide"><div class="spinner"></div><div style="color:#fff;font-size:14px;font-weight:600" id="ldMsg">Loading...</div></div>
+
+<!-- APP -->
+<div id="AP">
+  <aside class="sb" id="sb"><div class="sl"><div class="bd">RF</div><div><h2>ResearchFlow</h2><small>TASK MANAGER</small></div></div><div class="su" id="sbU"></div><nav class="sn" id="sbN"></nav>
+    <div class="sf"><div class="sst" id="syncSt">Last sync: —</div><button class="so" onclick="doLO()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button></div>
+  </aside>
+  <header class="tb" id="TB"><div style="display:flex;align-items:center;gap:10px"><button class="bgh hide" id="mT" onclick="document.getElementById('sb').classList.toggle('open')" style="padding:5px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button><h2 id="pT">Dashboard</h2></div>
+    <div class="tbr"><button class="btn bo bsm" onclick="syncFromSheet()" title="Sync now">🔄 Sync</button>
+    <div style="position:relative" id="nWr"><button class="tbb" onclick="tgN()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="tbd hide" id="nB">0</span></button>
+    <div class="hide" id="nP" style="position:absolute;right:0;top:44px;width:360px;background:var(--s);border:1px solid var(--bd);border-radius:12px;box-shadow:var(--sh3);z-index:60;max-height:400px;overflow:auto"><div style="padding:12px 16px;border-bottom:1px solid #eee;font-weight:700;font-size:13px;display:flex;justify-content:space-between">Notifications<button class="bgh bsm" onclick="nots=[];rnB();rnL()">Clear</button></div><div id="nL"></div></div></div></div>
+  </header>
+  <div class="ctt" id="MC"></div>
+</div>
+<div id="mO" class="ov hide" onclick="if(event.target===this)cM()"></div>
+<div class="twp" id="tW"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  ★ CONFIGURATION — PASTE YOUR WEB APP URL HERE ★
+// ═══════════════════════════════════════════════════════════════
+const API_URL = 'https://script.google.com/macros/s/AKfycbzJKTXVJYddd4xIhGfXSOLUv_KsLT6tJZki2wi66TPPYhA07mZsyablOzzQwnJYrJtnVA/exec';
+
+// ═══════════════════════════════════════════════════════════════
+//  MASTER ADMIN (hardcoded — always works even with empty sheet)
+// ═══════════════════════════════════════════════════════════════
+const MASTER = {
+  id:"admin",name:"SIONIQ Admin",email:"admin@sioniq.com",role:"Team Lead",
+  av:"SA",col:"#4338ca",pass:"sio@123",username:"sioniqadmin",
+  acc:["dashboard","works","tasks","reports","users","kanban","activity","team_dashboard"],on:true
+};
+
+const AC={D:"dashboard",W:"works",T:"tasks",R:"reports",U:"users",K:"kanban",A:"activity",TD:"team_dashboard"};
+const SS={Assigned:{bg:"#dbeafe",fg:"#1e40af",d:"#3b82f6"},"In Progress":{bg:"#ede9fe",fg:"#5b21b6",d:"#8b5cf6"},Completed:{bg:"#fce7f3",fg:"#9d174d",d:"#ec4899"},Approved:{bg:"#dcfce7",fg:"#166534",d:"#22c55e"},Rejected:{bg:"#fee2e2",fg:"#991b1b",d:"#ef4444"},Reassigned:{bg:"#fef9c3",fg:"#854d0e",d:"#eab308"}};
+const PC={Low:"#94a3b8",Medium:"#2563eb",High:"#d97706",Urgent:"#dc2626"};
+
+// ── APP STATE (starts empty — loaded from sheet) ──
+let users=[], works=[], tasks=[], nots=[], alog=[];
+let CU=null, CV="dashboard", wF="all", tF="all", tS="", eF="all", tdS=null;
+let nW_=1, nT_=100, nU_=1, nA_=1, syncInt=null, apiOk=false;
+
+// ═══════════════ API LAYER ═══════════════
+function showLD(m='Loading...'){document.getElementById('ldOv').classList.remove('hide');document.getElementById('ldMsg').textContent=m}
+function hideLD(){document.getElementById('ldOv').classList.add('hide')}
+
+async function apiGet(action){
+  try{const r=await fetch(`${API_URL}?action=${action}`);const d=await r.json();if(d.error)throw new Error(d.error);return d}catch(e){console.error('GET '+action,e);return null}
+}
+async function apiPost(action,payload){
+  try{const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action,payload})});const d=await r.json();if(d.error)throw new Error(d.error);return d}catch(e){console.error('POST '+action,e);return null}
+}
+
+async function checkConn(){
+  const el=document.getElementById('connStatus');
+  el.className='lconn load';el.innerHTML='⏳ Connecting to Google Sheets...';
+  if(API_URL.includes('YOUR_')){el.className='lconn err';el.innerHTML='❌ API URL not configured — set API_URL in code';apiOk=false;return}
+  const r=await apiGet('ping');
+  if(r&&r.status==='ok'){el.className='lconn ok';el.innerHTML='✅ Connected to Google Sheets';apiOk=true}
+  else{el.className='lconn err';el.innerHTML='❌ Cannot reach Google Sheets API';apiOk=false}
+}
+
+async function loadFromSheet(){
+  showLD('Loading data from Google Sheets...');
+  const d=await apiGet('getAll');
+  if(!d){hideLD();return false}
+
+  users=(d.users||[]).map(u=>({id:String(u.id),name:u.name,email:u.email,role:u.role,av:u.avatar||'',col:u.color||'#666',pass:u.password||'',username:(u.email||'').split('@')[0],acc:(u.access||'').split(',').map(a=>a.trim()).filter(Boolean),on:u.active===true||u.active==='TRUE'}));
+  works=(d.works||[]).map(w=>({id:parseInt(w.id),title:w.title,desc:w.description||'',pri:w.priority||'Medium',cat:w.createdAt||'',cb:w.createdBy||'',ht:w.hasTask===true||w.hasTask==='TRUE'}));
+  tasks=(d.tasks||[]).map(t=>({id:parseInt(t.id),wk:parseInt(t.workId),as:String(t.assignee),st:t.status||'Assigned',sd:t.startDate||'',ed:t.endDate||'',rc:parseInt(t.reassignCount)||0,pg:parseInt(t.progress)||0,cm:[],hi:[]}));
+  (d.comments||[]).forEach(c=>{const t=tasks.find(x=>x.id===parseInt(c.taskId));if(t)t.cm.push({by:String(c.by),tx:c.text,dt:c.date})});
+  (d.history||[]).forEach(h=>{const t=tasks.find(x=>x.id===parseInt(h.taskId));if(t)t.hi.push({a:h.action,d:h.date,b:String(h.by)})});
+  alog=(d.activity||[]).map(a=>({id:parseInt(a.id),u:String(a.userId),a:a.action,d:a.date,t:a.type}));
+
+  nW_=works.length?Math.max(...works.map(w=>w.id))+1:1;
+  nT_=tasks.length?Math.max(...tasks.map(t=>t.id))+1:100;
+  nU_=users.length?Math.max(...users.map(u=>parseInt(u.id.replace(/\D/g,''))||0))+1:1;
+  nA_=alog.length?Math.max(...alog.map(a=>a.id))+1:1;
+
+  document.getElementById('syncSt').textContent='Synced: '+new Date().toLocaleTimeString();
+  hideLD();return true;
+}
+
+async function syncFromSheet(){
+  toast('Syncing...','in');
+  const ok=await loadFromSheet();
+  if(ok){rA();toast('Data synced!','success')}else toast('Sync failed','error');
+}
+
+// Save helpers
+async function svUser(u){return apiPost('addUser',{id:u.id,name:u.name,email:u.email,role:u.role,avatar:u.av,color:u.col,password:u.pass,access:u.acc.join(','),active:u.on?'TRUE':'FALSE'})}
+async function upUser(u){return apiPost('updateUser',{id:u.id,name:u.name,email:u.email,role:u.role,avatar:u.av,color:u.col,password:u.pass,access:u.acc.join(','),active:u.on?'TRUE':'FALSE'})}
+async function svWork(w){return apiPost('addWork',{id:w.id,title:w.title,description:w.desc,priority:w.pri,createdAt:w.cat,createdBy:w.cb,hasTask:w.ht?'TRUE':'FALSE'})}
+async function upWork(w){return apiPost('updateWork',{id:w.id,title:w.title,description:w.desc,priority:w.pri,createdAt:w.cat,createdBy:w.cb,hasTask:w.ht?'TRUE':'FALSE'})}
+async function svTask(t){return apiPost('addTask',{id:t.id,workId:t.wk,assignee:t.as,status:t.st,startDate:t.sd,endDate:t.ed,reassignCount:t.rc,progress:t.pg})}
+async function upTask(t){return apiPost('updateTask',{id:t.id,workId:t.wk,assignee:t.as,status:t.st,startDate:t.sd,endDate:t.ed,reassignCount:t.rc,progress:t.pg})}
+async function svCm(tid,c){return apiPost('addComment',{id:Date.now(),taskId:tid,by:c.by,text:c.tx,date:c.dt})}
+async function svHi(tid,h){return apiPost('addHistory',{id:Date.now(),taskId:tid,action:h.a,date:h.d,by:h.b})}
+async function svAc(a){return apiPost('addActivity',{id:a.id,userId:a.u,action:a.a,date:a.d,type:a.t})}
+
+// ═══════════════ HELPERS ═══════════════
+const U=id=>{if(id==='admin')return MASTER;return users.find(u=>u.id===id)};
+const W=id=>works.find(w=>w.id===id);const T4W=wid=>tasks.find(t=>t.wk===wid);
+const td=()=>new Date().toISOString().split("T")[0];
+const fD=d=>{if(!d)return"—";return new Date(d+"T00:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})};
+const dDf=(a,b)=>Math.ceil((new Date(a+"T00:00:00")-new Date(b+"T00:00:00"))/86400000);
+const isOD=t=>t.ed&&new Date(t.ed)<new Date(td()+"T00:00:00")&&!["Approved","Completed"].includes(t.st);
+const isTL=()=>CU?.role==="Team Lead";
+const hA=k=>CU?.acc?.includes(k);
+const aCt=uid=>tasks.filter(t=>t.as===uid&&["Assigned","In Progress","Reassigned"].includes(t.st)).length;
+
+function sB(s){const x=SS[s]||{bg:"#eee",fg:"#666",d:"#999"};return`<span class="bdg" style="background:${x.bg};color:${x.fg}"><span class="dt" style="background:${x.d}"></span>${s}</span>`}
+function aH(u,sz=26){if(!u)return'';return`<div class="av" style="width:${sz}px;height:${sz}px;font-size:${sz<28?9:11}px;background:${u.col}12;color:${u.col}">${u.av}</div>`}
+function pB(p){return`<span style="font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;background:${PC[p]}10;color:${PC[p]}">${p}</span>`}
+function timeL(ed){const d=dDf(ed,td());if(d<0)return`<span style="color:var(--red);font-weight:700">${Math.abs(d)}d overdue</span>`;if(d===0)return`<span style="color:var(--red);font-weight:700">Due today!</span>`;if(d<=2)return`<span style="color:var(--ylw);font-weight:700">${d}d left</span>`;return`<span style="color:var(--tx3)">${d}d left</span>`}
+function ring(pct,col,sz=56,sw=5){const r=(sz-sw)/2,c=2*Math.PI*r,o=c-(pct/100)*c;return`<div class="met-ring" style="width:${sz}px;height:${sz}px"><svg width="${sz}" height="${sz}"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="#eee" stroke-width="${sw}"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-dasharray="${c}" stroke-dashoffset="${o}" stroke-linecap="round"/></svg><div class="mr-val" style="color:${col}">${pct}%</div></div>`}
+function toast(m,t="in"){const w=document.getElementById('tW');const e=document.createElement('div');e.className=`tst ${t==='success'?'ok':t==='error'?'er':'in'}`;e.innerHTML=m;w.appendChild(e);setTimeout(()=>{e.style.opacity='0';setTimeout(()=>e.remove(),300)},3200)}
+function addN(m,tid,fu){nots.unshift({id:Date.now(),msg:m,tm:"Just now",rd:false,tid,fu:fu||CU?.id});rnB()}
+function logA(a,t){const ac={id:nA_++,u:CU.id,a,d:td(),t};alog.unshift(ac);svAc(ac)}
+
+function eC(uid){
+  const et=tasks.filter(t=>t.as===uid);const now=td();
+  const run=et.filter(t=>["Assigned","In Progress","Reassigned"].includes(t.st));
+  const comp=et.filter(t=>t.st==="Completed");const appr=et.filter(t=>t.st==="Approved");
+  const onT=appr.filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes("complete"));return ch&&t.ed&&ch.d<=t.ed});
+  const dT=run.filter(t=>t.ed===now);const d2=run.filter(t=>{const d=dDf(t.ed,now);return d>=0&&d<=2});
+  return{total:et.length,run:run.length,comp:comp.length,appr:appr.length,reas:et.filter(t=>t.st==="Reassigned").length,od:run.filter(isOD).length,onT:onT.length,dT:dT.length,d2:d2.length,rate:appr.length?Math.round(onT.length/appr.length*100):0,runT:run,dTT:dT,d2T:d2,odT:run.filter(isOD),compT:comp,apprT:appr};
+}
+function eCA(){
+  const run=tasks.filter(t=>["Assigned","In Progress","Reassigned"].includes(t.st));const appr=tasks.filter(t=>t.st==="Approved");const now=td();
+  const onT=appr.filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes("complete"));return ch&&t.ed&&ch.d<=t.ed});
+  const dT=run.filter(t=>t.ed===now);const d2=run.filter(t=>{const d=dDf(t.ed,now);return d>=0&&d<=2});
+  return{total:tasks.length,run:run.length,comp:tasks.filter(t=>t.st==="Completed").length,appr:appr.length,reas:tasks.filter(t=>t.st==="Reassigned").length,od:run.filter(isOD).length,onT:onT.length,dT:dT.length,d2:d2.length,rate:appr.length?Math.round(onT.length/appr.length*100):0,runT:run,dTT:dT,d2T:d2,odT:run.filter(isOD)};
+}
+function urgC(title,cnt,col,bg,bdr,list){
+  let h=`<div class="urg-card" style="background:${bg};border-color:${bdr}"><h4>${title} <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:${col};color:#fff">${cnt}</span></h4>`;
+  if(!list.length)h+=`<div style="font-size:12px;color:var(--tx2);padding:4px 0">None ✨</div>`;
+  else list.slice(0,4).forEach(t=>{const w=W(t.wk);h+=`<div class="urg-task" onclick="oTD(${t.id})"><div class="pb" style="height:14px;background:${PC[w?.pri]||'#ccc'}"></div><span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${w?.title||''}</span><span class="urg-time" style="color:${col}">${timeL(t.ed)}</span></div>`});
+  if(list.length>4)h+=`<div style="font-size:10px;color:${col};font-weight:600;margin-top:4px">+${list.length-4} more</div>`;
+  return h+`</div>`}
+
+// ═══════════════ LOGIN ═══════════════
+async function doLI(){
+  const uname=document.getElementById('lU').value.trim();
+  const pass=document.getElementById('lP').value;
+
+  // Master admin check (works even without sheet)
+  if(uname==='sioniqadmin'&&pass==='sio@123'){
+    CU={...MASTER};
+    if(apiOk)await loadFromSheet();
+    document.getElementById('LS').style.display='none';
+    document.getElementById('AP').style.display='block';
+    CV=CU.acc[0];
+    if(apiOk)syncInt=setInterval(()=>loadFromSheet().then(()=>{document.getElementById('syncSt').textContent='Synced: '+new Date().toLocaleTimeString();rA()}),60000);
+    rA();toast(`Welcome, Master Admin!`,'success');return;
+  }
+
+  // Load users from sheet
+  if(apiOk){
+    showLD('Authenticating...');
+    await loadFromSheet();
+    hideLD();
+  }
+
+  // Find user by username (email prefix) or email
+  const u=users.find(x=>(x.email||'').split('@')[0]===uname||x.email===uname||x.name.toLowerCase()===uname.toLowerCase());
+  if(!u||pass!==u.pass||!u.on){document.getElementById('lE').style.display='block';return}
+  document.getElementById('lE').style.display='none';
+  CU=u;CV=CU.acc[0]||"dashboard";
+  document.getElementById('LS').style.display='none';
+  document.getElementById('AP').style.display='block';
+  if(apiOk)syncInt=setInterval(()=>loadFromSheet().then(()=>{document.getElementById('syncSt').textContent='Synced: '+new Date().toLocaleTimeString();rA()}),60000);
+  rA();toast(`Welcome, ${CU.name}!`,'success');
+}
+function doLO(){if(syncInt)clearInterval(syncInt);CU=null;document.getElementById('AP').style.display='none';document.getElementById('LS').style.display='flex';document.getElementById('lP').value='';document.getElementById('lU').value=''}
+
+// ═══════════════ APP RENDER ═══════════════
+function rA(){rSb();rTb();rnB();rnL();rP()}
+function rSb(){
+  document.getElementById('sbU').innerHTML=`${aH(CU,34)}<div><div class="un">${CU.name}</div><div class="ur">${CU.role}</div></div>`;
+  const items=[{k:AC.D,l:"My Dashboard",i:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'},{k:AC.TD,l:"Team Dashboards",i:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>'},{k:AC.W,l:"Works",i:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>',c:works.filter(w=>!w.ht).length},{k:AC.T,l:"Tasks",i:'<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/>',c:tasks.filter(t=>t.st==="Completed").length},{k:AC.K,l:"Kanban",i:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>'},{k:AC.R,l:"Reports",i:'<path d="M18 20V10M12 20V4M6 20v-6"/>'},{k:AC.A,l:"Activity",i:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>'},{k:AC.U,l:"Users",i:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'}];
+  let n='<div class="ss">Navigation</div>';
+  items.forEach(it=>{if(!hA(it.k))return;const isOn=CV===it.k||(it.k===AC.TD&&(CV==='team_dashboard'||CV==='member_dash'));
+    n+=`<button class="sk${isOn?' on':''}" onclick="goTo('${it.k}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${it.i}</svg>${it.l}${it.c>0?`<span class="ct">${it.c}</span>`:''}</button>`;
+    if(it.k===AC.TD&&hA(AC.TD)&&isOn){n+=`<button class="sk sub${CV==='team_dashboard'&&!tdS?' on':''}" onclick="CV='team_dashboard';tdS=null;rA()">📊 Combined</button>`;users.filter(u=>u.on).forEach(m=>{n+=`<button class="sk sub${CV==='member_dash'&&tdS===m.id?' on':''}" onclick="CV='member_dash';tdS='${m.id}';rA()">${aH(m,16)} ${m.name.split(' ')[0]}</button>`})}});
+  document.getElementById('sbN').innerHTML=n;
+}
+function rTb(){const t={dashboard:"My Dashboard",works:"Works",tasks:"Tasks",kanban:"Kanban",reports:"Reports",activity:"Activity",users:"Users",team_dashboard:"Team Dashboards",member_dash:"Member Dashboard"};let s='';if(CV==='member_dash'&&tdS){const m=U(tdS);s=`<small>${m?.name||''}</small>`}if(CV==='team_dashboard')s='<small>Combined</small>';document.getElementById('pT').innerHTML=(t[CV]||"Dashboard")+s}
+function goTo(v){if(!hA(v)&&v!=='member_dash'&&v!=='team_dashboard'){toast("No access","error");return}CV=v;if(v===AC.TD){CV='team_dashboard';tdS=null}document.getElementById('sb').classList.remove('open');rA()}
+function rP(){const c=document.getElementById('MC');const v={dashboard:rDash,team_dashboard:rTDa,member_dash:()=>rMDa(tdS),works:rWk,tasks:rTk,kanban:rKb,reports:rRp,activity:rAc,users:rUs};c.innerHTML=(v[CV]||rDash)()}
+
+// NOTIF
+function tgN(){const p=document.getElementById('nP');p.classList.toggle('hide');if(!p.classList.contains('hide')){nots.forEach(n=>{if(n.fu===CU?.id||n.fu==='admin')n.rd=true});rnB();rnL()}}
+function rnB(){const c=nots.filter(n=>!n.rd&&(n.fu===CU?.id||n.fu==='admin')).length;const b=document.getElementById('nB');if(b){b.textContent=c;b.classList.toggle('hide',c===0)}}
+function rnL(){const el=document.getElementById('nL');if(!el)return;const my=nots.filter(n=>n.fu===CU?.id||n.fu==='admin');el.innerHTML=my.length?my.slice(0,10).map(n=>`<div style="padding:10px 16px;border-bottom:1px solid #f0efe8;cursor:pointer;font-size:12px;background:${n.rd?'var(--s)':'var(--acbg)'}" onclick="oTD(${n.tid})">${n.msg}<div style="font-size:10px;color:var(--tx3);font-family:var(--mono);margin-top:2px">${n.tm}</div></div>`).join(''):'<div style="padding:24px;text-align:center;color:var(--tx3);font-size:12px">No notifications</div>'}
+document.addEventListener('click',e=>{const nw=document.getElementById('nWr');if(nw&&!nw.contains(e.target))document.getElementById('nP')?.classList.add('hide')});
+
+// MODAL
+function oM(h,w="520px"){const o=document.getElementById('mO');o.innerHTML=`<div class="mdl ai" style="width:min(${w},95vw)" onclick="event.stopPropagation()">${h}</div>`;o.classList.remove('hide')}
+function cM(){document.getElementById('mO').classList.add('hide');rA()}
+
+// ═══════════════ DASHBOARDS ═══════════════
+function rDash(){
+  const c=eC(CU.id);const empty=tasks.length===0&&works.length===0;
+  if(empty)return`<div class="cd" style="padding:40px;text-align:center"><div style="font-size:40px;margin-bottom:16px">🚀</div><h2 style="margin-bottom:8px">Welcome to ResearchFlow!</h2><p style="color:var(--tx2);margin-bottom:20px">No data yet. ${isTL()?'Start by creating works and assigning tasks.':'Ask your Team Lead to assign you tasks.'}</p>${isTL()?`<button class="btn ba" onclick="goTo('works')">Create First Work →</button>`:''}</div>`;
+
+  let h=`<div class="urg ai">${urgC("🔴 Due Today",c.dT,"#dc2626","#fef2f2","#fecaca",c.dTT)}${urgC("🟡 Due in 2 Days",c.d2,"#d97706","#fffbeb","#fde68a",c.d2T)}${urgC("⚫ Overdue",c.od,"#991b1b","#fef2f2","#fca5a5",c.odT)}</div>`;
+  h+=`<div class="met-row ai"><div class="met-card">${ring(c.rate,"#16a34a")}<div><div style="font-size:18px;font-weight:800;color:var(--grn)">${c.onT}/${c.appr}</div><div style="font-size:11px;color:var(--tx2)">On-Time Rate</div></div></div>
+    <div class="met-card"><div style="width:56px;height:56px;border-radius:14px;background:var(--blubg);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🚀</div><div><div style="font-size:18px;font-weight:800;color:var(--blu)">${c.run}</div><div style="font-size:11px;color:var(--tx2)">Active</div></div></div>
+    <div class="met-card"><div style="width:56px;height:56px;border-radius:14px;background:var(--grnbg);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">✅</div><div><div style="font-size:18px;font-weight:800;color:var(--grn)">${c.appr}</div><div style="font-size:11px;color:var(--tx2)">Approved</div></div></div>
+    <div class="met-card"><div style="width:56px;height:56px;border-radius:14px;background:${c.od>0?'var(--redbg)':'var(--grnbg)'};display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">${c.od>0?'⏰':'🎯'}</div><div><div style="font-size:18px;font-weight:800;color:${c.od>0?'var(--red)':'var(--grn)'}">${c.od}</div><div style="font-size:11px;color:var(--tx2)">${c.od>0?'Overdue':'On Track!'}</div></div></div></div>`;
+  h+=`<div class="sg ai">${[{l:"Total",v:c.total,c_:"#4338ca"},{l:"Active",v:c.run,c_:"#2563eb"},{l:"Review",v:c.comp,c_:"#db2777"},{l:"Approved",v:c.appr,c_:"#16a34a"},{l:"Reassign",v:c.reas,c_:"#d97706"},...(isTL()?[{l:"Unassigned",v:works.filter(w=>!w.ht).length,c_:"#d97706"}]:[])].map(s=>`<div class="sc"><div class="ob" style="background:${s.c_}"></div><div style="font-size:11px;color:var(--tx2);margin-bottom:4px">${s.l}</div><div style="font-size:26px;font-weight:800;font-family:var(--mono);color:${s.c_}">${s.v}</div></div>`).join('')}</div>`;
+  // Active tasks
+  const myAct=c.runT;
+  h+=`<div class="cd ai" style="margin-bottom:16px"><div class="cdh"><h3>Active Tasks (${myAct.length})</h3><button class="bgh bsm" onclick="goTo('${AC.T}')">All →</button></div>${myAct.length===0?'<div style="padding:20px;text-align:center;color:var(--tx3);font-size:12px">None 🎉</div>':myAct.map(t=>{const w=W(t.wk);return`<div style="padding:10px 20px;border-bottom:1px solid #f0efe8;cursor:pointer;display:flex;align-items:center;gap:10px" onclick="oTD(${t.id})" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='var(--s)'"><div class="pb" style="height:28px;background:${PC[w?.pri]||'#ccc'}"></div><div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w?.title||''}</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px"><div style="height:3px;border-radius:2px;background:#eee;width:70px"><div style="height:100%;border-radius:2px;background:var(--ac);width:${t.pg||0}%"></div></div><span style="font-size:9px;color:var(--tx2);font-family:var(--mono)">${t.pg||0}%</span></div></div>${sB(t.st)}<span style="font-size:10px">${timeL(t.ed)}</span></div>`}).join('')}</div>`;
+  // Pending approvals (TL)
+  const pA=tasks.filter(t=>t.st==="Completed");
+  if(isTL()&&pA.length)h+=`<div class="cd ai" style="margin-bottom:16px"><div class="cdh"><h3>Pending Approvals <span style="background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:99px;padding:2px 7px">${pA.length}</span></h3></div>${pA.map(t=>{const w=W(t.wk);const a=U(t.as);return`<div style="padding:10px 20px;border-bottom:1px solid #f0efe8;cursor:pointer;display:flex;align-items:center;gap:10px" onclick="oTD(${t.id})">${aH(a)}<div style="flex:1"><div style="font-size:12px;font-weight:600">${w?.title||''}</div><div style="font-size:10px;color:var(--tx2)">by ${a?.name||''}</div></div><button class="btn bg bsm" onclick="event.stopPropagation();doAp(${t.id})">✓</button></div>`}).join('')}</div>`;
+  // Team quick view
+  if(isTL()&&hA(AC.TD)&&users.length)h+=`<div class="cd ai"><div class="cdh"><h3>Team</h3><button class="bgh bsm" onclick="goTo('${AC.TD}')">Full →</button></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;padding:14px">${users.filter(u=>u.on).map(m=>{const mc=eC(m.id);const ld=mc.run>=3?{c:"#dc2626",l:"⬤ Busy"}:mc.run>=1?{c:"#d97706",l:"⬤ Active"}:{c:"#16a34a",l:"⬤ Free"};return`<div style="padding:10px;border-radius:9px;border:1px solid var(--bd);background:var(--s2);cursor:pointer;transition:all 0.15s" onclick="CV='member_dash';tdS='${m.id}';rA()" onmouseover="this.style.boxShadow='var(--sh2)'" onmouseout="this.style.boxShadow='none'"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">${aH(m,26)}<div><div style="font-size:11px;font-weight:600">${m.name}</div></div></div><div style="font-size:9px;display:flex;gap:8px"><span style="color:var(--blu)"><b>${mc.run}</b> active</span><span style="color:var(--grn)"><b>${mc.appr}</b> done</span></div><div style="font-size:9px;color:${ld.c};font-weight:600;margin-top:4px">${ld.l} · ${mc.rate}%</div></div>`}).join('')}</div></div>`;
+  return h;
+}
+
+function rTDa(){if(!users.filter(u=>u.on).length)return'<div class="cd" style="padding:40px;text-align:center"><h3>No team members yet</h3><p style="color:var(--tx2);margin-top:8px">Create users from User Management.</p></div>';
+  const gc=eCA();const avgP=tasks.length?Math.round(tasks.reduce((s,t)=>s+(t.pg||0),0)/tasks.length):0;
+  let h=`<div class="urg ai">${urgC("🔴 Due Today",gc.dT,"#dc2626","#fef2f2","#fecaca",gc.dTT)}${urgC("🟡 Due in 2 Days",gc.d2,"#d97706","#fffbeb","#fde68a",gc.d2T)}${urgC("⚫ Overdue",gc.od,"#991b1b","#fef2f2","#fca5a5",gc.odT)}</div>`;
+  h+=`<div class="met-row ai"><div class="met-card">${ring(gc.rate,"#16a34a")}<div><div style="font-size:18px;font-weight:800;color:var(--grn)">${gc.onT}/${gc.appr}</div><div style="font-size:11px;color:var(--tx2)">On-Time</div></div></div><div class="met-card">${ring(avgP,"#4338ca")}<div><div style="font-size:18px;font-weight:800;color:var(--ac)">${avgP}%</div><div style="font-size:11px;color:var(--tx2)">Avg Progress</div></div></div><div class="met-card"><div style="width:50px;height:50px;border-radius:12px;background:var(--blubg);display:flex;align-items:center;justify-content:center;font-size:20px">📊</div><div><div style="font-size:18px;font-weight:800">${gc.total}</div><div style="font-size:11px;color:var(--tx2)">Total Tasks</div></div></div></div>`;
+  h+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px;margin-bottom:20px">${users.filter(u=>u.on).map(m=>{const mc=eC(m.id);const ld=mc.run>=3?{c:"#dc2626",l:"Overloaded",bg:"var(--redbg)"}:mc.run>=1?{c:"#d97706",l:"Busy",bg:"var(--ylwbg)"}:{c:"#16a34a",l:"Free",bg:"var(--grnbg)"};return`<div class="mdc" onclick="CV='member_dash';tdS='${m.id}';rA()"><div class="mdc-h">${aH(m,38)}<div style="flex:1"><div style="font-size:14px;font-weight:700">${m.name}</div><div style="font-size:11px;color:var(--tx2)">${m.role}</div></div><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;background:${ld.bg};color:${ld.c}">${ld.l}</span></div><div class="mdc-s"><div class="mdc-si"><div class="v" style="color:var(--blu)">${mc.run}</div><div class="l">Active</div></div><div class="mdc-si"><div class="v" style="color:var(--grn)">${mc.appr}</div><div class="l">Done</div></div><div class="mdc-si"><div class="v" style="color:${mc.od>0?'var(--red)':'var(--tx3)'}">${mc.od}</div><div class="l">Overdue</div></div><div class="mdc-si"><div class="v" style="color:var(--grn)">${mc.rate}%</div><div class="l">On-Time</div></div></div>${mc.runT.length?`<div class="mdc-t"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Active</div>${mc.runT.slice(0,3).map(t=>{const w=W(t.wk);return`<div class="mdc-ti"><div class="pb" style="height:12px;background:${PC[w?.pri]||'#ccc'}"></div><span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${w?.title||''}</span><span style="font-size:9px">${timeL(t.ed)}</span></div>`}).join('')}</div>`:''}</div>`}).join('')}</div>`;
+  return h;
+}
+
+function rMDa(uid){const m=U(uid);if(!m)return'';const c=eC(uid);const avgP=c.total?Math.round(tasks.filter(t=>t.as===uid).reduce((s,t)=>s+(t.pg||0),0)/c.total):0;const ld=c.run>=3?{c:"#dc2626",l:"Overloaded",bg:"var(--redbg)"}:c.run>=1?{c:"#d97706",l:"Busy",bg:"var(--ylwbg)"}:{c:"#16a34a",l:"Free",bg:"var(--grnbg)"};
+  let h=`<div class="mdh ai"><div class="mda" style="background:${m.col}12;color:${m.col}">${m.av}</div><div style="flex:1"><h2 style="font-size:20px;font-weight:800">${m.name}</h2><p style="font-size:12px;color:var(--tx2)">${m.role} · ${m.email}</p></div><span style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:7px;background:${ld.bg};color:${ld.c}">${ld.l}</span><button class="btn bo bsm" onclick="goTo('${AC.TD}')">← Team</button></div>`;
+  h+=`<div class="urg ai">${urgC("Due Today 🔴",c.dT,"#dc2626","#fef2f2","#fecaca",c.dTT)}${urgC("Due 2 Days 🟡",c.d2,"#d97706","#fffbeb","#fde68a",c.d2T)}${urgC("Overdue ⚫",c.od,"#991b1b","#fef2f2","#fca5a5",c.odT)}</div>`;
+  h+=`<div class="met-row ai"><div class="met-card">${ring(c.rate,"#16a34a")}<div><div style="font-size:16px;font-weight:800;color:var(--grn)">${c.onT}/${c.appr}</div><div style="font-size:11px;color:var(--tx2)">On-Time</div></div></div><div class="met-card">${ring(avgP,"#4338ca")}<div><div style="font-size:16px;font-weight:800;color:var(--ac)">${avgP}%</div><div style="font-size:11px;color:var(--tx2)">Avg Progress</div></div></div></div>`;
+  h+=`<div class="sg ai">${[{l:"Active",v:c.run,c_:"#2563eb"},{l:"Pending",v:c.comp,c_:"#db2777"},{l:"Done",v:c.appr,c_:"#16a34a"},{l:"Reassign",v:c.reas,c_:"#d97706"},{l:"Overdue",v:c.od,c_:"#dc2626"},{l:"On-Time",v:c.onT,c_:"#059669"}].map(s=>`<div class="sc"><div class="ob" style="background:${s.c_}"></div><div style="font-size:10px;color:var(--tx2);margin-bottom:3px">${s.l}</div><div style="font-size:22px;font-weight:800;font-family:var(--mono);color:${s.c_}">${s.v}</div></div>`).join('')}</div>`;
+  h+=`<div class="cd ai" style="margin-bottom:14px"><div class="cdh"><h3>Active (${c.run})</h3></div>${c.runT.length?c.runT.map(t=>{const w=W(t.wk);return`<div class="rw ck" onclick="oTD(${t.id})" style="margin:6px 10px"><div class="pb" style="height:34px;background:${PC[w?.pri]||'#ccc'}"></div><div style="flex:1"><div style="font-size:12px;font-weight:600">${w?.title||''}</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px"><div style="height:3px;border-radius:2px;background:#eee;width:80px"><div style="height:100%;border-radius:2px;background:var(--ac);width:${t.pg||0}%"></div></div><span style="font-size:9px;font-family:var(--mono)">${t.pg||0}%</span></div></div>${sB(t.st)}<span style="font-size:10px">${timeL(t.ed)}</span></div>`}).join(''):'<div style="padding:16px;text-align:center;color:var(--tx3);font-size:12px">None</div>'}</div>`;
+  return h;
+}
+
+// ═══════════════ WORKS / TASKS / KANBAN / REPORTS / ACTIVITY / USERS ═══════════════
+function rWk(){const f=works.filter(w=>{if(wF==="unassigned")return!w.ht;if(wF==="assigned")return w.ht;return true});let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px"><div class="fb">${["all","unassigned","assigned"].map(x=>`<button class="fbt ${wF===x?'on':''}" onclick="wF='${x}';rA()">${x==="all"?`All (${works.length})`:x==="unassigned"?`Unassigned (${works.filter(w=>!w.ht).length})`:`Assigned (${works.filter(w=>w.ht).length})`}</button>`).join('')}</div>${isTL()?`<button class="btn ba" onclick="oCW()">+ New Work</button>`:''}</div>`;if(!f.length)h+='<div class="cd" style="padding:30px;text-align:center;color:var(--tx3)">No works yet</div>';else f.forEach(w=>{const tk=T4W(w.id);const a=tk?U(tk.as):null;h+=`<div class="rw${tk?' ck':''}" ${tk?`onclick="oTD(${tk.id})"`:''}><div class="pb" style="height:40px;background:${PC[w.pri]}"></div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="font-weight:700;font-size:13px">${w.title}</span>${pB(w.pri)}</div><div style="font-size:11px;color:var(--tx2)">${w.desc}</div></div><div style="flex-shrink:0;display:flex;align-items:center;gap:8px">${tk?`${aH(a,24)}<span style="font-size:11px;color:var(--tx2)">${a?.name||''}</span>${sB(tk.st)}`:`<span class="bdg" style="background:var(--ylwbg);color:#92400e">⏳ Unassigned</span>${isTL()?`<button class="btn ba bsm" onclick="event.stopPropagation();oAW(${w.id})">Assign →</button>`:''}`}</div></div>`});return h}
+
+function rTk(){let pool=isTL()?tasks:tasks.filter(t=>t.as===CU.id);const f=pool.filter(t=>{if(tF!=="all"&&t.st!==tF)return false;if(tS){const w=W(t.wk);if(w&&!w.title.toLowerCase().includes(tS.toLowerCase()))return false}return true});let h=`<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center"><div class="srch"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input class="inp" style="width:200px;padding-left:34px" placeholder="Search..." value="${tS}" oninput="tS=this.value;rA()"></div><div class="fb">${["all","Assigned","In Progress","Completed","Approved","Reassigned"].map(s=>`<button class="fbt ${tF===s?'on':''}" onclick="tF='${s}';rA()">${s==="all"?"All":s}</button>`).join('')}</div></div>`;if(!f.length)h+='<div class="cd" style="padding:30px;text-align:center;color:var(--tx3)">No tasks</div>';else f.forEach(t=>{const w=W(t.wk);const a=U(t.as);const isMe=t.as===CU.id;h+=`<div class="rw ck" onclick="oTD(${t.id})"><div class="pb" style="height:38px;background:${PC[w?.pri]||'#ccc'}"></div><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px">${w?.title||''} ${isOD(t)?'<span style="font-size:8px;background:var(--redbg);color:var(--red);padding:1px 5px;border-radius:3px;font-weight:700">OVERDUE</span>':''}</div><div style="font-size:10px;color:var(--tx3);font-family:var(--mono);margin-top:2px">${fD(t.sd)}→${fD(t.ed)}</div></div>${sB(t.st)}${a?`${aH(a)}<span style="font-size:11px;color:var(--tx2)">${a.name}</span>`:''}<span style="font-size:9px">${timeL(t.ed)}</span>${isMe&&(t.st==="Assigned"||t.st==="Reassigned")?`<button class="btn ba bsm" onclick="event.stopPropagation();doSt(${t.id})">▶</button>`:''}${isMe&&t.st==="In Progress"?`<button class="btn bg bsm" onclick="event.stopPropagation();doCo(${t.id})">✓</button>`:''}</div>`});return h}
+
+function rKb(){const pool=isTL()?tasks:tasks.filter(t=>t.as===CU.id);const cols=[{k:"Assigned",c:"#2563eb"},{k:"In Progress",c:"#7c3aed"},{k:"Reassigned",c:"#d97706"},{k:"Completed",c:"#db2777"},{k:"Approved",c:"#16a34a"}];let h=`<div style="margin-bottom:12px"><button class="btn bo bsm" onclick="goTo('${AC.T}')">☰ List</button></div><div class="kb">`;cols.forEach(col=>{const ct=pool.filter(t=>t.st===col.k);h+=`<div class="kbc"><div class="kbch"><span class="dt" style="width:7px;height:7px;border-radius:50%;background:${col.c};display:inline-block"></span><b style="font-size:12px">${col.k}</b><span style="font-size:10px;font-weight:700;background:rgba(0,0,0,0.05);border-radius:99px;padding:1px 7px">${ct.length}</span></div>`;ct.forEach(t=>{const w=W(t.wk);const a=U(t.as);h+=`<div class="kbcc" onclick="oTD(${t.id})"><div style="font-size:12px;font-weight:600;margin-bottom:6px">${w?.title||''}</div><div style="display:flex;justify-content:space-between;align-items:center">${a?`${aH(a,18)}<span style="font-size:10px;color:var(--tx2)">${a.name.split(' ')[0]}</span>`:''}<span style="font-size:9px">${timeL(t.ed)}</span></div><div style="margin-top:5px;height:3px;border-radius:2px;background:#eee"><div style="height:100%;border-radius:2px;background:${col.c};width:${t.pg||0}%"></div></div></div>`});h+=`</div>`});h+=`</div>`;return h}
+
+function rRp(){const gc=isTL()?eCA():eC(CU.id);let h=`<div class="cd ai" style="margin-bottom:18px"><div style="padding:20px"><div style="font-weight:800;font-size:15px;margin-bottom:14px">${isTL()?'Team':'My'} Summary</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px">${[{l:"Total",v:gc.total,c:"#4338ca"},{l:"Active",v:gc.run,c:"#2563eb"},{l:"Reassign",v:gc.reas,c:"#d97706"},{l:"Pending",v:gc.comp,c:"#db2777"},{l:"Done",v:gc.appr,c:"#16a34a"},{l:"On-Time",v:gc.onT,c:"#059669"},{l:"Overdue",v:gc.od,c:"#dc2626"},{l:"Rate",v:gc.rate+"%",c:"#16a34a"}].map(s=>`<div style="text-align:center;padding:10px 4px;border-radius:8px;background:${s.c}06;border:1px solid ${s.c}10"><div style="font-size:20px;font-weight:800;color:${s.c};font-family:var(--mono)">${s.v}</div><div style="font-size:9px;color:var(--tx2);margin-top:2px">${s.l}</div></div>`).join('')}</div></div></div>`;
+  if(isTL()&&users.length){const bM=Math.max(...users.filter(u=>u.on).map(m=>tasks.filter(t=>t.as===m.id).length),1);h+=`<div class="cd ai"><div class="cdh"><h3>Employee Table</h3></div><div style="overflow-x:auto"><table class="rt"><thead><tr>${["Employee","Total","Active","Done","On-Time","Overdue","Rate"].map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${users.filter(u=>u.on).map(m=>{const c=eC(m.id);return`<tr><td><div style="display:flex;align-items:center;gap:6px">${aH(m,22)}<span style="font-weight:600">${m.name}</span></div></td>${[c.total,c.run,c.appr,c.onT,c.od,c.rate+"%"].map((v,i)=>`<td style="font-weight:700;font-family:var(--mono);color:${["#333","#2563eb","#16a34a","#059669",typeof v==='number'&&v>0?"#dc2626":"#ccc","#16a34a"][i]}">${v}</td>`).join('')}</tr>`}).join('')}</tbody></table></div></div>`}return h}
+
+function rAc(){const tc={work:"#4338ca",task:"#2563eb",approve:"#16a34a",reject:"#dc2626",user:"#d97706"};return`<div class="cd ai"><div class="cdh"><h3>Activity</h3></div><div style="padding:16px">${!alog.length?'<div style="text-align:center;color:var(--tx3);padding:16px">No activity yet</div>':alog.slice(0,30).map(a=>{const u=U(a.u);return`<div style="display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid #f0efe8"><div style="width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0;background:${tc[a.t]||'#ccc'}"></div>${u?aH(u,22):''}<div style="flex:1;font-size:12px"><b>${u?.name||''}</b> ${a.a}<div style="font-size:10px;color:var(--tx3);font-family:var(--mono);margin-top:1px">${fD(a.d)}</div></div></div>`}).join('')}</div></div>`}
+
+function rUs(){let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span style="font-size:13px;color:var(--tx2)">${users.filter(u=>u.on).length} active / ${users.length} total</span><button class="btn ba" onclick="oCU()">+ Add User</button></div>`;users.forEach(u=>{h+=`<div class="rw ck" onclick="oEU('${u.id}')">${aH(u,36)}<div style="flex:1"><div style="font-weight:700;font-size:13px">${u.name}${!u.on?' <span style="font-size:9px;background:var(--redbg);color:var(--red);padding:1px 5px;border-radius:3px">Inactive</span>':''}</div><div style="font-size:11px;color:var(--tx2)">${u.email} · ${u.role}</div></div><div style="display:flex;gap:3px;flex-wrap:wrap">${u.acc.map(a=>`<span style="font-size:8px;padding:2px 6px;border-radius:3px;background:var(--acbg);color:var(--ac);font-weight:600">${a}</span>`).join('')}</div></div>`});return h}
+
+// ═══════════════ MODALS ═══════════════
+function oCW(){window._cp="Medium";oM(`<div class="mdlh"><div style="font-weight:800;font-size:17px">Create Work</div><button style="background:none;border:none;color:var(--tx3);font-size:18px" onclick="cM()">✕</button></div><div class="mdlb"><div style="margin-bottom:14px"><label class="lbl">Title <span class="rq">*</span></label><input class="inp" id="cwT" placeholder="Work title"></div><div style="margin-bottom:14px"><label class="lbl">Description</label><textarea class="inp" id="cwD" rows="3" placeholder="Describe..."></textarea></div><div style="margin-bottom:14px"><label class="lbl">Priority</label><div class="pbs">${["Low","Medium","High","Urgent"].map(p=>`<button class="pbt" id="cwP_${p}" onclick="sP('${p}')" style="${p==='Medium'?`border-color:${PC[p]};color:${PC[p]};background:${PC[p]}08`:''}">${p}</button>`).join('')}</div></div></div><div class="mdlf"><button class="btn bo" onclick="cM()">Cancel</button><button class="btn ba" onclick="dCW()">Create</button></div>`)}
+function sP(p){window._cp=p;["Low","Medium","High","Urgent"].forEach(x=>{const b=document.getElementById('cwP_'+x);const s=x===p;b.style.borderColor=s?PC[x]:'';b.style.color=s?PC[x]:'';b.style.background=s?PC[x]+'08':''})}
+async function dCW(){const t=document.getElementById('cwT').value.trim();if(!t){toast("Title required","error");return}const w={id:nW_++,title:t,desc:document.getElementById('cwD').value,pri:window._cp,cat:td(),cb:CU.id,ht:false};works.push(w);await svWork(w);logA(`created '${t}'`,"work");toast("Created!","success");cM()}
+
+function oAW(wid){const w=W(wid);window._aw=w;window._aa="";oM(`<div class="mdlh"><div><div style="font-size:9px;color:var(--ac);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px">Assign → Create Task</div><div style="font-weight:800;font-size:17px">${w.title}</div></div><button style="background:none;border:none;color:var(--tx3);font-size:18px" onclick="cM()">✕</button></div><div class="mdlb"><label class="lbl">Assign To <span class="rq">*</span></label>${users.filter(u=>u.on).map(m=>{const a=aCt(m.id);const ld=a>=3?"Busy":a>=1?"Active":"Free";const lc=a>=3?"#dc2626":a>=1?"#d97706":"#16a34a";return`<div class="tpk" id="aP_${m.id}" onclick="sAs('${m.id}')">${aH(m,28)}<div style="flex:1"><div style="font-size:12px;font-weight:600">${m.name}</div><div style="font-size:10px;color:var(--tx2)">${m.role}</div></div><div style="font-size:10px;font-weight:600;color:${lc}">${a} · ${ld}</div><div id="aC_${m.id}" class="hide" style="width:18px;height:18px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></div>`}).join('')}<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px"><div><label class="lbl">Start <span class="rq">*</span></label><input type="date" class="inp" id="aS" value="${td()}"></div><div><label class="lbl">End <span class="rq">*</span></label><input type="date" class="inp" id="aE"></div></div></div><div class="mdlf"><button class="btn bo" onclick="cM()">Cancel</button><button class="btn ba" onclick="dAW()">Assign</button></div>`,"540px")}
+function sAs(id){window._aa=id;users.forEach(m=>{const el=document.getElementById('aP_'+m.id);const ck=document.getElementById('aC_'+m.id);if(el)el.className='tpk'+(m.id===id?' sel':'');if(ck){ck.classList.toggle('hide',m.id!==id);if(m.id===id)ck.style.display='flex'}})}
+async function dAW(){const a=window._aa,s=document.getElementById('aS').value,e=document.getElementById('aE').value;if(!a||!s||!e){toast("All fields required","error");return}const w=window._aw;const hi={a:`Assigned to ${U(a).name}`,d:td(),b:CU.id};const t={id:nT_++,wk:w.id,as:a,st:"Assigned",sd:s,ed:e,rc:0,pg:0,cm:[],hi:[hi]};tasks.push(t);const wi=works.findIndex(x=>x.id===w.id);if(wi>=0)works[wi].ht=true;await svTask(t);await upWork(works[wi]);await svHi(t.id,hi);addN(`Task '${w.title}' assigned`,t.id,a);logA(`assigned '${w.title}' to ${U(a).name}`,"task");toast("Task created!","success");cM()}
+
+function oTD(tid){const t=tasks.find(x=>x.id===tid);if(!t)return;const w=W(t.wk);const a=U(t.as);const od=isOD(t);const isMe=t.as===CU.id;document.getElementById('nP')?.classList.add('hide');
+  oM(`<div style="padding:18px 22px;border-bottom:1px solid #eee"><div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap">${sB(t.st)} ${pB(w?.pri||'')} ${od?'<span style="font-size:9px;background:var(--redbg);color:var(--red);padding:2px 6px;border-radius:5px;font-weight:700">OVERDUE</span>':''} ${t.rc>0?`<span style="font-size:9px;background:var(--ylwbg);color:#a16207;padding:2px 6px;border-radius:5px">×${t.rc}</span>`:''} <span style="font-size:10px;font-weight:600;margin-left:auto">${timeL(t.ed)}</span></div>
+    <div style="font-weight:800;font-size:17px;display:flex;justify-content:space-between">${w?.title||''}<button style="background:none;border:none;cursor:pointer;color:var(--tx3);font-size:18px" onclick="cM()">✕</button></div></div>
+  <div style="padding:20px 22px">
+    <div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;font-weight:600;color:var(--tx2)">Progress</span><span style="font-size:11px;font-weight:700;font-family:var(--mono);color:var(--ac)">${t.pg||0}%</span></div><div style="height:5px;border-radius:3px;background:#eee"><div style="height:100%;border-radius:3px;background:var(--ac);width:${t.pg||0}%"></div></div>${isMe&&t.st==="In Progress"?`<input type="range" min="0" max="100" value="${t.pg||0}" style="width:100%;margin-top:5px;accent-color:var(--ac)" oninput="uPg(${t.id},this.value)">`:''}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+      <div style="padding:10px;border-radius:9px;background:var(--s2);border:1px solid var(--bd)"><div style="font-size:9px;color:var(--tx3);margin-bottom:2px;font-weight:600">Assigned</div>${a?`<div style="display:flex;align-items:center;gap:4px">${aH(a,18)}<span style="font-size:11px;font-weight:600">${a.name}</span></div>`:'—'}</div>
+      <div style="padding:10px;border-radius:9px;background:var(--s2);border:1px solid var(--bd)"><div style="font-size:9px;color:var(--tx3);margin-bottom:2px;font-weight:600">Start</div><div style="font-size:11px;font-weight:600;font-family:var(--mono)">${fD(t.sd)}</div></div>
+      <div style="padding:10px;border-radius:9px;background:var(--s2);border:1px solid ${od?'#fca5a5':'var(--bd)'}"><div style="font-size:9px;color:var(--tx3);margin-bottom:2px;font-weight:600">Deadline</div><div style="font-size:11px;font-weight:600;font-family:var(--mono);color:${od?'var(--red)':'var(--tx)'}">${fD(t.ed)}</div></div></div>
+    ${w?.desc?`<div style="margin-bottom:14px;padding:12px;border-radius:9px;background:var(--s2);border:1px solid var(--bd);font-size:12px;color:#555;line-height:1.5">${w.desc}</div>`:''}
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+      ${isMe&&(t.st==="Assigned"||t.st==="Reassigned")?`<button class="btn ba" onclick="doSt(${t.id})">▶ Start</button>`:''}
+      ${isMe&&t.st==="In Progress"?`<button class="btn bg" onclick="doCo(${t.id})">✓ Complete</button>`:''}
+      ${isTL()&&t.st==="Completed"?`<button class="btn bg" onclick="doAp(${t.id})">✓ Approve</button><button class="btn br" onclick="document.getElementById('rjF').classList.toggle('hide')">✕ Reject</button>`:''}</div>
+    <div id="rjF" class="hide" style="margin-bottom:14px;padding:14px;border-radius:10px;background:var(--redbg);border:1px solid #fecaca"><div style="margin-bottom:8px"><label class="lbl">Reason</label><input class="inp" id="rjR" placeholder="Why?"></div><div style="margin-bottom:10px"><label class="lbl">Reassign To</label><select class="inp" id="rjA"><option value="">Select</option>${users.filter(u=>u.on).map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}</select></div><button class="btn br" onclick="doRj(${t.id})">Confirm</button></div>
+    <div class="tbs"><button class="tbt on" onclick="sTT('c',this)">Comments (${(t.cm||[]).length})</button><button class="tbt" onclick="sTT('h',this)">History (${t.hi.length})</button></div>
+    <div id="td-c">${(t.cm||[]).map(c=>{const cu=U(c.by);return`<div style="display:flex;gap:7px;margin-bottom:10px">${cu?aH(cu,22):''}<div style="flex:1;background:var(--s2);border-radius:9px;padding:9px 11px;border:1px solid var(--bd)"><div style="font-size:11px;font-weight:600">${cu?.name||''}</div><div style="font-size:12px;color:#555">${c.tx}</div><div style="font-size:9px;color:var(--tx3);font-family:var(--mono);margin-top:2px">${fD(c.dt)}</div></div></div>`}).join('')}<div style="display:flex;gap:6px;margin-top:6px"><input class="inp" id="cmI" placeholder="Comment..." style="flex:1" onkeydown="if(event.key==='Enter')aCm(${t.id})"><button class="btn ba bsm" onclick="aCm(${t.id})">Send</button></div></div>
+    <div id="td-h" class="hide"><div class="tl">${t.hi.map((h,i)=>`<div class="tli"><div class="tld ${i===t.hi.length-1?'on':''}"></div><div style="font-size:12px;font-weight:500;color:#333">${h.a}</div><div style="font-size:10px;color:var(--tx3);font-family:var(--mono);margin-top:1px">${fD(h.d)} · ${U(h.b)?.name||''}</div></div>`).join('')}</div></div></div>`,"600px")}
+
+function sTT(t,b){document.querySelectorAll('.tbt').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('td-c').classList.toggle('hide',t!=='c');document.getElementById('td-h').classList.toggle('hide',t!=='h')}
+function uPg(tid,v){const i=tasks.findIndex(t=>t.id===tid);if(i>=0){tasks[i].pg=parseInt(v);clearTimeout(window._pt);window._pt=setTimeout(()=>upTask(tasks[i]),1000)}}
+async function aCm(tid){const inp=document.getElementById('cmI');const tx=inp?.value?.trim();if(!tx)return;const i=tasks.findIndex(t=>t.id===tid);if(i>=0){const cm={by:CU.id,tx,dt:td()};tasks[i].cm.push(cm);await svCm(tid,cm);toast("Added","success");oTD(tid)}}
+
+async function doSt(tid){const i=tasks.findIndex(t=>t.id===tid);if(i<0)return;tasks[i].st="In Progress";tasks[i].pg=tasks[i].pg||10;const hi={a:"Started",d:td(),b:CU.id};tasks[i].hi.push(hi);await upTask(tasks[i]);await svHi(tid,hi);logA(`started '${W(tasks[i].wk)?.title}'`,"task");toast("Started!","success");cM()}
+async function doCo(tid){const i=tasks.findIndex(t=>t.id===tid);if(i<0)return;const w=W(tasks[i].wk);tasks[i].st="Completed";tasks[i].pg=100;const hi={a:"Marked complete",d:td(),b:CU.id};tasks[i].hi.push(hi);await upTask(tasks[i]);await svHi(tid,hi);addN(`${CU.name} completed '${w?.title}'`,tid,"u1");logA(`completed '${w?.title}'`,"task");toast("Done!","success");cM()}
+async function doAp(tid){const i=tasks.findIndex(t=>t.id===tid);if(i<0)return;const w=W(tasks[i].wk);tasks[i].st="Approved";const hi={a:"Approved",d:td(),b:CU.id};tasks[i].hi.push(hi);await upTask(tasks[i]);await svHi(tid,hi);addN(`Approved '${w?.title}'`,tid,tasks[i].as);logA(`approved '${w?.title}'`,"approve");toast("Approved!","success");cM()}
+async function doRj(tid){const r=document.getElementById('rjR')?.value?.trim();const na=document.getElementById('rjA')?.value;if(!r||!na){toast("Fill all","error");return}const i=tasks.findIndex(t=>t.id===tid);if(i<0)return;const w=W(tasks[i].wk);tasks[i].st="Reassigned";tasks[i].as=na;tasks[i].rc=(tasks[i].rc||0)+1;tasks[i].pg=0;const h1={a:`Rejected – ${r}`,d:td(),b:CU.id},h2={a:`Reassigned to ${U(na).name}`,d:td(),b:CU.id};tasks[i].hi.push(h1,h2);await upTask(tasks[i]);await svHi(tid,h1);await svHi(tid,h2);addN(`Rejected '${w?.title}'`,tid,na);logA(`rejected '${w?.title}'`,"reject");toast("Reassigned","in");cM()}
+
+function oCU(){window._na=[AC.D,AC.T];oM(`<div class="mdlh"><div style="font-weight:800;font-size:17px">Create User</div><button style="background:none;border:none;color:var(--tx3);font-size:18px" onclick="cM()">✕</button></div><div class="mdlb"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px"><div><label class="lbl">Name <span class="rq">*</span></label><input class="inp" id="nuN" placeholder="Full name"></div><div><label class="lbl">Email <span class="rq">*</span></label><input class="inp" id="nuE" placeholder="email@company.com"></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px"><div><label class="lbl">Role</label><select class="inp" id="nuR"><option>Junior</option><option>Senior</option><option>Team Lead</option></select></div><div><label class="lbl">Password</label><input class="inp" id="nuP" placeholder="Password"></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px"><div><label class="lbl">Initials</label><input class="inp" id="nuA" maxlength="2" placeholder="AB"></div><div><label class="lbl">Color</label><input type="color" id="nuC" value="#7c3aed" style="width:100%;height:40px;border:1px solid var(--bd);border-radius:8px;cursor:pointer"></div></div><label class="lbl">Access</label><div class="acg">${[{k:AC.D,l:"Dashboard",i:"📊"},{k:AC.W,l:"Works",i:"📦"},{k:AC.T,l:"Tasks",i:"📋"},{k:AC.K,l:"Kanban",i:"⊞"},{k:AC.R,l:"Reports",i:"📈"},{k:AC.A,l:"Activity",i:"📝"},{k:AC.U,l:"Users",i:"⚙️"},{k:AC.TD,l:"Team Dash",i:"👥"}].map(a=>`<div class="aci ${[AC.D,AC.T].includes(a.k)?'on':''}" onclick="tNA('${a.k}',this)"><div style="font-size:14px;width:28px;text-align:center">${a.i}</div><div style="flex:1;font-size:11px;font-weight:600">${a.l}</div><div class="atg ${[AC.D,AC.T].includes(a.k)?'on':''}"></div></div>`).join('')}</div></div><div class="mdlf"><button class="btn bo" onclick="cM()">Cancel</button><button class="btn ba" onclick="dCU()">Create</button></div>`,"560px")}
+function tNA(k,el){const i=window._na.indexOf(k);if(i>=0)window._na.splice(i,1);else window._na.push(k);el.classList.toggle('on');el.querySelector('.atg').classList.toggle('on')}
+async function dCU(){const n=document.getElementById('nuN').value.trim(),e=document.getElementById('nuE').value.trim(),p=document.getElementById('nuP').value.trim();if(!n||!e||!p){toast("Name, email & password required","error");return}const u={id:"u"+(nU_++),name:n,email:e,role:document.getElementById('nuR').value,av:document.getElementById('nuA').value.toUpperCase()||n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(),col:document.getElementById('nuC').value,pass:p,acc:[...window._na],on:true};users.push(u);await svUser(u);logA(`created user ${n}`,"user");toast("Created!","success");cM()}
+
+function oEU(uid){const u=users.find(x=>x.id===uid);if(!u)return;window._ea=[...u.acc];oM(`<div class="mdlh"><div style="font-weight:800;font-size:17px">Edit: ${u.name}</div><button style="background:none;border:none;color:var(--tx3);font-size:18px" onclick="cM()">✕</button></div><div class="mdlb"><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:12px;border-radius:10px;background:var(--s2);border:1px solid var(--bd)">${aH(u,44)}<div style="flex:1"><div style="font-size:15px;font-weight:700">${u.name}</div><div style="font-size:11px;color:var(--tx2)">${u.email}</div></div><div><div class="atg ${u.on?'on':''}" onclick="tUA('${u.id}',this)" style="cursor:pointer"></div><div style="font-size:9px;color:var(--tx2);margin-top:2px;text-align:center" id="uSt">${u.on?'Active':'Off'}</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px"><div><label class="lbl">Name</label><input class="inp" id="euN" value="${u.name}"></div><div><label class="lbl">Email</label><input class="inp" id="euE" value="${u.email}"></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px"><div><label class="lbl">Role</label><select class="inp" id="euR"><option ${u.role==='Junior'?'selected':''}>Junior</option><option ${u.role==='Senior'?'selected':''}>Senior</option><option ${u.role==='Team Lead'?'selected':''}>Team Lead</option></select></div><div><label class="lbl">New Password</label><input class="inp" id="euP" placeholder="Leave blank to keep"></div></div><label class="lbl">Access</label><div class="acg">${[{k:AC.D,l:"Dashboard",i:"📊"},{k:AC.W,l:"Works",i:"📦"},{k:AC.T,l:"Tasks",i:"📋"},{k:AC.K,l:"Kanban",i:"⊞"},{k:AC.R,l:"Reports",i:"📈"},{k:AC.A,l:"Activity",i:"📝"},{k:AC.U,l:"Users",i:"⚙️"},{k:AC.TD,l:"Team Dash",i:"👥"}].map(a=>`<div class="aci ${u.acc.includes(a.k)?'on':''}" onclick="tEA('${a.k}',this)"><div style="font-size:14px;width:28px;text-align:center">${a.i}</div><div style="flex:1;font-size:11px;font-weight:600">${a.l}</div><div class="atg ${u.acc.includes(a.k)?'on':''}"></div></div>`).join('')}</div></div><div class="mdlf"><button class="btn bo" onclick="cM()">Cancel</button><button class="btn ba" onclick="dEU('${u.id}')">Save</button></div>`,"560px")}
+function tUA(uid,el){const i=users.findIndex(u=>u.id===uid);if(i>=0){users[i].on=!users[i].on;el.classList.toggle('on');document.getElementById('uSt').textContent=users[i].on?'Active':'Off'}}
+function tEA(k,el){const i=window._ea.indexOf(k);if(i>=0)window._ea.splice(i,1);else window._ea.push(k);el.classList.toggle('on');el.querySelector('.atg').classList.toggle('on')}
+async function dEU(uid){const i=users.findIndex(u=>u.id===uid);if(i<0)return;users[i].name=document.getElementById('euN').value.trim()||users[i].name;users[i].email=document.getElementById('euE').value.trim()||users[i].email;users[i].role=document.getElementById('euR').value;const np=document.getElementById('euP').value.trim();if(np)users[i].pass=np;users[i].acc=[...window._ea];if(CU.id===uid)CU=users[i];await upUser(users[i]);logA(`updated ${users[i].name}`,"user");toast("Saved!","success");cM()}
+
+// INIT
+(function(){checkConn();window.addEventListener('resize',()=>{document.getElementById('mT')?.classList.toggle('hide',window.innerWidth>900)})})();
+</script>
+</body>
+</html>
