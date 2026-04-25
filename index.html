@@ -172,6 +172,50 @@ textarea.inp{resize:vertical}
 .fb{display:flex;gap:3px;flex-wrap:wrap}
 .fbt{padding:5px 11px;border-radius:5px;font-size:10px;font-weight:600;border:1px solid var(--bd);background:var(--s);color:var(--tx2);transition:all 0.12s}
 .fbt.on{background:#19180f;color:#fff;border-color:#19180f}
+
+/* ── DUE-DATE FILTER CHIPS ── */
+.due-chips{display:flex;gap:3px;flex-wrap:wrap;align-items:center}
+.dc{padding:5px 11px;border-radius:5px;font-size:10px;font-weight:600;border:1px solid var(--bd);background:var(--s);color:var(--tx2);transition:all 0.12s;cursor:pointer;white-space:nowrap}
+.dc:hover{border-color:var(--acbd);color:var(--ac)}
+.dc.on{color:#fff;border-color:transparent}
+.dc.today.on{background:#dc2626}
+.dc.d2.on{background:#d97706}
+.dc.week.on{background:#7c3aed}
+.dc.od.on{background:#991b1b}
+.dc.all.on{background:#19180f}
+.dc.custom.on{background:#2563eb}
+
+/* ── USER FILTER SELECT ── */
+.usr-sel{padding:5px 28px 5px 10px;border-radius:5px;font-size:10px;font-weight:600;border:1px solid var(--bd);background:var(--s);color:var(--tx2);outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23b3b0a5' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;transition:all 0.12s}
+.usr-sel:hover,.usr-sel:focus{border-color:var(--acbd);color:var(--ac)}
+.usr-sel.active{border-color:var(--ac);background-color:var(--acbg);color:var(--ac)}
+
+/* ── DATE RANGE INPUTS ── */
+.drange{display:flex;align-items:center;gap:5px}
+.drange input{padding:5px 8px;border-radius:5px;font-size:10px;border:1px solid var(--bd);background:var(--s);color:var(--tx);outline:none;transition:border 0.15s}
+.drange input:focus{border-color:var(--ac)}
+.drange span{font-size:10px;color:var(--tx3)}
+
+/* ── FILTER BAR WRAPPER ── */
+.filter-bar{background:var(--s);border-radius:var(--r2);border:1px solid var(--bd);padding:12px 16px;margin-bottom:14px;box-shadow:var(--sh)}
+.filter-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.filter-row:last-child{margin-bottom:0}
+.filter-label{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap}
+
+/* ── REPORT DETAIL TABLE ── */
+.rp-tbl{width:100%;border-collapse:collapse;font-size:11px}
+.rp-tbl th{padding:9px 14px;text-align:left;font-weight:700;color:var(--tx2);font-size:9px;text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid var(--bd);background:var(--s2);white-space:nowrap}
+.rp-tbl td{padding:10px 14px;border-bottom:1px solid #f5f5f0;vertical-align:middle}
+.rp-tbl tr:hover td{background:var(--s2);cursor:pointer}
+.rp-tbl .pg-bar{width:60px;height:4px;border-radius:2px;background:#eee;display:inline-block;vertical-align:middle}
+.rp-tbl .pg-fill{height:100%;border-radius:2px;background:var(--ac)}
+
+/* ── SUMMARY STAT PILL ── */
+.stat-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700}
+
+/* ── EXPORT BTN ── */
+.exp-btn{padding:6px 14px;border-radius:7px;border:1px solid var(--acbd);background:var(--acbg);color:var(--ac);font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all 0.15s}
+.exp-btn:hover{background:var(--ac);color:#fff;border-color:var(--ac)}
 .rw{background:var(--s);border-radius:var(--r);border:1px solid var(--bd);padding:13px 18px;display:flex;align-items:center;gap:11px;transition:all 0.15s;margin-bottom:7px;box-shadow:var(--sh)}
 .rw:hover{box-shadow:var(--sh2);transform:translateY(-1px)}
 .rw.ck{cursor:pointer}
@@ -404,6 +448,10 @@ const PC = {Low:'#94a3b8',Medium:'#2563eb',High:'#d97706',Urgent:'#dc2626'};
 // ── STATE ──
 let users=[], works=[], tasks=[], nots=[], alog=[];
 let CU=null, CV='dashboard', wF='all', tF='all', tS='', eF='all', tdS=null;
+// ── Extended filter state ──
+let tDue='all', tUser='all';         // Tasks: due-date filter, user filter
+let kbDue='all', kbUser='all';       // Kanban: due-date filter, user filter
+let rpUser='all', rpStatus='all', rpPri='all', rpFrom='', rpTo='';
 let nW_=1, nT_=100, nU_=1, nA_=1, syncInt=null, apiOk=false;
 
 // ── SAVE LOCK: prevents duplicate submissions ──
@@ -669,6 +717,10 @@ function goTo(v){
   if(!hA(v)&&v!=='member_dash'&&v!=='team_dashboard'){toast('No access to this module','er');return}
   CV=v;
   if(v===AC.TD){CV='team_dashboard';tdS=null}
+  // Reset per-view filter state on navigation
+  if(v===AC.T){tF='all';tDue='all';tUser='all';tS=''}
+  if(v===AC.K){kbDue='all';kbUser='all'}
+  if(v===AC.R){window._rpTab='summary';window._rpSort='due'}
   closeSb();rA();
 }
 
@@ -847,22 +899,98 @@ function rWk(){
 // ══════════════════════════════════════════════════════════
 //  TASKS
 // ══════════════════════════════════════════════════════════
+// ── Due-date filter helper ──
+function applyDueFilter(taskList, dueKey, from, to){
+  const now=td();
+  return taskList.filter(t=>{
+    if(dueKey==='today') return t.ed===now;
+    if(dueKey==='d2'){const d=dDf(t.ed,now);return d>=0&&d<=2}
+    if(dueKey==='week'){const d=dDf(t.ed,now);return d>=0&&d<=7}
+    if(dueKey==='od') return isOD(t);
+    if(dueKey==='custom'){
+      if(from&&t.ed<from)return false;
+      if(to&&t.ed>to)return false;
+      return true;
+    }
+    return true; // 'all'
+  });
+}
+
 function rTk(){
+  // Base pool — TL sees all or filtered by user, others see own tasks
   let pool=isTL()?tasks:tasks.filter(t=>t.as===CU.id);
-  const f=pool.filter(t=>{if(tF!=='all'&&t.st!==tF)return false;if(tS){const w=W(t.wk);if(w&&!w.title.toLowerCase().includes(tS.toLowerCase()))return false}return true});
-  let h=`<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
-    <div class="srch"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input class="inp" style="width:200px;padding-left:32px" placeholder="Search tasks..." value="${tS}" oninput="tS=this.value;rA()"></div>
-    <div class="fb">${['all','Assigned','In Progress','Completed','Approved','Reassigned'].map(s=>`<button class="fbt ${tF===s?'on':''}" onclick="tF='${s}';rA()">${s==='all'?'All':s}</button>`).join('')}</div>
-    ${hA(AC.K)?`<button class="btn bo bsm" onclick="goTo('${AC.K}')">⊞ Kanban</button>`:''}
+  if(isTL()&&tUser!=='all') pool=pool.filter(t=>t.as===tUser);
+
+  // Apply due-date filter
+  let filtered=applyDueFilter(pool, tDue, '', '');
+
+  // Apply status + search
+  filtered=filtered.filter(t=>{
+    if(tF!=='all'&&t.st!==tF)return false;
+    if(tS){const w=W(t.wk);if(w&&!w.title.toLowerCase().includes(tS.toLowerCase()))return false}
+    return true;
+  });
+
+  const dueChips=[{k:'all',l:'All',cls:'all'},{k:'today',l:'🔴 Today',cls:'today'},{k:'d2',l:'🟡 2 Days',cls:'d2'},{k:'week',l:'📅 Week',cls:'week'},{k:'od',l:'⚫ Overdue',cls:'od'}];
+
+  // Count chips
+  const counts={all:pool.length,today:pool.filter(t=>t.ed===td()).length,d2:pool.filter(t=>{const d=dDf(t.ed,td());return d>=0&&d<=2}).length,week:pool.filter(t=>{const d=dDf(t.ed,td());return d>=0&&d<=7}).length,od:pool.filter(isOD).length};
+
+  let h=`<div class="filter-bar">
+    <div class="filter-row">
+      <span class="filter-label">Status</span>
+      <div class="fb">${['all','Assigned','In Progress','Completed','Approved','Reassigned'].map(s=>`<button class="fbt ${tF===s?'on':''}" onclick="tF='${s}';rA()">${s==='all'?'All':s}</button>`).join('')}</div>
+      ${hA(AC.K)?`<button class="btn bo bsm" onclick="goTo('${AC.K}')" style="margin-left:auto">⊞ Kanban</button>`:''}
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Due Date</span>
+      <div class="due-chips">${dueChips.map(c=>`<button class="dc ${c.cls} ${tDue===c.k?'on':''}" onclick="tDue='${c.k}';rA()">${c.l} ${counts[c.k]>0&&c.k!=='all'?`<span style="font-size:9px;opacity:0.8">(${counts[c.k]})</span>`:''}</button>`).join('')}</div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Search</span>
+      <div class="srch"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input class="inp" style="width:180px;padding-left:30px;font-size:11px" placeholder="Search tasks..." value="${tS}" oninput="tS=this.value;rA()"></div>
+      ${isTL()?`<span class="filter-label" style="margin-left:8px">Member</span>
+      <select class="usr-sel ${tUser!=='all'?'active':''}" onchange="tUser=this.value;rA()">
+        <option value="all">All Members</option>
+        ${users.filter(u=>u.on).map(u=>`<option value="${u.id}" ${tUser===u.id?'selected':''}>${u.av} ${u.name}</option>`).join('')}
+      </select>`:''}
+      <span style="font-size:10px;color:var(--tx3);margin-left:auto">${filtered.length} task${filtered.length!==1?'s':''}</span>
+    </div>
   </div>`;
-  if(!f.length)h+=`<div class="cd" style="padding:28px;text-align:center;color:var(--tx3);font-size:12px">No tasks found</div>`;
-  else f.forEach(t=>{const w=W(t.wk);const a=U(t.as);const isMe=t.as===CU.id;
-    h+=`<div class="rw ck" onclick="oTD(${t.id})"><div class="pb" style="height:36px;background:${PC[w?.pri]||'#ccc'}"></div>
-      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:12px">${w?.title||''} ${isOD(t)?'<span style="font-size:8px;background:var(--redbg);color:var(--red);padding:1px 4px;border-radius:3px;font-weight:700">OD</span>':''}</div>
-      <div style="font-size:9px;color:var(--tx3);font-family:var(--mono);margin-top:2px">${fD(t.sd)}→${fD(t.ed)}</div></div>
-      ${sB(t.st)} ${a?`${aH(a,20)}<span style="font-size:10px;color:var(--tx2)">${a.name.split(' ')[0]}</span>`:''} <span>${tL(t.ed)}</span>
-      ${isMe&&(t.st==='Assigned'||t.st==='Reassigned')?`<button class="btn ba bsm" onclick="event.stopPropagation();doSt(${t.id})">▶</button>`:''}
-      ${isMe&&t.st==='In Progress'?`<button class="btn bg bsm" onclick="event.stopPropagation();doCo(${t.id})">✓</button>`:''}</div>`});
+
+  if(!filtered.length){
+    h+=`<div class="cd" style="padding:28px;text-align:center">
+      <div style="font-size:28px;margin-bottom:10px">${tDue==='od'?'🎉':tDue==='today'?'✅':'🔍'}</div>
+      <div style="font-size:13px;font-weight:600;color:var(--tx2)">${tDue==='od'?'No overdue tasks!':tDue==='today'?'No tasks due today!':'No tasks match filters'}</div>
+      <button class="btn bo bsm" style="margin-top:12px" onclick="tF='all';tDue='all';tUser='all';tS='';rA()">Clear Filters</button>
+    </div>`;
+  } else {
+    filtered.forEach(t=>{
+      const w=W(t.wk);const a=U(t.as);const isMe=t.as===CU.id;const od=isOD(t);
+      const dDays=t.ed?dDf(t.ed,td()):null;
+      const dueBg=od?'#fef2f2':dDays===0?'#fff7f0':dDays<=2?'#fffbeb':'transparent';
+      h+=`<div class="rw ck" onclick="oTD(${t.id})" style="border-left:3px solid ${PC[w?.pri]||'#ccc'};padding-left:14px;${dueBg!=='transparent'?`background:${dueBg}`:''}">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span style="font-weight:700;font-size:12px">${w?.title||''}</span>
+            ${od?'<span style="font-size:8px;background:var(--redbg);color:var(--red);padding:1px 5px;border-radius:3px;font-weight:700">OVERDUE</span>':''}
+            ${dDays===0?'<span style="font-size:8px;background:#fff7f0;color:#d97706;padding:1px 5px;border-radius:3px;font-weight:700;border:1px solid #fde68a">DUE TODAY</span>':''}
+            ${dDays===1?'<span style="font-size:8px;background:var(--ylwbg);color:#a16207;padding:1px 5px;border-radius:3px;font-weight:600">DUE TOMORROW</span>':''}
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:3px">
+            <span style="font-size:9px;color:var(--tx3);font-family:var(--mono)">${fD(t.sd)} → ${fD(t.ed)}</span>
+            <div style="height:3px;border-radius:2px;background:#eee;width:50px"><div style="height:100%;border-radius:2px;background:var(--ac);width:${t.pg||0}%"></div></div>
+            <span style="font-size:9px;color:var(--tx2);font-family:var(--mono)">${t.pg||0}%</span>
+          </div>
+        </div>
+        ${sB(t.st)}
+        ${a?`<div style="display:flex;align-items:center;gap:4px;flex-shrink:0">${aH(a,20)}<span style="font-size:10px;color:var(--tx2)">${a.name.split(' ')[0]}</span></div>`:''}
+        <span>${tL(t.ed)}</span>
+        ${isMe&&(t.st==='Assigned'||t.st==='Reassigned')?`<button class="btn ba bsm" onclick="event.stopPropagation();doSt(${t.id})">▶</button>`:''}
+        ${isMe&&t.st==='In Progress'?`<button class="btn bg bsm" onclick="event.stopPropagation();doCo(${t.id})">✓</button>`:''}
+      </div>`;
+    });
+  }
   return h;
 }
 
@@ -870,26 +998,301 @@ function rTk(){
 //  KANBAN
 // ══════════════════════════════════════════════════════════
 function rKb(){
-  const pool=isTL()?tasks:tasks.filter(t=>t.as===CU.id);
+  let pool=isTL()?tasks:tasks.filter(t=>t.as===CU.id);
+  if(isTL()&&kbUser!=='all') pool=pool.filter(t=>t.as===kbUser);
+  pool=applyDueFilter(pool, kbDue, '', '');
+
+  const dueChips=[{k:'all',l:'All',cls:'all'},{k:'today',l:'🔴 Today',cls:'today'},{k:'d2',l:'🟡 2 Days',cls:'d2'},{k:'week',l:'📅 Week',cls:'week'},{k:'od',l:'⚫ Overdue',cls:'od'}];
+  const totalPool=isTL()?tasks:tasks.filter(t=>t.as===CU.id);
+  const counts={all:totalPool.length,today:totalPool.filter(t=>t.ed===td()).length,d2:totalPool.filter(t=>{const d=dDf(t.ed,td());return d>=0&&d<=2}).length,week:totalPool.filter(t=>{const d=dDf(t.ed,td());return d>=0&&d<=7}).length,od:totalPool.filter(isOD).length};
+
+  let h=`<div class="filter-bar">
+    <div class="filter-row">
+      <span class="filter-label">Due Date</span>
+      <div class="due-chips">${dueChips.map(c=>`<button class="dc ${c.cls} ${kbDue===c.k?'on':''}" onclick="kbDue='${c.k}';rA()">${c.l}${counts[c.k]>0&&c.k!=='all'?` <span style="font-size:9px;opacity:0.8">(${counts[c.k]})</span>`:''}</button>`).join('')}</div>
+      <button class="btn bo bsm" onclick="goTo('${AC.T}')" style="margin-left:auto">☰ List View</button>
+    </div>
+    ${isTL()?`<div class="filter-row">
+      <span class="filter-label">Member</span>
+      <select class="usr-sel ${kbUser!=='all'?'active':''}" onchange="kbUser=this.value;rA()">
+        <option value="all">All Members</option>
+        ${users.filter(u=>u.on).map(u=>`<option value="${u.id}" ${kbUser===u.id?'selected':''}>${u.av} ${u.name}</option>`).join('')}
+      </select>
+      <span style="font-size:10px;color:var(--tx3);margin-left:auto">${pool.length} task${pool.length!==1?'s':''} shown</span>
+    </div>`:''}
+  </div>`;
+
   const cols=[{k:'Assigned',c:'#2563eb'},{k:'In Progress',c:'#7c3aed'},{k:'Reassigned',c:'#d97706'},{k:'Completed',c:'#db2777'},{k:'Approved',c:'#16a34a'}];
-  let h=`<div style="margin-bottom:10px"><button class="btn bo bsm" onclick="goTo('${AC.T}')">☰ List View</button></div><div class="kb">`;
-  cols.forEach(col=>{const ct=pool.filter(t=>t.st===col.k);
-    h+=`<div class="kbc"><div class="kbch"><span class="dt" style="width:7px;height:7px;border-radius:50%;background:${col.c};display:inline-block"></span><b style="font-size:11px">${col.k}</b><span style="font-size:9px;font-weight:700;background:rgba(0,0,0,0.05);border-radius:99px;padding:1px 6px;margin-left:4px">${ct.length}</span></div>`;
-    ct.forEach(t=>{const w=W(t.wk);const a=U(t.as);h+=`<div class="kbcc" onclick="oTD(${t.id})"><div style="font-size:11px;font-weight:600;margin-bottom:5px;line-height:1.3">${w?.title||''}</div><div style="display:flex;justify-content:space-between;align-items:center">${a?`<div style="display:flex;align-items:center;gap:4px">${aH(a,17)}<span style="font-size:9px;color:var(--tx2)">${a.name.split(' ')[0]}</span></div>`:''}<span>${tL(t.ed)}</span></div><div style="margin-top:5px;height:2px;border-radius:2px;background:#eee"><div style="height:100%;border-radius:2px;background:${col.c};width:${t.pg||0}%"></div></div></div>`});
-    h+=`</div>`});
+  h+=`<div class="kb">`;
+  cols.forEach(col=>{
+    const ct=pool.filter(t=>t.st===col.k);
+    h+=`<div class="kbc">
+      <div class="kbch">
+        <span class="dt" style="width:7px;height:7px;border-radius:50%;background:${col.c};display:inline-block"></span>
+        <b style="font-size:11px">${col.k}</b>
+        <span style="font-size:9px;font-weight:700;background:rgba(0,0,0,0.05);border-radius:99px;padding:1px 6px;margin-left:4px">${ct.length}</span>
+      </div>`;
+    if(!ct.length){
+      h+=`<div style="padding:20px;text-align:center;color:var(--tx3);font-size:11px">No tasks</div>`;
+    } else {
+      ct.forEach(t=>{
+        const w=W(t.wk);const a=U(t.as);const od=isOD(t);const dDays=t.ed?dDf(t.ed,td()):null;
+        h+=`<div class="kbcc" onclick="oTD(${t.id})" style="${od?'border-left:3px solid var(--red);':dDays===0?'border-left:3px solid #d97706;':dDays<=2&&dDays>=0?'border-left:3px solid #eab308;':''}">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+            ${pB(w?.pri||'Medium')}
+            <span style="font-size:9px">${tL(t.ed)}</span>
+          </div>
+          <div style="font-size:11px;font-weight:600;margin-bottom:6px;line-height:1.3">${w?.title||''}</div>
+          ${a?`<div style="display:flex;align-items:center;gap:4px;margin-bottom:5px">${aH(a,17)}<span style="font-size:9px;color:var(--tx2)">${a.name}</span></div>`:''}
+          <div style="height:2px;border-radius:2px;background:#eee"><div style="height:100%;border-radius:2px;background:${col.c};width:${t.pg||0}%"></div></div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px"><span style="font-size:8px;color:var(--tx3);font-family:var(--mono)">${fD(t.ed)}</span><span style="font-size:8px;font-family:var(--mono);color:var(--tx3)">${t.pg||0}%</span></div>
+        </div>`;
+      });
+    }
+    h+=`</div>`;
+  });
   return h+'</div>';
 }
 
 // ══════════════════════════════════════════════════════════
-//  REPORTS
+//  REPORTS — Detailed with full filtration
 // ══════════════════════════════════════════════════════════
 function rRp(){
-  const gc=isTL()?eCA():eC(CU.id);
-  let h=`<div class="cd ai" style="margin-bottom:16px"><div style="padding:18px"><div style="font-weight:800;font-size:14px;margin-bottom:12px">${isTL()?'Team':'My'} Summary</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:8px">${[{l:'Total',v:gc.total,c:'#4338ca'},{l:'Active',v:gc.run,c:'#2563eb'},{l:'Reassign',v:gc.reas,c:'#d97706'},{l:'Pending',v:gc.comp,c:'#db2777'},{l:'Approved',v:gc.appr,c:'#16a34a'},{l:'On-Time',v:gc.onT,c:'#059669'},{l:'Overdue',v:gc.od,c:'#dc2626'},{l:'Rate',v:gc.rate+'%',c:'#16a34a'}].map(s=>`<div style="text-align:center;padding:10px 4px;border-radius:8px;background:${s.c}06;border:1px solid ${s.c}10"><div style="font-size:20px;font-weight:800;color:${s.c};font-family:var(--mono)">${s.v}</div><div style="font-size:9px;color:var(--tx2);margin-top:2px">${s.l}</div></div>`).join('')}</div></div></div>`;
-  if(isTL()&&users.length){const bM=Math.max(...users.filter(u=>u.on).map(m=>tasks.filter(t=>t.as===m.id).length),1);
-    h+=`<div class="cd ai"><div class="cdh"><h3>Employee Report</h3></div><div style="overflow-x:auto"><table class="rt"><thead><tr>${['Employee','Total','Active','Done','On-Time','Overdue','Rate'].map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${users.filter(u=>u.on).map(m=>{const c=eC(m.id);return`<tr><td><div style="display:flex;align-items:center;gap:6px">${aH(m,22)}<span style="font-weight:600">${m.name}</span></div></td>${[c.total,c.run,c.appr,c.onT,c.od,c.rate+'%'].map((v,i)=>`<td style="font-weight:700;font-family:var(--mono);color:${['#333','#2563eb','#16a34a','#059669',typeof v==='number'&&v>0?'#dc2626':'#ccc','#16a34a'][i]}">${v}</td>`).join('')}</tr>`}).join('')}</tbody></table></div></div>`}
+  // Build filtered task pool
+  let pool=isTL()?tasks:tasks.filter(t=>t.as===CU.id);
+  if(rpUser!=='all') pool=pool.filter(t=>t.as===rpUser);
+  if(rpStatus!=='all') pool=pool.filter(t=>t.st===rpStatus);
+  if(rpPri!=='all') pool=pool.filter(t=>{const w=W(t.wk);return w?.pri===rpPri});
+  if(rpFrom) pool=pool.filter(t=>t.ed&&t.ed>=rpFrom);
+  if(rpTo)   pool=pool.filter(t=>t.ed&&t.ed<=rpTo);
+
+  const now=td();
+  const onT=pool.filter(t=>t.st==='Approved').filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));return ch&&t.ed&&ch.d<=t.ed});
+  const stats={
+    total:pool.length, run:pool.filter(t=>['Assigned','In Progress','Reassigned'].includes(t.st)).length,
+    comp:pool.filter(t=>t.st==='Completed').length, appr:pool.filter(t=>t.st==='Approved').length,
+    reas:pool.filter(t=>t.st==='Reassigned').length, od:pool.filter(isOD).length,
+    onT:onT.length, dT:pool.filter(t=>t.ed===now).length, d2:pool.filter(t=>{const d=dDf(t.ed,now);return d>=0&&d<=2}).length,
+    rate:pool.filter(t=>t.st==='Approved').length?Math.round(onT.length/pool.filter(t=>t.st==='Approved').length*100):0,
+    avgPg:pool.length?Math.round(pool.reduce((s,t)=>s+(t.pg||0),0)/pool.length):0
+  };
+
+  // Tabs state
+  const rpTab=window._rpTab||'summary';
+
+  let h=``;
+
+  // ── FILTER BAR ──
+  h+=`<div class="filter-bar">
+    <div class="filter-row">
+      <span class="filter-label">Filters</span>
+      ${isTL()?`<select class="usr-sel ${rpUser!=='all'?'active':''}" onchange="rpUser=this.value;rA()">
+        <option value="all">👤 All Members</option>
+        ${users.filter(u=>u.on).map(u=>`<option value="${u.id}" ${rpUser===u.id?'selected':''}>${u.av} ${u.name}</option>`).join('')}
+      </select>`:''}
+      <select class="usr-sel ${rpStatus!=='all'?'active':''}" onchange="rpStatus=this.value;rA()">
+        <option value="all">📋 All Status</option>
+        ${['Assigned','In Progress','Completed','Approved','Reassigned'].map(s=>`<option value="${s}" ${rpStatus===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+      <select class="usr-sel ${rpPri!=='all'?'active':''}" onchange="rpPri=this.value;rA()">
+        <option value="all">🏷 All Priority</option>
+        ${['Low','Medium','High','Urgent'].map(p=>`<option value="${p}" ${rpPri===p?'selected':''}>${p}</option>`).join('')}
+      </select>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Date Range</span>
+      <div class="drange">
+        <input type="date" value="${rpFrom}" onchange="rpFrom=this.value;rA()" style="padding:5px 8px;border-radius:5px;font-size:10px;border:1px solid var(--bd);background:var(--s);outline:none;${rpFrom?'border-color:var(--ac);color:var(--ac)':''}">
+        <span>→</span>
+        <input type="date" value="${rpTo}" onchange="rpTo=this.value;rA()" style="padding:5px 8px;border-radius:5px;font-size:10px;border:1px solid var(--bd);background:var(--s);outline:none;${rpTo?'border-color:var(--ac);color:var(--ac)':''}">
+      </div>
+      ${(rpUser!=='all'||rpStatus!=='all'||rpPri!=='all'||rpFrom||rpTo)?`<button class="btn bo bsm" onclick="rpUser='all';rpStatus='all';rpPri='all';rpFrom='';rpTo='';rA()">✕ Clear</button>`:''}
+      <span style="font-size:10px;color:var(--tx3);margin-left:auto">${pool.length} task${pool.length!==1?'s':''} matched</span>
+      <button class="exp-btn" onclick="exportReport()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
+    </div>
+  </div>`;
+
+  // ── TABS ──
+  h+=`<div class="tbs" style="margin-bottom:16px">
+    <button class="tbt ${rpTab==='summary'?'on':''}" onclick="window._rpTab='summary';rA()">📊 Summary</button>
+    <button class="tbt ${rpTab==='detail'?'on':''}" onclick="window._rpTab='detail';rA()">📋 Detail Tasks</button>
+    ${isTL()?`<button class="tbt ${rpTab==='team'?'on':''}" onclick="window._rpTab='team';rA()">👥 Team Report</button>`:''}
+  </div>`;
+
+  // ── SUMMARY TAB ──
+  if(rpTab==='summary'){
+    h+=`<div class="sg ai" style="margin-bottom:16px">${[
+      {l:'Total Tasks',v:stats.total,c:'#4338ca'},
+      {l:'Active',v:stats.run,c:'#2563eb'},
+      {l:'Pending Review',v:stats.comp,c:'#db2777'},
+      {l:'Approved',v:stats.appr,c:'#16a34a'},
+      {l:'Reassigned',v:stats.reas,c:'#d97706'},
+      {l:'Overdue',v:stats.od,c:'#dc2626'},
+      {l:'Due Today',v:stats.dT,c:'#ef4444'},
+      {l:'Due 2 Days',v:stats.d2,c:'#f59e0b'},
+      {l:'On-Time',v:stats.onT,c:'#059669'},
+      {l:'On-Time Rate',v:stats.rate+'%',c:'#16a34a'},
+      {l:'Avg Progress',v:stats.avgPg+'%',c:'#7c3aed'},
+    ].map(s=>`<div class="sc"><div class="ob" style="background:${s.c}"></div><div style="font-size:10px;color:var(--tx2);margin-bottom:3px">${s.l}</div><div style="font-size:22px;font-weight:800;font-family:var(--mono);color:${s.c}">${s.v}</div></div>`).join('')}</div>`;
+
+    // Status breakdown donut-like bars
+    h+=`<div class="cd ai" style="margin-bottom:14px"><div class="cdh"><h3>Status Breakdown</h3></div><div style="padding:16px">`;
+    const statuses=[{l:'Assigned',c:'#2563eb'},{l:'In Progress',c:'#7c3aed'},{l:'Completed',c:'#db2777'},{l:'Approved',c:'#16a34a'},{l:'Reassigned',c:'#d97706'}];
+    statuses.forEach(s=>{const cnt=pool.filter(t=>t.st===s.l).length;const pct=stats.total?Math.round(cnt/stats.total*100):0;
+      h+=`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;font-weight:600">${s.l}</span><span style="font-size:11px;font-family:var(--mono);color:${s.c};font-weight:700">${cnt} <span style="color:var(--tx3);font-weight:400">(${pct}%)</span></span></div><div style="height:6px;border-radius:3px;background:#eee"><div style="height:100%;border-radius:3px;background:${s.c};width:${pct}%;transition:width 0.4s"></div></div></div>`;
+    });
+    h+=`</div></div>`;
+
+    // Priority breakdown
+    h+=`<div class="cd ai"><div class="cdh"><h3>Priority Breakdown</h3></div><div style="padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">`;
+    ['Urgent','High','Medium','Low'].forEach(p=>{const pTasks=pool.filter(t=>{const w=W(t.wk);return w?.pri===p});const od=pTasks.filter(isOD).length;
+      h+=`<div style="padding:12px;border-radius:10px;background:${PC[p]}06;border:1px solid ${PC[p]}15">
+        <div style="font-size:9px;font-weight:700;color:${PC[p]};text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px">${p}</div>
+        <div style="font-size:22px;font-weight:800;font-family:var(--mono);color:${PC[p]};margin-bottom:4px">${pTasks.length}</div>
+        ${od>0?`<div style="font-size:9px;color:var(--red)">⚠ ${od} overdue</div>`:`<div style="font-size:9px;color:var(--tx3)">0 overdue</div>`}
+      </div>`;
+    });
+    h+=`</div></div>`;
+  }
+
+  // ── DETAIL TASKS TAB ──
+  if(rpTab==='detail'){
+    if(!pool.length){
+      h+=`<div class="cd" style="padding:28px;text-align:center;color:var(--tx3);font-size:12px">No tasks match the current filters</div>`;
+    } else {
+      h+=`<div class="cd ai"><div class="cdh"><h3>Task Detail (${pool.length})</h3>
+        <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--tx3)">
+          <span>Sort:</span>
+          <select class="usr-sel" onchange="window._rpSort=this.value;rA()" style="font-size:10px">
+            <option value="due" ${(window._rpSort||'due')==='due'?'selected':''}>Due Date</option>
+            <option value="status" ${window._rpSort==='status'?'selected':''}>Status</option>
+            <option value="priority" ${window._rpSort==='priority'?'selected':''}>Priority</option>
+            <option value="progress" ${window._rpSort==='progress'?'selected':''}>Progress</option>
+          </select>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+      <table class="rp-tbl">
+        <thead><tr>
+          <th>#</th><th>Work Title</th><th>Assignee</th><th>Status</th><th>Priority</th>
+          <th>Start</th><th>Deadline</th><th>Progress</th><th>Days Left</th><th>On-Time</th>
+        </tr></thead>
+        <tbody>`;
+
+      const sortKey=window._rpSort||'due';
+      const sorted=[...pool].sort((a,b)=>{
+        if(sortKey==='due') return (a.ed||'9999')>(b.ed||'9999')?1:-1;
+        if(sortKey==='status') return a.st.localeCompare(b.st);
+        if(sortKey==='priority'){const po={Urgent:0,High:1,Medium:2,Low:3};return (po[W(a.wk)?.pri]||2)-(po[W(b.wk)?.pri]||2);}
+        if(sortKey==='progress') return (b.pg||0)-(a.pg||0);
+        return 0;
+      });
+
+      sorted.forEach((t,idx)=>{
+        const w=W(t.wk);const a=U(t.as);const od=isOD(t);
+        const dDays=t.ed?dDf(t.ed,now):null;
+        const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));
+        const wasOnTime=t.st==='Approved'&&ch&&t.ed&&ch.d<=t.ed;
+        const wasLate=t.st==='Approved'&&ch&&t.ed&&ch.d>t.ed;
+        const rowBg=od?'#fef8f8':dDays===0?'#fffbf0':dDays===1?'#fffef0':'';
+        h+=`<tr onclick="oTD(${t.id})" style="${rowBg?`background:${rowBg}`:''};cursor:pointer">
+          <td style="color:var(--tx3);font-family:var(--mono)">${idx+1}</td>
+          <td><div style="font-weight:600;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w?.title||'—'}</div></td>
+          <td>${a?`<div style="display:flex;align-items:center;gap:5px">${aH(a,20)}<span style="font-size:10px">${a.name}</span></div>`:'—'}</td>
+          <td>${sB(t.st)}</td>
+          <td>${pB(w?.pri||'Medium')}</td>
+          <td style="font-family:var(--mono);font-size:10px;color:var(--tx2)">${fD(t.sd)}</td>
+          <td style="font-family:var(--mono);font-size:10px;color:${od?'var(--red)':dDays===0?'#d97706':'var(--tx)'};font-weight:${od||dDays===0?'700':'400'}">${fD(t.ed)}${od?' ⚠':dDays===0?' 🔴':''}</td>
+          <td><div style="display:flex;align-items:center;gap:5px"><div class="rp-tbl .pg-bar" style="width:50px;height:4px;border-radius:2px;background:#eee;display:inline-block"><div style="height:100%;width:${t.pg||0}%;background:var(--ac);border-radius:2px"></div></div><span style="font-family:var(--mono);font-size:9px">${t.pg||0}%</span></div></td>
+          <td style="font-family:var(--mono);font-size:10px;font-weight:600;color:${od?'var(--red)':dDays===0?'#d97706':dDays<=2&&dDays>=0?'#eab308':'var(--tx3)'}">${dDays===null?'—':od?`-${Math.abs(dDays)}d`:dDays===0?'Today!':dDays+'d'}</td>
+          <td>${t.st==='Approved'?(wasOnTime?'<span style="font-size:10px;font-weight:700;color:var(--grn)">✓ On-time</span>':'<span style="font-size:10px;font-weight:700;color:var(--red)">⚠ Late</span>'):t.st==='Completed'?'<span style="font-size:10px;color:var(--tx3)">Pending</span>':'<span style="font-size:10px;color:var(--tx3)">—</span>'}</td>
+        </tr>`;
+      });
+      h+=`</tbody></table></div></div>`;
+    }
+  }
+
+  // ── TEAM REPORT TAB ──
+  if(rpTab==='team'&&isTL()){
+    const teamUsers=rpUser!=='all'?users.filter(u=>u.on&&u.id===rpUser):users.filter(u=>u.on);
+    h+=`<div class="cd ai"><div class="cdh"><h3>Team Performance Report</h3></div>
+    <div style="overflow-x:auto">
+    <table class="rp-tbl">
+      <thead><tr>
+        <th>Member</th><th>Role</th><th>Total</th><th>Active</th><th>Done</th>
+        <th>Reassigned</th><th>Overdue</th><th>On-Time</th><th>Rate</th><th>Avg Progress</th>
+      </tr></thead>
+      <tbody>`;
+
+    teamUsers.forEach(m=>{
+      const mTasks=pool.filter(t=>t.as===m.id);
+      const mAppr=mTasks.filter(t=>t.st==='Approved');
+      const mOnT=mAppr.filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));return ch&&t.ed&&ch.d<=t.ed});
+      const mRun=mTasks.filter(t=>['Assigned','In Progress','Reassigned'].includes(t.st)).length;
+      const mOd=mTasks.filter(isOD).length;
+      const mReas=mTasks.filter(t=>t.st==='Reassigned').length;
+      const mRate=mAppr.length?Math.round(mOnT.length/mAppr.length*100):0;
+      const mAvgPg=mTasks.length?Math.round(mTasks.reduce((s,t)=>s+(t.pg||0),0)/mTasks.length):0;
+      const perf=mRate>=80?{c:'var(--grn)',l:'Excellent'}:mRate>=60?{c:'#d97706',l:'Good'}:mRate>=40?{c:'var(--ylw)',l:'Fair'}:{c:'var(--red)',l:'Needs Attention'};
+      h+=`<tr onclick="CV='member_dash';tdS='${m.id}';cM&&cM();rA()">
+        <td><div style="display:flex;align-items:center;gap:7px">${aH(m,26)}<div><div style="font-weight:600;font-size:12px">${m.name}</div><div style="font-size:9px;color:${perf.c};font-weight:600">${perf.l}</div></div></div></td>
+        <td style="color:var(--tx2);font-size:11px">${m.role}</td>
+        <td style="font-weight:700;font-family:var(--mono)">${mTasks.length}</td>
+        <td style="font-weight:700;font-family:var(--mono);color:#2563eb">${mRun}</td>
+        <td style="font-weight:700;font-family:var(--mono);color:var(--grn)">${mAppr.length}</td>
+        <td style="font-weight:700;font-family:var(--mono);color:${mReas>0?'#d97706':'var(--tx3)'}">${mReas}</td>
+        <td style="font-weight:700;font-family:var(--mono);color:${mOd>0?'var(--red)':'var(--tx3)'}">${mOd}</td>
+        <td style="font-weight:700;font-family:var(--mono);color:var(--grn)">${mOnT.length}</td>
+        <td><div style="display:flex;align-items:center;gap:6px"><div style="width:40px;height:5px;border-radius:3px;background:#eee"><div style="height:100%;border-radius:3px;background:${mRate>=60?'var(--grn)':'var(--red)'};width:${mRate}%"></div></div><span style="font-family:var(--mono);font-size:10px;font-weight:700;color:${mRate>=60?'var(--grn)':'var(--red)'}">${mRate}%</span></div></td>
+        <td><div style="display:flex;align-items:center;gap:6px"><div style="width:40px;height:5px;border-radius:3px;background:#eee"><div style="height:100%;border-radius:3px;background:var(--ac);width:${mAvgPg}%"></div></div><span style="font-family:var(--mono);font-size:10px">${mAvgPg}%</span></div></td>
+      </tr>`;
+    });
+    // Totals row
+    const tot={tasks:pool.length,run:pool.filter(t=>['Assigned','In Progress','Reassigned'].includes(t.st)).length,appr:pool.filter(t=>t.st==='Approved').length,reas:pool.filter(t=>t.st==='Reassigned').length,od:pool.filter(isOD).length};
+    h+=`<tr style="background:var(--s2);font-weight:700">
+      <td colspan="2" style="font-weight:800;font-size:11px">TOTALS</td>
+      <td style="font-family:var(--mono)">${tot.tasks}</td>
+      <td style="font-family:var(--mono);color:#2563eb">${tot.run}</td>
+      <td style="font-family:var(--mono);color:var(--grn)">${tot.appr}</td>
+      <td style="font-family:var(--mono);color:${tot.reas>0?'#d97706':'var(--tx3)'}">${tot.reas}</td>
+      <td style="font-family:var(--mono);color:${tot.od>0?'var(--red)':'var(--tx3)'}">${tot.od}</td>
+      <td style="font-family:var(--mono);color:var(--grn)">${stats.onT}</td>
+      <td style="font-family:var(--mono);color:${stats.rate>=60?'var(--grn)':'var(--red)'}">${stats.rate}%</td>
+      <td style="font-family:var(--mono)">${stats.avgPg}%</td>
+    </tr>`;
+    h+=`</tbody></table></div></div>`;
+  }
+
   return h;
+}
+
+// ── CSV Export ──
+function exportReport(){
+  let pool=isTL()?tasks:tasks.filter(t=>t.as===CU.id);
+  if(rpUser!=='all') pool=pool.filter(t=>t.as===rpUser);
+  if(rpStatus!=='all') pool=pool.filter(t=>t.st===rpStatus);
+  if(rpPri!=='all') pool=pool.filter(t=>{const w=W(t.wk);return w?.pri===rpPri});
+  if(rpFrom) pool=pool.filter(t=>t.ed&&t.ed>=rpFrom);
+  if(rpTo)   pool=pool.filter(t=>t.ed&&t.ed<=rpTo);
+
+  const now=td();
+  const rows=[['#','Work Title','Assignee','Status','Priority','Start Date','End Date','Progress %','Days Left','On-Time','Reassign Count']];
+  pool.forEach((t,i)=>{
+    const w=W(t.wk);const a=U(t.as);
+    const dDays=t.ed?dDf(t.ed,now):null;
+    const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));
+    const wasOnTime=t.st==='Approved'&&ch&&t.ed&&ch.d<=t.ed;
+    rows.push([i+1,w?.title||'',a?.name||'',t.st,w?.pri||'',t.sd,t.ed,t.pg||0,dDays===null?'':(isOD(t)?'-'+Math.abs(dDays):dDays),t.st==='Approved'?(wasOnTime?'Yes':'No'):'',t.rc||0]);
+  });
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`researchflow-report-${now}.csv`;a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV exported!','ok');
 }
 
 // ══════════════════════════════════════════════════════════
