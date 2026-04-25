@@ -531,19 +531,21 @@ async function loadFromSheet(){
 
   tasks=(d.tasks||[]).map(t=>({
     id:parseInt(t.id)||0, wk:parseInt(t.workId)||0, as:String(t.assignee||''),
-    st:t.status||'Assigned', sd:t.startDate||'', ed:t.endDate||'',
+    st:t.status||'Assigned',
+    sd:cleanDate(t.startDate),   // ← strip any timestamp
+    ed:cleanDate(t.endDate),     // ← strip any timestamp
     rc:parseInt(t.reassignCount)||0, pg:parseInt(t.progress)||0, cm:[], hi:[]
   }));
 
   (d.comments||[]).forEach(c=>{
     const t=tasks.find(x=>x.id===parseInt(c.taskId));
-    if(t)t.cm.push({by:String(c.by||''),tx:c.text||'',dt:c.date||''});
+    if(t)t.cm.push({by:String(c.by||''),tx:c.text||'',dt:cleanDate(c.date)||c.date||''});
   });
   (d.history||[]).forEach(h=>{
     const t=tasks.find(x=>x.id===parseInt(h.taskId));
-    if(t)t.hi.push({a:h.action||'',d:h.date||'',b:String(h.by||'')});
+    if(t)t.hi.push({a:h.action||'',d:cleanDate(h.date)||h.date||'',b:String(h.by||'')});
   });
-  alog=(d.activity||[]).map(a=>({id:parseInt(a.id)||0,u:String(a.userId||''),a:a.action||'',d:a.date||'',t:a.type||'task'}));
+  alog=(d.activity||[]).map(a=>({id:parseInt(a.id)||0,u:String(a.userId||''),a:a.action||'',d:cleanDate(a.date)||a.date||'',t:a.type||'task'}));
 
   nW_=works.length?Math.max(...works.map(w=>w.id))+1:1;
   nT_=tasks.length?Math.max(...tasks.map(t=>t.id))+1:100;
@@ -563,7 +565,7 @@ async function syncFromSheet(){
 // ── SAVE HELPERS (all background — UI is instant, sheet syncs async) ──
 const _uPl=u=>({id:u.id,name:u.name,email:u.email,role:u.role,avatar:u.av,color:u.col,password:u.pass,access:u.acc.join(','),active:u.on?'TRUE':'FALSE'});
 const _wPl=w=>({id:w.id,title:w.title,description:w.desc,priority:w.pri,createdAt:w.cat,createdBy:w.cb,hasTask:w.ht?'TRUE':'FALSE'});
-const _tPl=t=>({id:t.id,workId:t.wk,assignee:t.as,status:t.st,startDate:t.sd,endDate:t.ed,reassignCount:t.rc,progress:t.pg});
+const _tPl=t=>({id:t.id,workId:t.wk,assignee:t.as,status:t.st,startDate:cleanDate(t.sd)||t.sd,endDate:cleanDate(t.ed)||t.ed,reassignCount:t.rc,progress:t.pg});
 const svU=u=>bgSave('addUser',_uPl(u));
 const upU=u=>bgSave('updateUser',_uPl(u));
 const svW=w=>bgSave('addWork',_wPl(w));
@@ -581,9 +583,44 @@ const U=id=>{if(id==='admin')return MASTER;return users.find(u=>u.id===id)||null
 const W=id=>works.find(w=>w.id===id)||null;
 const T4W=wid=>tasks.find(t=>t.wk===wid)||null;
 const td=()=>new Date().toISOString().split('T')[0];
-const fD=d=>{if(!d)return'—';return new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})};
-const dDf=(a,b)=>Math.ceil((new Date(a+'T00:00:00')-new Date(b+'T00:00:00'))/86400000);
-const isOD=t=>t.ed&&new Date(t.ed)<new Date(td()+'T00:00:00')&&!['Approved','Completed'].includes(t.st);
+
+// ── cleanDate: strips time from any date format (handles ISO timestamps, plain dates, etc.) ──
+function cleanDate(v){
+  if(!v&&v!==0)return'';
+  const s=String(v).trim();
+  if(!s||s==='Invalid Date'||s==='NaN')return'';
+  // Already plain YYYY-MM-DD
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;
+  // ISO timestamp: 2026-04-24T18:00:00... or 2026-04-24T18::...
+  if(s.includes('T'))return s.split('T')[0];
+  // Google Sheets Date serial number (numeric)
+  if(/^\d+$/.test(s)){
+    // Sheets epoch: Dec 30 1899
+    const d=new Date((parseInt(s)-25569)*86400000);
+    return d.toISOString().split('T')[0];
+  }
+  // Try native parse as fallback
+  const d=new Date(s);
+  if(!isNaN(d.getTime()))return d.toISOString().split('T')[0];
+  return'';
+}
+
+const fD=d=>{
+  const clean=cleanDate(d);
+  if(!clean)return'—';
+  const dt=new Date(clean+'T00:00:00');
+  if(isNaN(dt.getTime()))return'—';
+  return dt.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+};
+const dDf=(a,b)=>{
+  const ca=cleanDate(a),cb=cleanDate(b);
+  if(!ca||!cb)return 0;
+  return Math.ceil((new Date(ca+'T00:00:00')-new Date(cb+'T00:00:00'))/86400000);
+};
+const isOD=t=>{
+  const ed=cleanDate(t.ed);
+  return ed&&ed<td()&&!['Approved','Completed'].includes(t.st);
+};
 const isTL=()=>CU?.role==='Team Lead';
 const hA=k=>CU?.acc?.includes(k);
 const aCt=uid=>tasks.filter(t=>t.as===uid&&['Assigned','In Progress','Reassigned'].includes(t.st)).length;
@@ -591,7 +628,15 @@ const aCt=uid=>tasks.filter(t=>t.as===uid&&['Assigned','In Progress','Reassigned
 function sB(s){const x=SS[s]||{bg:'#eee',fg:'#666',d:'#999'};return`<span class="bdg" style="background:${x.bg};color:${x.fg}"><span class="dt" style="background:${x.d}"></span>${s}</span>`}
 function aH(u,sz=24){if(!u)return'';return`<div class="av" style="width:${sz}px;height:${sz}px;font-size:${sz<26?9:11}px;background:${u.col}14;color:${u.col}">${u.av}</div>`}
 function pB(p){return`<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:${PC[p]||'#ccc'}10;color:${PC[p]||'#ccc'}">${p||''}</span>`}
-function tL(ed){if(!ed)return'';const d=dDf(ed,td());if(d<0)return`<span style="color:var(--red);font-weight:700;font-size:9px">${Math.abs(d)}d overdue</span>`;if(d===0)return`<span style="color:var(--red);font-weight:700;font-size:9px">Due today!</span>`;if(d<=2)return`<span style="color:var(--ylw);font-weight:700;font-size:9px">${d}d left</span>`;return`<span style="color:var(--tx3);font-size:9px">${d}d left</span>`}
+function tL(ed){
+  const clean=cleanDate(ed);
+  if(!clean)return'';
+  const d=dDf(clean,td());
+  if(d<0)return`<span style="color:var(--red);font-weight:700;font-size:9px">${Math.abs(d)}d overdue</span>`;
+  if(d===0)return`<span style="color:var(--red);font-weight:700;font-size:9px">Due today!</span>`;
+  if(d<=2)return`<span style="color:var(--ylw);font-weight:700;font-size:9px">${d}d left</span>`;
+  return`<span style="color:var(--tx3);font-size:9px">${d}d left</span>`;
+}
 function ring(pct,col,sz=52,sw=5){const r=(sz-sw)/2,c=2*Math.PI*r,o=c-(pct/100)*c;return`<div class="mr" style="width:${sz}px;height:${sz}px"><svg width="${sz}" height="${sz}"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="#eee" stroke-width="${sw}"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-dasharray="${c}" stroke-dashoffset="${o}" stroke-linecap="round"/></svg><div class="mrv" style="color:${col}">${pct}%</div></div>`}
 
 function toast(m,t='in'){const w=document.getElementById('tW');const e=document.createElement('div');e.className=`tst ${t==='ok'||t==='success'?'ok':t==='er'||t==='error'?'er':'in'}`;e.textContent=m;w.appendChild(e);setTimeout(()=>{e.style.opacity='0';setTimeout(()=>e.remove(),300)},3000)}
@@ -602,16 +647,18 @@ function eC(uid){
   const et=tasks.filter(t=>t.as===uid);const now=td();
   const run=et.filter(t=>['Assigned','In Progress','Reassigned'].includes(t.st));
   const comp=et.filter(t=>t.st==='Completed');const appr=et.filter(t=>t.st==='Approved');
-  const onT=appr.filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));return ch&&t.ed&&ch.d<=t.ed});
-  const dTT=run.filter(t=>t.ed===now);const d2T=run.filter(t=>{const d=dDf(t.ed,now);return d>=0&&d<=2});
+  const onT=appr.filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));const ed=cleanDate(t.ed);const hd=cleanDate(ch?.d);return ch&&ed&&hd&&hd<=ed});
+  const dTT=run.filter(t=>cleanDate(t.ed)===now);
+  const d2T=run.filter(t=>{const d=dDf(cleanDate(t.ed),now);return d>=0&&d<=2});
   const odT=run.filter(isOD);
   return{total:et.length,run:run.length,comp:comp.length,appr:appr.length,reas:et.filter(t=>t.st==='Reassigned').length,od:odT.length,onT:onT.length,dT:dTT.length,d2:d2T.length,rate:appr.length?Math.round(onT.length/appr.length*100):0,runT:run,dTT,d2T,odT,compT:comp,apprT:appr};
 }
 function eCA(){
   const run=tasks.filter(t=>['Assigned','In Progress','Reassigned'].includes(t.st));
   const appr=tasks.filter(t=>t.st==='Approved');const now=td();
-  const onT=appr.filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));return ch&&t.ed&&ch.d<=t.ed});
-  const dTT=run.filter(t=>t.ed===now);const d2T=run.filter(t=>{const d=dDf(t.ed,now);return d>=0&&d<=2});
+  const onT=appr.filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));const ed=cleanDate(t.ed);const hd=cleanDate(ch?.d);return ch&&ed&&hd&&hd<=ed});
+  const dTT=run.filter(t=>cleanDate(t.ed)===now);
+  const d2T=run.filter(t=>{const d=dDf(cleanDate(t.ed),now);return d>=0&&d<=2});
   const odT=run.filter(isOD);
   return{total:tasks.length,run:run.length,comp:tasks.filter(t=>t.st==='Completed').length,appr:appr.length,reas:tasks.filter(t=>t.st==='Reassigned').length,od:odT.length,onT:onT.length,dT:dTT.length,d2:d2T.length,rate:appr.length?Math.round(onT.length/appr.length*100):0,runT:run,dTT,d2T,odT};
 }
@@ -871,7 +918,7 @@ function rMDa(uid){
 
   h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
     <div class="cd ai"><div class="cdh"><h3>Pending Review (${c.comp})</h3></div>${c.compT.length?c.compT.map(t=>{const w=W(t.wk);return`<div style="padding:8px 14px;border-bottom:1px solid #f0efe8;font-size:11px;display:flex;align-items:center;gap:6px;cursor:pointer" onclick="oTD(${t.id})"><div class="pb" style="height:14px;background:${PC[w?.pri]||'#ccc'}"></div><span style="flex:1;font-weight:500">${w?.title||''}</span>${isTL()?`<button class="btn bg bsm" style="padding:2px 8px;font-size:9px" onclick="event.stopPropagation();doAp(${t.id})">✓</button>`:''}</div>`}).join(''):'<div style="padding:14px;text-align:center;color:var(--tx3);font-size:11px">None</div>'}</div>
-    <div class="cd ai"><div class="cdh"><h3>Approved (${c.appr})</h3></div>${c.apprT.length?c.apprT.map(t=>{const w=W(t.wk);const ch=t.hi.find(x=>x.a.toLowerCase().includes('complete'));const onT=ch&&t.ed&&ch.d<=t.ed;return`<div style="padding:8px 14px;border-bottom:1px solid #f0efe8;font-size:11px;display:flex;align-items:center;gap:6px"><div class="pb" style="height:14px;background:${PC[w?.pri]||'#ccc'}"></div><span style="flex:1;font-weight:500">${w?.title||''}</span><span style="font-size:9px;font-weight:600;color:${onT?'var(--grn)':'var(--red)'}">  ${onT?'✓ On-time':'⚠ Late'}</span></div>`}).join(''):'<div style="padding:14px;text-align:center;color:var(--tx3);font-size:11px">None</div>'}</div>
+    <div class="cd ai"><div class="cdh"><h3>Approved (${c.appr})</h3></div>${c.apprT.length?c.apprT.map(t=>{const w=W(t.wk);const ch=t.hi.find(x=>x.a.toLowerCase().includes('complete'));const onT=ch&&cleanDate(t.ed)&&cleanDate(ch.d)&&cleanDate(ch.d)<=cleanDate(t.ed);return`<div style="padding:8px 14px;border-bottom:1px solid #f0efe8;font-size:11px;display:flex;align-items:center;gap:6px"><div class="pb" style="height:14px;background:${PC[w?.pri]||'#ccc'}"></div><span style="flex:1;font-weight:500">${w?.title||''}</span><span style="font-size:9px;font-weight:600;color:${onT?'var(--grn)':'var(--red)'}">  ${onT?'✓ On-time':'⚠ Late'}</span></div>`}).join(''):'<div style="padding:14px;text-align:center;color:var(--tx3);font-size:11px">None</div>'}</div>
   </div>`;
 
   const mA=alog.filter(a=>a.u===uid).slice(0,6);
@@ -903,16 +950,18 @@ function rWk(){
 function applyDueFilter(taskList, dueKey, from, to){
   const now=td();
   return taskList.filter(t=>{
-    if(dueKey==='today') return t.ed===now;
-    if(dueKey==='d2'){const d=dDf(t.ed,now);return d>=0&&d<=2}
-    if(dueKey==='week'){const d=dDf(t.ed,now);return d>=0&&d<=7}
-    if(dueKey==='od') return isOD(t);
+    const ed=cleanDate(t.ed);
+    if(!ed) return dueKey==='all'; // tasks with no date only show in 'all'
+    if(dueKey==='today') return ed===now;
+    if(dueKey==='d2'){const d=dDf(ed,now);return d>=0&&d<=2}
+    if(dueKey==='week'){const d=dDf(ed,now);return d>=0&&d<=7}
+    if(dueKey==='od') return isOD({...t,ed});
     if(dueKey==='custom'){
-      if(from&&t.ed<from)return false;
-      if(to&&t.ed>to)return false;
+      if(from&&ed<from)return false;
+      if(to&&ed>to)return false;
       return true;
     }
-    return true; // 'all'
+    return true;
   });
 }
 
@@ -934,7 +983,13 @@ function rTk(){
   const dueChips=[{k:'all',l:'All',cls:'all'},{k:'today',l:'🔴 Today',cls:'today'},{k:'d2',l:'🟡 2 Days',cls:'d2'},{k:'week',l:'📅 Week',cls:'week'},{k:'od',l:'⚫ Overdue',cls:'od'}];
 
   // Count chips
-  const counts={all:pool.length,today:pool.filter(t=>t.ed===td()).length,d2:pool.filter(t=>{const d=dDf(t.ed,td());return d>=0&&d<=2}).length,week:pool.filter(t=>{const d=dDf(t.ed,td());return d>=0&&d<=7}).length,od:pool.filter(isOD).length};
+  const counts={
+    all:pool.length,
+    today:pool.filter(t=>cleanDate(t.ed)===td()).length,
+    d2:pool.filter(t=>{const d=dDf(cleanDate(t.ed),td());return d>=0&&d<=2}).length,
+    week:pool.filter(t=>{const d=dDf(cleanDate(t.ed),td());return d>=0&&d<=7}).length,
+    od:pool.filter(isOD).length
+  };
 
   let h=`<div class="filter-bar">
     <div class="filter-row">
@@ -1004,7 +1059,13 @@ function rKb(){
 
   const dueChips=[{k:'all',l:'All',cls:'all'},{k:'today',l:'🔴 Today',cls:'today'},{k:'d2',l:'🟡 2 Days',cls:'d2'},{k:'week',l:'📅 Week',cls:'week'},{k:'od',l:'⚫ Overdue',cls:'od'}];
   const totalPool=isTL()?tasks:tasks.filter(t=>t.as===CU.id);
-  const counts={all:totalPool.length,today:totalPool.filter(t=>t.ed===td()).length,d2:totalPool.filter(t=>{const d=dDf(t.ed,td());return d>=0&&d<=2}).length,week:totalPool.filter(t=>{const d=dDf(t.ed,td());return d>=0&&d<=7}).length,od:totalPool.filter(isOD).length};
+  const counts={
+    all:totalPool.length,
+    today:totalPool.filter(t=>cleanDate(t.ed)===td()).length,
+    d2:totalPool.filter(t=>{const d=dDf(cleanDate(t.ed),td());return d>=0&&d<=2}).length,
+    week:totalPool.filter(t=>{const d=dDf(cleanDate(t.ed),td());return d>=0&&d<=7}).length,
+    od:totalPool.filter(isOD).length
+  };
 
   let h=`<div class="filter-bar">
     <div class="filter-row">
@@ -1063,16 +1124,16 @@ function rRp(){
   if(rpUser!=='all') pool=pool.filter(t=>t.as===rpUser);
   if(rpStatus!=='all') pool=pool.filter(t=>t.st===rpStatus);
   if(rpPri!=='all') pool=pool.filter(t=>{const w=W(t.wk);return w?.pri===rpPri});
-  if(rpFrom) pool=pool.filter(t=>t.ed&&t.ed>=rpFrom);
-  if(rpTo)   pool=pool.filter(t=>t.ed&&t.ed<=rpTo);
+  if(rpFrom) pool=pool.filter(t=>{const ed=cleanDate(t.ed);return ed&&ed>=rpFrom});
+  if(rpTo)   pool=pool.filter(t=>{const ed=cleanDate(t.ed);return ed&&ed<=rpTo});
 
   const now=td();
-  const onT=pool.filter(t=>t.st==='Approved').filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));return ch&&t.ed&&ch.d<=t.ed});
+  const onT=pool.filter(t=>t.st==='Approved').filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));return ch&&cleanDate(t.ed)&&cleanDate(ch.d)&&cleanDate(ch.d)<=cleanDate(t.ed)});
   const stats={
     total:pool.length, run:pool.filter(t=>['Assigned','In Progress','Reassigned'].includes(t.st)).length,
     comp:pool.filter(t=>t.st==='Completed').length, appr:pool.filter(t=>t.st==='Approved').length,
     reas:pool.filter(t=>t.st==='Reassigned').length, od:pool.filter(isOD).length,
-    onT:onT.length, dT:pool.filter(t=>t.ed===now).length, d2:pool.filter(t=>{const d=dDf(t.ed,now);return d>=0&&d<=2}).length,
+    onT:onT.length, dT:pool.filter(t=>cleanDate(t.ed)===now).length, d2:pool.filter(t=>{const d=dDf(cleanDate(t.ed),now);return d>=0&&d<=2}).length,
     rate:pool.filter(t=>t.st==='Approved').length?Math.round(onT.length/pool.filter(t=>t.st==='Approved').length*100):0,
     avgPg:pool.length?Math.round(pool.reduce((s,t)=>s+(t.pg||0),0)/pool.length):0
   };
@@ -1195,8 +1256,8 @@ function rRp(){
         const w=W(t.wk);const a=U(t.as);const od=isOD(t);
         const dDays=t.ed?dDf(t.ed,now):null;
         const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));
-        const wasOnTime=t.st==='Approved'&&ch&&t.ed&&ch.d<=t.ed;
-        const wasLate=t.st==='Approved'&&ch&&t.ed&&ch.d>t.ed;
+        const wasOnTime=t.st==='Approved'&&ch&&cleanDate(t.ed)&&cleanDate(ch.d)&&cleanDate(ch.d)<=cleanDate(t.ed);
+        const wasLate=t.st==='Approved'&&ch&&cleanDate(t.ed)&&cleanDate(ch.d)&&cleanDate(ch.d)>cleanDate(t.ed);
         const rowBg=od?'#fef8f8':dDays===0?'#fffbf0':dDays===1?'#fffef0':'';
         h+=`<tr onclick="oTD(${t.id})" style="${rowBg?`background:${rowBg}`:''};cursor:pointer">
           <td style="color:var(--tx3);font-family:var(--mono)">${idx+1}</td>
@@ -1230,7 +1291,7 @@ function rRp(){
     teamUsers.forEach(m=>{
       const mTasks=pool.filter(t=>t.as===m.id);
       const mAppr=mTasks.filter(t=>t.st==='Approved');
-      const mOnT=mAppr.filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));return ch&&t.ed&&ch.d<=t.ed});
+      const mOnT=mAppr.filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));return ch&&cleanDate(t.ed)&&cleanDate(ch.d)&&cleanDate(ch.d)<=cleanDate(t.ed)});
       const mRun=mTasks.filter(t=>['Assigned','In Progress','Reassigned'].includes(t.st)).length;
       const mOd=mTasks.filter(isOD).length;
       const mReas=mTasks.filter(t=>t.st==='Reassigned').length;
@@ -1275,8 +1336,8 @@ function exportReport(){
   if(rpUser!=='all') pool=pool.filter(t=>t.as===rpUser);
   if(rpStatus!=='all') pool=pool.filter(t=>t.st===rpStatus);
   if(rpPri!=='all') pool=pool.filter(t=>{const w=W(t.wk);return w?.pri===rpPri});
-  if(rpFrom) pool=pool.filter(t=>t.ed&&t.ed>=rpFrom);
-  if(rpTo)   pool=pool.filter(t=>t.ed&&t.ed<=rpTo);
+  if(rpFrom) pool=pool.filter(t=>{const ed=cleanDate(t.ed);return ed&&ed>=rpFrom});
+  if(rpTo)   pool=pool.filter(t=>{const ed=cleanDate(t.ed);return ed&&ed<=rpTo});
 
   const now=td();
   const rows=[['#','Work Title','Assignee','Status','Priority','Start Date','End Date','Progress %','Days Left','On-Time','Reassign Count']];
@@ -1284,8 +1345,8 @@ function exportReport(){
     const w=W(t.wk);const a=U(t.as);
     const dDays=t.ed?dDf(t.ed,now):null;
     const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));
-    const wasOnTime=t.st==='Approved'&&ch&&t.ed&&ch.d<=t.ed;
-    rows.push([i+1,w?.title||'',a?.name||'',t.st,w?.pri||'',t.sd,t.ed,t.pg||0,dDays===null?'':(isOD(t)?'-'+Math.abs(dDays):dDays),t.st==='Approved'?(wasOnTime?'Yes':'No'):'',t.rc||0]);
+    const wasOnTime=t.st==='Approved'&&ch&&cleanDate(t.ed)&&cleanDate(ch.d)&&cleanDate(ch.d)<=cleanDate(t.ed);
+    rows.push([i+1,w?.title||'',a?.name||'',t.st,w?.pri||'',cleanDate(t.sd)||t.sd,cleanDate(t.ed)||t.ed,t.pg||0,dDays===null?'':(isOD(t)?'-'+Math.abs(dDays):dDays),t.st==='Approved'?(wasOnTime?'Yes':'No'):'',t.rc||0]);
   });
   const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob=new Blob([csv],{type:'text/csv'});
