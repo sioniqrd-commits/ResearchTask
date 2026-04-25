@@ -3,425 +3,327 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ResearchFlow · Work & Task Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- PWA Meta -->
 <meta name="theme-color" content="#4338ca">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ResearchFlow">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="application-name" content="ResearchFlow">
+<meta name="description" content="Advanced work and task management for research departments">
 <meta name="msapplication-TileColor" content="#4338ca">
 <meta name="msapplication-tap-highlight" content="no">
 <meta name="format-detection" content="telephone=no">
-<meta name="description" content="Advanced work and task management for research departments">
+
+<!-- PWA Manifest & Icons -->
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>ResearchFlow · Work & Task Management</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
 :root{
   --bg:#f0eeea;--s:#fff;--s2:#f8f7f4;--bd:#e2dfd7;
   --tx:#19180f;--tx2:#78756a;--tx3:#b3b0a5;
   --ac:#4338ca;--ac2:#6366f1;--acbg:#eef2ff;--acbd:#c7d2fe;
   --red:#dc2626;--redbg:#fef2f2;--grn:#16a34a;--grnbg:#f0fdf4;
-  --blu:#2563eb;--blubg:#eff6ff;--ylw:#d97706;--ylwbg:#fffbeb;
+  --blu:#2563eb;--blubg:#eff6ff;--ylw:#d97706;--ylwbg:#fffbeb;--pnk:#db2777;
   --mono:'JetBrains Mono',monospace;--sans:'Plus Jakarta Sans',sans-serif;
   --sh:0 1px 3px rgba(0,0,0,0.04);--sh2:0 4px 16px rgba(0,0,0,0.07);
   --sh3:0 12px 40px rgba(0,0,0,0.12);--r:10px;--r2:14px;--r3:18px;
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-html{height:100%;}
-body{background:var(--bg);color:var(--tx);font-family:var(--sans);min-height:100vh;min-height:-webkit-fill-available;overflow-x:hidden;}
-button{cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;}
-select,input,textarea{font-family:inherit;}
-::-webkit-scrollbar{width:4px;}
-::-webkit-scrollbar-thumb{background:#d5d2c8;border-radius:3px;}
-.hide{display:none!important;}
-img{max-width:100%;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+button{cursor:pointer;font-family:inherit}
+select,input,textarea{font-family:inherit}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:#d5d2c8;border-radius:3px}
+.hide{display:none!important}
+
+/* ── LOGIN ── */
+#LS{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#19180f;position:relative;overflow:hidden;padding:16px}
+#LS::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(67,56,202,0.14),transparent 70%);top:-150px;right:-150px}
+.lc{background:rgba(255,255,255,0.03);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.07);border-radius:24px;padding:40px 36px;width:min(420px,100%);position:relative;z-index:1;box-shadow:0 40px 80px rgba(0,0,0,0.4)}
+.ll{display:flex;align-items:center;gap:12px;margin-bottom:30px}
+.ll .lb{width:42px;height:42px;border-radius:12px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;font-family:var(--mono);flex-shrink:0}
+.ll h1{font-size:18px;font-weight:800;color:#fff;letter-spacing:-0.03em}
+.ll span{display:block;font-size:9px;color:rgba(255,255,255,0.3);font-family:var(--mono);letter-spacing:0.1em}
+.lf{margin-bottom:16px}
+.lf label{display:block;font-size:10px;font-weight:600;color:rgba(255,255,255,0.4);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em}
+.lf input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px 15px;color:#fff;font-size:14px;outline:none;transition:border 0.2s}
+.lf input:focus{border-color:var(--ac)}
+.lbt{width:100%;padding:13px;border:none;border-radius:10px;background:var(--ac);color:#fff;font-size:14px;font-weight:700;transition:all 0.2s;margin-top:4px}
+.lbt:hover{background:var(--ac2)}
+.le{color:#f87171;font-size:12px;margin-top:6px;display:none}
+.lconn{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:11px;display:flex;align-items:center;gap:8px;font-weight:600}
+.lconn.ok{background:rgba(22,163,106,0.1);color:#22c55e;border:1px solid rgba(22,163,106,0.2)}
+.lconn.er{background:rgba(220,38,38,0.1);color:#f87171;border:1px solid rgba(220,38,38,0.2)}
+.lconn.ld{background:rgba(99,102,241,0.1);color:#a5b4fc;border:1px solid rgba(99,102,241,0.2)}
+.lh{margin-top:14px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)}
+.lh p{font-size:11px;color:rgba(255,255,255,0.25);line-height:1.7;font-family:var(--mono)}
+
+/* ── LOADING OVERLAY ── */
+#ldOv{position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+#ldOv .sp{width:38px;height:38px;border:3px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite}
+#ldMsg{color:#fff;font-size:13px;font-weight:600}
+
+/* ── APP SHELL ── */
+#AP{display:none;min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sb{position:fixed;left:0;top:0;bottom:0;width:248px;background:#19180f;color:#fff;display:flex;flex-direction:column;z-index:40;transition:transform 0.3s}
+.sl{padding:16px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.sl .bd{width:30px;height:30px;border-radius:8px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;font-family:var(--mono);flex-shrink:0}
+.sl h2{font-size:13px;font-weight:700}
+.sl small{display:block;font-size:8px;color:rgba(255,255,255,0.25);font-family:var(--mono);letter-spacing:0.08em}
+.su{padding:12px 18px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:9px}
+.su .un{font-size:12px;font-weight:600}
+.su .ur{font-size:9px;color:rgba(255,255,255,0.3)}
+.sn{flex:1;padding:8px 6px;overflow-y:auto}
+.ss{font-size:8px;font-weight:700;color:rgba(255,255,255,0.18);text-transform:uppercase;letter-spacing:0.1em;padding:12px 10px 4px}
+.sk{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;border:none;background:transparent;color:rgba(255,255,255,0.4);font-size:12px;font-weight:500;width:100%;text-align:left;transition:all 0.15s;position:relative}
+.sk:hover{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.8)}
+.sk.on{background:rgba(67,56,202,0.15);color:#fff}
+.sk.on::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;border-radius:0 2px 2px 0;background:var(--ac)}
+.sk svg{width:14px;height:14px;flex-shrink:0}
+.sk .ct{margin-left:auto;background:var(--red);color:#fff;font-size:8px;font-weight:700;border-radius:99px;padding:1px 6px}
+.sk.sub{padding-left:34px;font-size:11px}
+.sf{padding:10px 18px;border-bottom:0;border-top:1px solid rgba(255,255,255,0.06);padding-bottom:calc(10px + var(--safe-bottom))}
+.sst{font-size:9px;color:rgba(255,255,255,0.18);margin-bottom:6px;font-family:var(--mono)}
+.so{display:flex;align-items:center;gap:7px;background:none;border:none;color:rgba(255,255,255,0.3);font-size:11px;font-weight:500;padding:6px 0;width:100%}
+.so:hover{color:var(--red)}
+
+/* ── TOPBAR ── */
+.tb{position:fixed;top:0;left:248px;right:0;height:54px;background:rgba(240,238,234,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:30}
+.tb h2{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;letter-spacing:-0.02em}
+.tb h2 small{font-size:10px;font-weight:500;color:var(--tx2);background:var(--s2);padding:2px 8px;border-radius:6px;border:1px solid var(--bd)}
+.tbr{display:flex;align-items:center;gap:8px}
+.tbb{width:34px;height:34px;border-radius:8px;border:1px solid var(--bd);background:var(--s);display:flex;align-items:center;justify-content:center;position:relative;transition:all 0.15s}
+.tbb:hover{border-color:var(--acbd);background:var(--acbg)}
+.tbd{position:absolute;top:-3px;right:-3px;background:var(--red);color:#fff;font-size:8px;font-weight:700;border-radius:99px;min-width:15px;height:15px;display:flex;align-items:center;justify-content:center}
+.sbtn{padding:5px 12px;border-radius:7px;border:1px solid var(--bd);background:var(--s);color:var(--tx2);font-size:11px;font-weight:600;transition:all 0.15s}
+.sbtn:hover{border-color:var(--acbd);background:var(--acbg);color:var(--ac)}
+
+/* ── CONTENT ── */
+.ctt{margin-left:248px;padding:70px 20px 32px}
+
+/* ── COMPONENTS ── */
+.cd{background:var(--s);border-radius:var(--r2);border:1px solid var(--bd);overflow:hidden;box-shadow:var(--sh)}
+.cdh{padding:13px 18px;border-bottom:1px solid #eeece6;display:flex;justify-content:space-between;align-items:center}
+.cdh h3{font-weight:700;font-size:13px;display:flex;align-items:center;gap:7px}
+.inp{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:9px 13px;color:var(--tx);font-size:13px;outline:none;transition:border 0.2s}
+.inp:focus{border-color:var(--ac)}
+textarea.inp{resize:vertical}
+.lbl{font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:5px;display:block}
+.lbl .rq{color:var(--red)}
+.btn{padding:7px 16px;border-radius:8px;border:none;font-size:12px;font-weight:600;transition:all 0.15s;display:inline-flex;align-items:center;gap:5px}
+.ba{background:var(--ac);color:#fff}.ba:hover{background:var(--ac2)}
+.bg{background:var(--grn);color:#fff}.bg:hover{filter:brightness(1.08)}
+.br{background:var(--red);color:#fff}.br:hover{filter:brightness(1.08)}
+.bo{background:var(--s);border:1px solid var(--bd);color:var(--tx2)}.bo:hover{border-color:var(--acbd);background:var(--acbg);color:var(--ac)}
+.bgh{background:transparent;border:none;color:var(--tx2);padding:4px 8px}.bgh:hover{color:var(--ac)}
+.bsm{padding:5px 11px;font-size:10px}
+.bdg{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:16px;font-size:10px;font-weight:600;white-space:nowrap}
+.bdg .dt{width:5px;height:5px;border-radius:50%;display:inline-block}
+.av{border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-family:var(--mono);flex-shrink:0}
+
+/* ── STAT GRID ── */
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px;margin-bottom:16px}
+.sc{background:var(--s);border-radius:var(--r2);padding:15px 16px;border:1px solid var(--bd);position:relative;overflow:hidden;box-shadow:var(--sh);transition:transform 0.15s,box-shadow 0.15s}
+.sc:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.sc .ob{position:absolute;top:-16px;right:-16px;width:60px;height:60px;border-radius:50%;opacity:0.06}
+
+/* ── URGENCY ── */
+.urg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:16px}
+.uc{border-radius:var(--r2);padding:16px 18px;border:1px solid}
+.uc h4{font-size:12px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.utask{display:flex;align-items:center;gap:7px;padding:6px 0;border-top:1px solid rgba(0,0,0,0.05);font-size:11px;cursor:pointer}
+.utask:hover{opacity:0.8}
+.utm{font-size:9px;font-family:var(--mono);font-weight:600;margin-left:auto;white-space:nowrap}
+
+/* ── METRICS ── */
+.mtr{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;margin-bottom:16px}
+.mc{background:var(--s);border-radius:var(--r2);padding:16px 18px;border:1px solid var(--bd);display:flex;align-items:center;gap:14px;box-shadow:var(--sh)}
+.mr{width:52px;height:52px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mr svg{position:absolute;top:0;left:0;transform:rotate(-90deg)}
+.mr .mrv{font-size:13px;font-weight:800;font-family:var(--mono)}
+
+/* ── MEMBER CARDS ── */
+.mdc{background:var(--s);border-radius:var(--r2);border:1px solid var(--bd);overflow:hidden;box-shadow:var(--sh);transition:transform 0.15s,box-shadow 0.15s;cursor:pointer}
+.mdc:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.mdch{padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f0efe8}
+.mdcs{display:grid;grid-template-columns:repeat(4,1fr)}
+.mdcsi{padding:10px;text-align:center;border-right:1px solid #f0efe8}
+.mdcsi:last-child{border-right:none}
+.mdcsi .v{font-size:17px;font-weight:800;font-family:var(--mono)}
+.mdcsi .l{font-size:8px;color:var(--tx3);margin-top:2px}
+.mdct{padding:9px 13px;border-top:1px solid #f0efe8;background:var(--s2)}
+.mdcti{display:flex;align-items:center;gap:6px;padding:4px 0;font-size:10px}
+
+/* ── MEMBER DETAIL HEADER ── */
+.mdh{display:flex;align-items:center;gap:16px;padding:20px;background:var(--s);border-radius:var(--r2);border:1px solid var(--bd);margin-bottom:16px}
+.mdh .mda{width:54px;height:54px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;font-family:var(--mono)}
+
+/* ── FILTER / ROWS / TABLE ── */
+.fb{display:flex;gap:3px;flex-wrap:wrap}
+.fbt{padding:5px 11px;border-radius:5px;font-size:10px;font-weight:600;border:1px solid var(--bd);background:var(--s);color:var(--tx2);transition:all 0.12s}
+.fbt.on{background:#19180f;color:#fff;border-color:#19180f}
+.rw{background:var(--s);border-radius:var(--r);border:1px solid var(--bd);padding:13px 18px;display:flex;align-items:center;gap:11px;transition:all 0.15s;margin-bottom:7px;box-shadow:var(--sh)}
+.rw:hover{box-shadow:var(--sh2);transform:translateY(-1px)}
+.rw.ck{cursor:pointer}
+.pb{width:4px;border-radius:2px;flex-shrink:0}
+.rt{width:100%;border-collapse:collapse;font-size:12px}
+.rt th{padding:10px 15px;text-align:left;font-weight:700;color:var(--tx2);font-size:10px;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid #eee;background:var(--s2)}
+.rt td{padding:11px 15px;border-bottom:1px solid #f5f5f0}
+.rt tr:hover td{background:var(--s2)}
+
+/* ── MODAL ── */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(6px);z-index:100;display:flex;align-items:center;justify-content:center;padding:12px}
+.mdl{background:var(--s);border-radius:var(--r3);border:1px solid var(--bd);box-shadow:0 24px 60px rgba(0,0,0,0.14);max-height:90vh;overflow:auto;width:100%}
+.mdlh{padding:18px 22px;border-bottom:1px solid #eee}
+.mdlb{padding:20px 22px}
+.mdlf{padding:14px 22px;border-top:1px solid #eee;display:flex;justify-content:flex-end;gap:8px}
+
+/* ── TIMELINE ── */
+.tl{position:relative;padding-left:18px}
+.tl::before{content:'';position:absolute;left:4px;top:4px;bottom:4px;width:2px;background:#ece9e0;border-radius:1px}
+.tli{position:relative;margin-bottom:11px}
+.tld{position:absolute;left:-17px;top:4px;width:9px;height:9px;border-radius:50%;border:2px solid #fff;background:#ddd}
+.tld.on{background:var(--ac)}
+
+/* ── FLOW ── */
+.flw{display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center}
+.flwn{padding:7px 12px;border-radius:8px;text-align:center;min-width:72px}
+.flwn .fv{font-size:17px;font-weight:800;font-family:var(--mono)}
+.flwn .fl{font-size:8px;color:#999;margin-top:1px;font-weight:600}
+.flwa{padding:0 3px;color:#ccc;font-size:13px}
+
+/* ── WORKLOAD ── */
+.wg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding:14px}
+.wc{padding:13px;border-radius:10px;border:1px solid #eee;background:var(--s2)}
+.cpb{height:3px;border-radius:2px;background:#eee;margin-top:8px}
+.cpf{height:100%;border-radius:2px;transition:width 0.4s}
+
+/* ── KANBAN ── */
+.kb{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.kbc{background:var(--s2);border-radius:var(--r2);border:1px solid var(--bd);min-height:140px}
+.kbch{padding:10px 13px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:6px}
+.kbcc{margin:6px;padding:11px;background:var(--s);border-radius:9px;border:1px solid var(--bd);cursor:pointer;transition:all 0.15s;box-shadow:var(--sh)}
+.kbcc:hover{box-shadow:var(--sh2);transform:translateY(-1px)}
+
+/* ── ACCESS TOGGLES ── */
+.acg{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.aci{padding:9px;border-radius:8px;border:2px solid var(--bd);background:var(--s);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:8px}
+.aci.on{border-color:var(--ac);background:var(--acbg)}
+.atg{width:34px;height:18px;border-radius:9px;background:#ddd;position:relative;transition:background 0.2s;margin-left:auto;flex-shrink:0}
+.atg.on{background:var(--ac)}
+.atg::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform 0.2s}
+.atg.on::after{transform:translateX(16px)}
+
+/* ── TEAM PICK ── */
+.tpk{padding:9px 11px;border-radius:8px;border:2px solid var(--bd);background:var(--s);cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.15s;margin-bottom:5px}
+.tpk:hover{border-color:var(--acbd)}
+.tpk.sel{border-color:var(--ac);background:var(--acbg)}
+
+/* ── BARCHART ── */
+.brt{display:flex;height:16px;border-radius:5px;overflow:hidden;background:#f0efe8;margin-left:34px}
+.brs{min-width:3px;transition:width 0.5s}
+
+/* ── PRI BTNS ── */
+.pbs{display:flex;gap:6px}
+.pbt{flex:1;padding:9px 0;border-radius:7px;border:2px solid var(--bd);background:var(--s);font-size:11px;font-weight:600;color:var(--tx2);transition:all 0.15s}
+
+/* ── TABS ── */
+.tbs{display:flex;gap:2px;margin-bottom:14px;border-bottom:1px solid var(--bd)}
+.tbt{padding:8px 14px;border:none;background:transparent;font-size:11px;font-weight:600;color:var(--tx2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.15s}
+.tbt.on{color:var(--ac);border-bottom-color:var(--ac)}
+
+/* ── SEARCH ── */
+.srch{position:relative}
+.srch input{padding-left:32px}
+.srch svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--tx3)}
+
+/* ── TOAST ── */
+.twp{position:fixed;bottom:calc(20px + var(--safe-bottom));right:16px;z-index:200;display:flex;flex-direction:column;gap:6px}
+.tst{padding:11px 16px;border-radius:9px;background:#19180f;color:#fff;font-size:12px;font-weight:500;box-shadow:var(--sh3);display:flex;align-items:center;gap:7px;animation:tin 0.3s;max-width:340px}
+.tst.ok{border-left:4px solid var(--grn)}.tst.er{border-left:4px solid var(--red)}.tst.in{border-left:4px solid var(--blu)}
+
+/* ── PWA INSTALL BANNER ── */
+#pwaBar{position:fixed;bottom:calc(16px + var(--safe-bottom));left:50%;transform:translateX(-50%);background:#19180f;color:#fff;padding:12px 16px;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,0.3);z-index:250;display:flex;align-items:center;gap:12px;max-width:calc(100vw - 32px);width:360px;border:1px solid rgba(255,255,255,0.1);animation:tin 0.3s ease-out}
+#pwaBar .pi{width:38px;height:38px;border-radius:10px;background:var(--ac);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+#pwaBar .pt{flex:1}
+#pwaBar .pt b{display:block;font-size:12px;font-weight:700;margin-bottom:1px}
+#pwaBar .pt span{font-size:10px;color:rgba(255,255,255,0.45)}
+
+/* ── ONLINE/OFFLINE BANNER ── */
+#offBanner{position:fixed;top:0;left:0;right:0;background:var(--red);color:#fff;padding:8px 16px;text-align:center;font-size:12px;font-weight:600;z-index:400;display:none;align-items:center;justify-content:center;gap:8px}
 
 /* ── ANIMATIONS ── */
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes tin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
-.ai{animation:fi 0.2s ease-out;}
-.su{animation:slideUp 0.3s ease-out;}
+.ai{animation:fi 0.22s ease-out}
 
-/* ══════════════════════════════════════
-   LOGIN SCREEN
-══════════════════════════════════════ */
-#LS{
-  min-height:100vh;min-height:-webkit-fill-available;
-  display:flex;align-items:center;justify-content:center;
-  background:#19180f;position:relative;overflow:hidden;
-  padding:24px;padding-top:calc(24px + var(--safe-top));
+/* ── MOBILE OVERLAY ── */
+#sbOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:39;display:none}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .sb{transform:translateX(-100%);width:260px;z-index:50}
+  .sb.open{transform:translateX(0)}
+  #sbOverlay.show{display:block}
+  .tb{left:0}
+  .ctt{margin-left:0;padding:66px 14px 28px}
+  .sg{grid-template-columns:repeat(2,1fr)}
+  .urg{grid-template-columns:1fr}
+  .mtr{grid-template-columns:1fr 1fr}
+  .kb{grid-template-columns:1fr}
+  .acg{grid-template-columns:1fr}
+  .mdcs{grid-template-columns:repeat(2,1fr)}
+  #pwaBar{width:calc(100vw - 32px)}
 }
-#LS::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(67,56,202,0.15),transparent 70%);top:-100px;right:-100px;pointer-events:none;}
-#LS::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,0.08),transparent 70%);bottom:-80px;left:-80px;pointer-events:none;}
-.lc{
-  background:rgba(255,255,255,0.04);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,0.08);border-radius:24px;
-  padding:40px 36px;width:100%;max-width:400px;position:relative;z-index:1;
-  box-shadow:0 40px 80px rgba(0,0,0,0.4);
-}
-.ll{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
-.ll .lb{width:44px;height:44px;border-radius:13px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#fff;font-family:var(--mono);flex-shrink:0;}
-.ll h1{font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.03em;}
-.ll span{display:block;font-size:10px;color:rgba(255,255,255,0.3);font-family:var(--mono);letter-spacing:0.1em;margin-top:2px;}
-.lf{margin-bottom:16px;}
-.lf label{display:block;font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.06em;}
-.lf input{
-  width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);
-  border-radius:10px;padding:13px 16px;color:#fff;font-size:14px;outline:none;
-  transition:border 0.2s;-webkit-appearance:none;
-}
-.lf input:focus{border-color:var(--ac);background:rgba(67,56,202,0.1);}
-.lf input::placeholder{color:rgba(255,255,255,0.25);}
-.lbt{
-  width:100%;padding:14px;border:none;border-radius:10px;
-  background:var(--ac);color:#fff;font-size:14px;font-weight:700;
-  transition:all 0.2s;margin-top:8px;letter-spacing:0.01em;
-}
-.lbt:hover{background:var(--ac2);}
-.lbt:active{transform:scale(0.98);}
-.le{color:var(--red);font-size:12px;margin-top:8px;display:none;padding:8px 12px;background:rgba(220,38,38,0.1);border-radius:7px;border:1px solid rgba(220,38,38,0.2);}
-.lconn{
-  margin-top:14px;padding:10px 14px;border-radius:8px;font-size:11px;
-  display:flex;align-items:center;gap:8px;font-weight:600;
-}
-.lconn.ok{background:rgba(22,163,106,0.1);color:#22c55e;border:1px solid rgba(22,163,106,0.2);}
-.lconn.er{background:rgba(220,38,38,0.1);color:#f87171;border:1px solid rgba(220,38,38,0.2);}
-.lconn.ld{background:rgba(99,102,241,0.1);color:#a5b4fc;border:1px solid rgba(99,102,241,0.2);animation:pulse 1.5s infinite;}
-.lh{margin-top:14px;padding:12px;border-radius:9px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);}
-.lh p{font-size:11px;color:rgba(255,255,255,0.27);line-height:1.7;font-family:var(--mono);}
-
-/* ══════════════════════════════════════
-   LOADING OVERLAY
-══════════════════════════════════════ */
-#ldOv{
-  position:fixed;inset:0;background:rgba(25,24,15,0.7);
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  z-index:400;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;
-}
-.spinner{width:38px;height:38px;border:3px solid rgba(255,255,255,0.15);border-top-color:#a5b4fc;border-radius:50%;animation:spin 0.8s linear infinite;}
-
-/* ══════════════════════════════════════
-   APP SHELL
-══════════════════════════════════════ */
-#AP{display:none;min-height:100vh;}
-
-/* SIDEBAR */
-.sb{
-  position:fixed;left:0;top:0;bottom:0;width:250px;
-  background:#19180f;color:#fff;display:flex;flex-direction:column;
-  z-index:40;transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
-  padding-bottom:var(--safe-bottom);
-}
-.sb .sl{padding:18px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06);}
-.sb .sl .bd{width:34px;height:34px;border-radius:9px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;font-family:var(--mono);flex-shrink:0;}
-.sb .sl h2{font-size:14px;font-weight:700;letter-spacing:-0.02em;}
-.sb .sl small{display:block;font-size:9px;color:rgba(255,255,255,0.25);font-family:var(--mono);letter-spacing:0.08em;margin-top:1px;}
-.su2{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;}
-.su2 .un{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.su2 .ur{font-size:10px;color:rgba(255,255,255,0.3);}
-.sn{flex:1;padding:10px 8px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.ss{font-size:9px;font-weight:700;color:rgba(255,255,255,0.18);text-transform:uppercase;letter-spacing:0.1em;padding:12px 12px 5px;}
-.sk{
-  display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;
-  border:none;background:transparent;color:rgba(255,255,255,0.4);
-  font-size:12px;font-weight:500;width:100%;text-align:left;transition:all 0.15s;
-  position:relative;-webkit-tap-highlight-color:transparent;
-}
-.sk:hover,.sk:focus{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.85);}
-.sk.on{background:rgba(67,56,202,0.18);color:#fff;}
-.sk.on::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 2px 2px 0;background:var(--ac);}
-.sk svg{width:15px;height:15px;flex-shrink:0;}
-.sk .ct{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:99px;padding:2px 7px;}
-.sk.sub{padding-left:38px;font-size:11px;}
-.sf{padding:12px 20px;border-top:1px solid rgba(255,255,255,0.06);padding-bottom:calc(12px + var(--safe-bottom));}
-.sst{font-size:9px;color:rgba(255,255,255,0.2);margin-bottom:6px;font-family:var(--mono);}
-.so{display:flex;align-items:center;gap:8px;background:none;border:none;color:rgba(255,255,255,0.3);font-size:11px;font-weight:500;padding:6px 0;width:100%;-webkit-tap-highlight-color:transparent;}
-.so:hover{color:var(--red);}
-
-/* OVERLAY (mobile sidebar backdrop) */
-.sbOv{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:39;backdrop-filter:blur(2px);}
-.sbOv.show{display:block;}
-
-/* TOPBAR */
-.tb{
-  position:fixed;top:0;left:250px;right:0;height:58px;
-  background:rgba(240,238,234,0.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--bd);display:flex;align-items:center;
-  justify-content:space-between;padding:0 22px;z-index:30;
-  padding-top:var(--safe-top);height:calc(58px + var(--safe-top));
-}
-.tb h2{font-size:15px;font-weight:700;letter-spacing:-0.02em;display:flex;align-items:center;gap:8px;}
-.tb h2 small{font-size:11px;font-weight:500;color:var(--tx2);background:var(--s2);padding:2px 10px;border-radius:6px;border:1px solid var(--bd);}
-.tbr{display:flex;align-items:center;gap:8px;}
-.tbb{width:36px;height:36px;border-radius:9px;border:1px solid var(--bd);background:var(--s);display:flex;align-items:center;justify-content:center;position:relative;transition:all 0.15s;-webkit-tap-highlight-color:transparent;}
-.tbb:hover,.tbb:active{border-color:var(--acbd);background:var(--acbg);}
-.tbd{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:99px;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;padding:0 3px;}
-
-/* CONTENT */
-.ctt{margin-left:250px;padding-top:calc(58px + var(--safe-top) + 18px);padding-left:22px;padding-right:22px;padding-bottom:calc(36px + var(--safe-bottom));}
-
-/* ══════════════════════════════════════
-   SHARED COMPONENTS
-══════════════════════════════════════ */
-.cd{background:var(--s);border-radius:var(--r2);border:1px solid var(--bd);overflow:hidden;box-shadow:var(--sh);}
-.cdh{padding:14px 20px;border-bottom:1px solid #eeece6;display:flex;justify-content:space-between;align-items:center;}
-.cdh h3{font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px;}
-.inp{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;color:var(--tx);font-size:13px;outline:none;transition:border 0.2s;-webkit-appearance:none;}
-.inp:focus{border-color:var(--ac);}
-textarea.inp{resize:vertical;}
-.lbl{font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:5px;display:block;}
-.lbl .rq{color:var(--red);}
-
-/* BUTTONS */
-.btn{padding:9px 18px;border-radius:8px;border:none;font-size:12px;font-weight:600;transition:all 0.15s;display:inline-flex;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent;}
-.btn:active{transform:scale(0.97);}
-.ba{background:var(--ac);color:#fff;}.ba:hover{background:var(--ac2);}
-.bg{background:var(--grn);color:#fff;}.bg:hover{filter:brightness(1.08);}
-.br{background:var(--red);color:#fff;}.br:hover{filter:brightness(1.08);}
-.bo{background:var(--s);border:1px solid var(--bd);color:var(--tx2);}.bo:hover{border-color:var(--acbd);background:var(--acbg);color:var(--ac);}
-.bgh{background:transparent;border:none;color:var(--tx2);padding:5px 8px;font-family:inherit;}.bgh:hover{color:var(--ac);}
-.bsm{padding:5px 12px;font-size:10px;}
-
-/* BADGE */
-.bdg{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:18px;font-size:10px;font-weight:600;white-space:nowrap;}
-.bdg .dt{width:5px;height:5px;border-radius:50%;display:inline-block;}
-
-/* AVATAR */
-.av{border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-family:var(--mono);flex-shrink:0;}
-
-/* STAT GRID */
-.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px;margin-bottom:16px;}
-.sc{background:var(--s);border-radius:var(--r2);padding:16px 18px;border:1px solid var(--bd);position:relative;overflow:hidden;box-shadow:var(--sh);transition:transform 0.15s,box-shadow 0.15s;}
-.sc:hover{transform:translateY(-2px);box-shadow:var(--sh2);}
-.sc .ob{position:absolute;top:-18px;right:-18px;width:65px;height:65px;border-radius:50%;opacity:0.06;}
-
-/* URGENCY CARDS */
-.urg{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:11px;margin-bottom:16px;}
-.urg-card{border-radius:var(--r2);padding:16px 18px;border:1px solid;}
-.urg-card h4{font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
-.urg-task{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid rgba(0,0,0,0.05);font-size:12px;cursor:pointer;}
-.urg-task:hover{opacity:0.8;}
-.urg-time{font-size:10px;font-family:var(--mono);font-weight:600;margin-left:auto;white-space:nowrap;}
-
-/* METRIC ROW */
-.met-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:11px;margin-bottom:16px;}
-.met-card{background:var(--s);border-radius:var(--r2);padding:16px 18px;border:1px solid var(--bd);display:flex;align-items:center;gap:14px;box-shadow:var(--sh);}
-.met-ring{width:54px;height:54px;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.met-ring svg{position:absolute;top:0;left:0;transform:rotate(-90deg);}
-.mr-val{font-size:13px;font-weight:800;font-family:var(--mono);}
-
-/* MEMBER CARDS */
-.mdc{background:var(--s);border-radius:var(--r2);border:1px solid var(--bd);overflow:hidden;box-shadow:var(--sh);transition:transform 0.15s,box-shadow 0.15s;cursor:pointer;}
-.mdc:hover{transform:translateY(-2px);box-shadow:var(--sh2);}
-.mdc-h{padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f0efe8;}
-.mdc-s{display:grid;grid-template-columns:repeat(4,1fr);}
-.mdc-si{padding:10px;text-align:center;border-right:1px solid #f0efe8;}.mdc-si:last-child{border-right:none;}
-.mdc-si .v{font-size:17px;font-weight:800;font-family:var(--mono);}
-.mdc-si .l{font-size:9px;color:var(--tx3);margin-top:2px;}
-.mdc-t{padding:9px 13px;border-top:1px solid #f0efe8;background:var(--s2);}
-.mdc-ti{display:flex;align-items:center;gap:6px;padding:4px 0;font-size:11px;}
-
-/* MEMBER DETAIL HEADER */
-.mdh{display:flex;align-items:center;gap:16px;padding:20px;background:var(--s);border-radius:var(--r2);border:1px solid var(--bd);margin-bottom:16px;}
-.mda{border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:800;font-family:var(--mono);}
-
-/* FILTERS & ROWS */
-.fb{display:flex;gap:3px;flex-wrap:wrap;}
-.fbt{padding:5px 12px;border-radius:6px;font-size:10px;font-weight:600;border:1px solid var(--bd);background:var(--s);color:var(--tx2);transition:all 0.12s;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.fbt.on{background:#19180f;color:#fff;border-color:#19180f;}
-.rw{background:var(--s);border-radius:var(--r);border:1px solid var(--bd);padding:13px 18px;display:flex;align-items:center;gap:11px;transition:all 0.15s;margin-bottom:7px;box-shadow:var(--sh);}
-.rw:hover{box-shadow:var(--sh2);transform:translateY(-1px);}
-.rw.ck{cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.rw.ck:active{transform:scale(0.99);}
-.pb{width:4px;border-radius:2px;flex-shrink:0;}
-
-/* TABLE */
-.rt{width:100%;border-collapse:collapse;font-size:12px;}
-.rt th{padding:10px 14px;text-align:left;font-weight:700;color:var(--tx2);font-size:10px;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid #eee;background:var(--s2);}
-.rt td{padding:11px 14px;border-bottom:1px solid #f5f5f0;}
-.rt tr:hover td{background:var(--s2);}
-
-/* MODAL */
-.ov{position:fixed;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:100;display:flex;align-items:flex-end;justify-content:center;padding:0;}
-.mdl{
-  background:var(--s);border-radius:var(--r3) var(--r3) 0 0;
-  border:1px solid var(--bd);box-shadow:0 -12px 40px rgba(0,0,0,0.15);
-  max-height:90vh;overflow:auto;width:100%;
-  -webkit-overflow-scrolling:touch;
-  padding-bottom:var(--safe-bottom);
-}
-.mdlh{padding:18px 22px;border-bottom:1px solid #eee;}
-.mdlb{padding:20px 22px;}
-.mdlf{padding:14px 22px;border-top:1px solid #eee;display:flex;justify-content:flex-end;gap:10px;}
-
-/* TIMELINE */
-.tl{position:relative;padding-left:20px;}
-.tl::before{content:'';position:absolute;left:5px;top:4px;bottom:4px;width:2px;background:#ece9e0;border-radius:1px;}
-.tli{position:relative;margin-bottom:12px;}
-.tld{position:absolute;left:-18px;top:5px;width:9px;height:9px;border-radius:50%;border:2px solid #fff;background:#ddd;}
-.tld.on{background:var(--ac);}
-
-/* FLOW */
-.flw{display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center;}
-.flwn{padding:8px 12px;border-radius:8px;text-align:center;min-width:76px;}
-.flwn .fv{font-size:17px;font-weight:800;font-family:var(--mono);}
-.flwn .fl{font-size:9px;color:#999;margin-top:1px;font-weight:600;}
-.flwa{padding:0 3px;color:#ccc;font-size:14px;}
-
-/* WORKLOAD */
-.wg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:11px;padding:16px;}
-.wc{padding:14px;border-radius:11px;border:1px solid #eee;background:var(--s2);}
-.cpb{height:4px;border-radius:2px;background:#eee;margin-top:8px;}
-.cpf{height:100%;border-radius:2px;transition:width 0.4s;}
-
-/* KANBAN */
-.kb{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:11px;}
-.kbc{background:var(--s2);border-radius:var(--r2);border:1px solid var(--bd);min-height:140px;}
-.kbch{padding:11px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:7px;}
-.kbcc{margin:7px;padding:12px;background:var(--s);border-radius:9px;border:1px solid var(--bd);cursor:pointer;transition:all 0.15s;box-shadow:var(--sh);}
-.kbcc:hover{box-shadow:var(--sh2);transform:translateY(-1px);}
-
-/* ACCESS TOGGLES */
-.acg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.aci{padding:10px;border-radius:9px;border:2px solid var(--bd);background:var(--s);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:9px;}
-.aci.on{border-color:var(--ac);background:var(--acbg);}
-.atg{width:36px;height:19px;border-radius:10px;background:#ddd;position:relative;transition:background 0.2s;margin-left:auto;flex-shrink:0;}
-.atg.on{background:var(--ac);}
-.atg::after{content:'';position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:transform 0.2s;box-shadow:0 1px 2px rgba(0,0,0,0.15);}
-.atg.on::after{transform:translateX(17px);}
-
-/* TEAM PICK */
-.tpk{padding:9px 12px;border-radius:9px;border:2px solid var(--bd);background:var(--s);cursor:pointer;display:flex;align-items:center;gap:9px;transition:all 0.15s;margin-bottom:5px;}
-.tpk:hover,.tpk:focus{border-color:var(--acbd);}
-.tpk.sel{border-color:var(--ac);background:var(--acbg);}
-
-/* BAR CHART */
-.brt{display:flex;height:18px;border-radius:5px;overflow:hidden;background:#f0efe8;margin-left:36px;}
-.brs{min-width:3px;transition:width 0.5s;}
-
-/* PRI BUTTONS */
-.pbs{display:flex;gap:6px;}
-.pbt{flex:1;padding:9px 0;border-radius:7px;border:2px solid var(--bd);background:var(--s);font-size:11px;font-weight:600;color:var(--tx2);transition:all 0.15s;cursor:pointer;}
-
-/* TABS */
-.tbs{display:flex;gap:3px;margin-bottom:14px;border-bottom:1px solid var(--bd);}
-.tbt{padding:8px 16px;border:none;background:transparent;font-size:12px;font-weight:600;color:var(--tx2);border-bottom:2px solid transparent;transition:all 0.15s;margin-bottom:-1px;cursor:pointer;}
-.tbt.on{color:var(--ac);border-bottom-color:var(--ac);}
-
-/* SEARCH */
-.srch{position:relative;}
-.srch input{padding-left:34px;}
-.srch svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--tx3);}
-
-/* NOTIF PANEL */
-#nP{
-  position:absolute;right:0;top:44px;width:340px;
-  background:var(--s);border:1px solid var(--bd);
-  border-radius:12px;box-shadow:var(--sh3);
-  z-index:60;max-height:380px;overflow:auto;
-}
-
-/* TOAST */
-.twp{position:fixed;bottom:calc(20px + var(--safe-bottom));right:16px;left:16px;z-index:500;display:flex;flex-direction:column;gap:7px;align-items:flex-end;}
-.tst{padding:12px 16px;border-radius:10px;background:#19180f;color:#fff;font-size:12px;font-weight:500;box-shadow:var(--sh3);display:flex;align-items:center;gap:8px;animation:tin 0.3s;max-width:360px;width:auto;}
-.tst.ok{border-left:4px solid var(--grn);}
-.tst.er{border-left:4px solid var(--red);}
-.tst.in{border-left:4px solid var(--blu);}
-
-/* PWA INSTALL BANNER */
-#pwaBar{
-  position:fixed;bottom:calc(16px + var(--safe-bottom));left:50%;transform:translateX(-50%);
-  background:#19180f;color:#fff;padding:12px 16px;border-radius:14px;
-  box-shadow:0 12px 40px rgba(0,0,0,0.3);z-index:250;
-  display:flex;align-items:center;gap:12px;width:calc(100% - 32px);max-width:400px;
-  border:1px solid rgba(255,255,255,0.1);animation:tin 0.3s;
-}
-
-/* OFFLINE BANNER */
-#offlineBanner{
-  position:fixed;top:0;left:0;right:0;z-index:500;
-  background:var(--red);color:#fff;text-align:center;
-  padding:8px;font-size:12px;font-weight:600;
-  transform:translateY(-100%);transition:transform 0.3s;
-}
-#offlineBanner.show{transform:translateY(0);}
-
-/* ══════════════════════════════════════
-   RESPONSIVE — MOBILE
-══════════════════════════════════════ */
-@media(max-width:768px){
-  .sb{transform:translateX(-100%);width:280px;}
-  .sb.open{transform:translateX(0);}
-  .tb{left:0;padding-left:14px;padding-right:14px;}
-  .ctt{margin-left:0;padding-left:14px;padding-right:14px;}
-  .kb{grid-template-columns:1fr;}
-  .acg{grid-template-columns:1fr;}
-  .urg{grid-template-columns:1fr;}
-  .met-row{grid-template-columns:1fr 1fr;}
-  .sg{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
-  .mdl{border-radius:var(--r3) var(--r3) 0 0;max-height:92vh;}
-  #nP{right:-80px;width:300px;}
-  .mdc-s{grid-template-columns:repeat(2,1fr);}
-  .mdh{flex-wrap:wrap;}
-  .flwn{min-width:60px;}
-}
-@media(max-width:380px){
-  .met-row{grid-template-columns:1fr;}
-  .sg{grid-template-columns:repeat(2,1fr);}
+@media(max-width:480px){
+  .sg{grid-template-columns:repeat(2,1fr)}
+  .mtr{grid-template-columns:1fr}
+  .lc{padding:30px 24px}
 }
 </style>
 </head>
 <body>
 
-<!-- ── OFFLINE BANNER ── -->
-<div id="offlineBanner">⚡ No internet connection — showing cached data</div>
+<!-- OFFLINE BANNER -->
+<div id="offBanner">📵 You are offline — changes will sync when reconnected</div>
 
-<!-- ════════════════════════════════════
-     LOGIN
-════════════════════════════════════ -->
+<!-- LOGIN -->
 <div id="LS">
   <div class="lc ai">
     <div class="ll">
       <div class="lb">RF</div>
       <div><h1>ResearchFlow</h1><span>WORK & TASK MANAGEMENT</span></div>
     </div>
-    <div class="lf">
-      <label>Username</label>
-      <input id="lU" placeholder="Enter username" autocomplete="username" autocapitalize="none">
-    </div>
-    <div class="lf">
-      <label>Password</label>
-      <input type="password" id="lP" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLI()" autocomplete="current-password">
-    </div>
+    <div class="lf"><label>Username</label><input id="lU" placeholder="Enter username" autocomplete="username" spellcheck="false"></div>
+    <div class="lf"><label>Password</label><input type="password" id="lP" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLI()" autocomplete="current-password"></div>
     <div class="le" id="lE">Invalid credentials. Please try again.</div>
     <button class="lbt" onclick="doLI()">Sign In →</button>
-    <div id="connSt" class="lconn ld">⏳ Checking connection...</div>
-    <div class="lh">
-      <p>Master Admin: <b style="color:rgba(255,255,255,0.65)">sioniqadmin</b> / <b style="color:rgba(255,255,255,0.65)">sio@123</b><br>Other users: login with email prefix as username</p>
-    </div>
+    <div id="connSt" class="lconn ld">⏳ Connecting to Google Sheets...</div>
+    <div class="lh"><p>Master Admin: <b style="color:rgba(255,255,255,0.65)">sioniqadmin</b> / <b style="color:rgba(255,255,255,0.65)">sio@123</b></p></div>
   </div>
 </div>
 
-<!-- ── LOADING OVERLAY ── -->
+<!-- LOADING -->
 <div id="ldOv" class="hide">
-  <div class="spinner"></div>
-  <div style="color:rgba(255,255,255,0.8);font-size:13px;font-weight:600" id="ldMsg">Loading...</div>
+  <div class="sp"></div>
+  <div id="ldMsg">Loading...</div>
 </div>
 
-<!-- ════════════════════════════════════
-     APP SHELL
-════════════════════════════════════ -->
+<!-- APP -->
 <div id="AP">
-  <!-- Sidebar backdrop (mobile) -->
-  <div class="sbOv" id="sbOv" onclick="closeSb()"></div>
+  <!-- Sidebar overlay (mobile) -->
+  <div id="sbOverlay" onclick="closeSb()"></div>
 
   <!-- SIDEBAR -->
   <aside class="sb" id="sb">
@@ -429,12 +331,12 @@ textarea.inp{resize:vertical;}
       <div class="bd">RF</div>
       <div><h2>ResearchFlow</h2><small>TASK MANAGER</small></div>
     </div>
-    <div class="su2" id="sbU"></div>
+    <div class="su" id="sbU"></div>
     <nav class="sn" id="sbN"></nav>
     <div class="sf">
-      <div class="sst" id="syncSt">Last sync: —</div>
+      <div class="sst" id="syncSt">Not synced yet</div>
       <button class="so" onclick="doLO()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Sign Out
       </button>
     </div>
@@ -443,26 +345,22 @@ textarea.inp{resize:vertical;}
   <!-- TOPBAR -->
   <header class="tb" id="TB">
     <div style="display:flex;align-items:center;gap:10px">
-      <button class="bgh" id="mT" onclick="openSb()" style="padding:6px;display:flex;align-items:center">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      <button id="mT" class="tbb" onclick="openSb()" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
       </button>
       <h2 id="pT">Dashboard</h2>
     </div>
     <div class="tbr">
-      <button class="tbb bsm bo" onclick="syncFromSheet()" style="width:auto;padding:0 10px;font-size:10px;font-weight:600;gap:4px;display:flex;align-items:center">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-        Sync
-      </button>
-      <!-- Notifications -->
+      <button class="sbtn" onclick="syncFromSheet()">🔄</button>
       <div style="position:relative" id="nWr">
         <button class="tbb" onclick="tgN()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <span class="tbd hide" id="nB">0</span>
         </button>
-        <div class="hide" id="nP">
-          <div style="padding:12px 16px;border-bottom:1px solid #eee;font-weight:700;font-size:13px;display:flex;justify-content:space-between;align-items:center">
+        <div class="hide" id="nP" style="position:absolute;right:0;top:42px;width:340px;background:var(--s);border:1px solid var(--bd);border-radius:12px;box-shadow:var(--sh3);z-index:60;max-height:380px;overflow:auto">
+          <div style="padding:11px 15px;border-bottom:1px solid #eee;font-weight:700;font-size:12px;display:flex;justify-content:space-between">
             Notifications
-            <button class="bgh bsm" onclick="nots=[];rnB();rnL()">Clear all</button>
+            <button class="bgh bsm" onclick="nots=[];rnB();rnL()">Clear</button>
           </div>
           <div id="nL"></div>
         </div>
@@ -470,7 +368,7 @@ textarea.inp{resize:vertical;}
     </div>
   </header>
 
-  <!-- MAIN CONTENT -->
+  <!-- CONTENT -->
   <div class="ctt" id="MC"></div>
 </div>
 
@@ -480,332 +378,261 @@ textarea.inp{resize:vertical;}
 <!-- TOAST -->
 <div class="twp" id="tW"></div>
 
-<!-- ════════════════════════════════════
-     JAVASCRIPT
-════════════════════════════════════ -->
 <script>
 // ══════════════════════════════════════════════════════════
-// ★ CONFIGURATION
+//  ★  CONFIG
 // ══════════════════════════════════════════════════════════
 const API_URL = 'https://script.google.com/macros/s/AKfycbzJKTXVJYddd4xIhGfXSOLUv_KsLT6tJZki2wi66TPPYhA07mZsyablOzzQwnJYrJtnVA/exec';
 
-// ══════════════════════════════════════════════════════════
-// MASTER ADMIN (always works, even if sheet is empty)
-// ══════════════════════════════════════════════════════════
 const MASTER = {
-  id:'admin', name:'SIONIQ Admin', email:'admin@sioniq.com',
-  role:'Team Lead', av:'SA', col:'#4338ca', pass:'sio@123',
-  username:'sioniqadmin',
-  acc:['dashboard','works','tasks','reports','users','kanban','activity','team_dashboard'],
-  on:true
+  id:'admin', name:'SIONIQ Admin', email:'admin@sioniq.com', role:'Team Lead',
+  av:'SA', col:'#4338ca', pass:'sio@123', username:'sioniqadmin',
+  acc:['dashboard','works','tasks','reports','users','kanban','activity','team_dashboard'], on:true
 };
 
-// ══════════════════════════════════════════════════════════
-// CONSTANTS
-// ══════════════════════════════════════════════════════════
-const AC={D:'dashboard',W:'works',T:'tasks',R:'reports',U:'users',K:'kanban',A:'activity',TD:'team_dashboard'};
-const SS={
-  'Assigned':{bg:'#dbeafe',fg:'#1e40af',d:'#3b82f6'},
+const AC = {D:'dashboard',W:'works',T:'tasks',R:'reports',U:'users',K:'kanban',A:'activity',TD:'team_dashboard'};
+const SS = {
+  Assigned:{bg:'#dbeafe',fg:'#1e40af',d:'#3b82f6'},
   'In Progress':{bg:'#ede9fe',fg:'#5b21b6',d:'#8b5cf6'},
-  'Completed':{bg:'#fce7f3',fg:'#9d174d',d:'#ec4899'},
-  'Approved':{bg:'#dcfce7',fg:'#166534',d:'#22c55e'},
-  'Rejected':{bg:'#fee2e2',fg:'#991b1b',d:'#ef4444'},
-  'Reassigned':{bg:'#fef9c3',fg:'#854d0e',d:'#eab308'}
+  Completed:{bg:'#fce7f3',fg:'#9d174d',d:'#ec4899'},
+  Approved:{bg:'#dcfce7',fg:'#166534',d:'#22c55e'},
+  Rejected:{bg:'#fee2e2',fg:'#991b1b',d:'#ef4444'},
+  Reassigned:{bg:'#fef9c3',fg:'#854d0e',d:'#eab308'}
 };
-const PC={Low:'#94a3b8',Medium:'#2563eb',High:'#d97706',Urgent:'#dc2626'};
-const ACCESS_ITEMS=[
-  {k:'dashboard',l:'Dashboard',i:'📊',d:'Overview & stats'},
-  {k:'works',l:'Works',i:'📦',d:'Create & manage works'},
-  {k:'tasks',l:'Tasks',i:'📋',d:'View & update tasks'},
-  {k:'kanban',l:'Kanban',i:'⊞',d:'Visual task board'},
-  {k:'reports',l:'Reports',i:'📈',d:'Analytics & reports'},
-  {k:'activity',l:'Activity',i:'📝',d:'Activity log'},
-  {k:'users',l:'Users',i:'⚙️',d:'User management'},
-  {k:'team_dashboard',l:'Team Dash',i:'👥',d:'Team dashboards'}
-];
+const PC = {Low:'#94a3b8',Medium:'#2563eb',High:'#d97706',Urgent:'#dc2626'};
 
-// ══════════════════════════════════════════════════════════
-// APP STATE
-// ══════════════════════════════════════════════════════════
+// ── STATE ──
 let users=[], works=[], tasks=[], nots=[], alog=[];
 let CU=null, CV='dashboard', wF='all', tF='all', tS='', eF='all', tdS=null;
-let nW_=1, nT_=100, nU_=1, nA_=1;
-let syncInt=null, apiOk=false, isOnline=navigator.onLine;
+let nW_=1, nT_=100, nU_=1, nA_=1, syncInt=null, apiOk=false;
 
-// ══════════════════════════════════════════════════════════
-// LOADING UI
-// ══════════════════════════════════════════════════════════
-function showLD(m='Loading...'){
-  document.getElementById('ldOv').classList.remove('hide');
-  document.getElementById('ldMsg').textContent=m;
+// ── SAVE LOCK: prevents duplicate submissions ──
+let _saving=false;
+function setBtnSaving(btnId,label){
+  if(_saving)return false; // already saving — block
+  _saving=true;
+  const b=document.getElementById(btnId);
+  if(b){b.disabled=true;b._orig=b.innerHTML;b.innerHTML=`<span style="display:inline-flex;align-items:center;gap:6px"><svg style="animation:spin 0.7s linear infinite" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>${label||'Saving...'}</span>`;b.style.opacity='0.75';}
+  return true;
 }
-function hideLD(){document.getElementById('ldOv').classList.add('hide');}
+function clearBtnSaving(btnId){
+  _saving=false;
+  const b=document.getElementById(btnId);
+  if(b&&b._orig){b.innerHTML=b._orig;b.disabled=false;b.style.opacity='1';delete b._orig;}
+}
 
 // ══════════════════════════════════════════════════════════
-// API LAYER
+//  API LAYER
 // ══════════════════════════════════════════════════════════
+function showLD(m='Loading...'){document.getElementById('ldOv').classList.remove('hide');document.getElementById('ldMsg').textContent=m}
+function hideLD(){document.getElementById('ldOv').classList.add('hide')}
+
 async function apiGet(action){
   try{
-    const r=await fetch(`${API_URL}?action=${action}`,{cache:'no-store'});
+    const r=await fetch(`${API_URL}?action=${action}`);
     const d=await r.json();
     if(d.error)throw new Error(d.error);
     return d;
-  }catch(e){console.error('GET '+action,e);return null;}
+  }catch(e){console.error('GET',action,e);return null}
 }
+
 async function apiPost(action,payload){
   try{
-    const r=await fetch(API_URL,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({action,payload})
-    });
+    const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action,payload})});
     const d=await r.json();
     if(d.error)throw new Error(d.error);
     return d;
-  }catch(e){console.error('POST '+action,e);return null;}
+  }catch(e){console.error('POST',action,e);return null}
+}
+
+// ── OPTIMISTIC SAVES: update UI instantly, write to sheet in background ──
+// bgSave: fire-and-forget single call
+function bgSave(action,payload){
+  apiPost(action,payload).catch(e=>console.warn('[bgSave]',action,'failed:',e));
+}
+// bgSaveAll: run multiple saves in PARALLEL (not sequential) in background
+function bgSaveAll(...calls){
+  Promise.all(calls.map(([a,p])=>apiPost(a,p))).catch(e=>console.warn('[bgSaveAll] failed:',e));
 }
 
 async function checkConn(){
   const el=document.getElementById('connSt');
-  el.className='lconn ld';el.innerHTML='⏳ Connecting to Google Sheets...';
+  el.className='lconn ld';el.textContent='⏳ Connecting...';
   const r=await apiGet('ping');
-  if(r&&r.status==='ok'){
-    el.className='lconn ok';el.innerHTML='✅ Connected to Google Sheets';apiOk=true;
-  }else{
-    el.className='lconn er';el.innerHTML='❌ Cannot reach Google Sheets — check API URL';apiOk=false;
-  }
+  if(r&&r.status==='ok'){el.className='lconn ok';el.textContent='✅ Connected to Google Sheets';apiOk=true}
+  else{el.className='lconn er';el.textContent='❌ Cannot reach sheet — check API URL';apiOk=false}
 }
 
 async function loadFromSheet(){
-  showLD('Loading data from Google Sheets...');
+  showLD('Syncing from Google Sheets...');
   const d=await apiGet('getAll');
-  if(!d){hideLD();return false;}
+  if(!d){hideLD();return false}
 
   users=(d.users||[]).map(u=>({
-    id:String(u.id),name:u.name,email:u.email||'',role:u.role||'Junior',
-    av:(u.avatar||'').toUpperCase()||'?',col:u.color||'#666',pass:u.password||'',
+    id:String(u.id), name:u.name||'', email:u.email||'', role:u.role||'Junior',
+    av:u.avatar||'??', col:u.color||'#666', pass:u.password||'',
     acc:(u.access||'').split(',').map(a=>a.trim()).filter(Boolean),
     on:u.active===true||u.active==='TRUE'
   }));
+
   works=(d.works||[]).map(w=>({
-    id:parseInt(w.id)||0,title:w.title||'',desc:w.description||'',
-    pri:w.priority||'Medium',cat:w.createdAt||'',cb:w.createdBy||'',
+    id:parseInt(w.id)||0, title:w.title||'', desc:w.description||'',
+    pri:w.priority||'Medium', cat:w.createdAt||'', cb:w.createdBy||'',
     ht:w.hasTask===true||w.hasTask==='TRUE'
   }));
+
   tasks=(d.tasks||[]).map(t=>({
-    id:parseInt(t.id)||0,wk:parseInt(t.workId)||0,as:String(t.assignee||''),
-    st:t.status||'Assigned',sd:t.startDate||'',ed:t.endDate||'',
-    rc:parseInt(t.reassignCount)||0,pg:parseInt(t.progress)||0,cm:[],hi:[]
+    id:parseInt(t.id)||0, wk:parseInt(t.workId)||0, as:String(t.assignee||''),
+    st:t.status||'Assigned', sd:t.startDate||'', ed:t.endDate||'',
+    rc:parseInt(t.reassignCount)||0, pg:parseInt(t.progress)||0, cm:[], hi:[]
   }));
+
   (d.comments||[]).forEach(c=>{
     const t=tasks.find(x=>x.id===parseInt(c.taskId));
-    if(t)t.cm.push({by:String(c.by),tx:c.text||'',dt:c.date||''});
+    if(t)t.cm.push({by:String(c.by||''),tx:c.text||'',dt:c.date||''});
   });
   (d.history||[]).forEach(h=>{
     const t=tasks.find(x=>x.id===parseInt(h.taskId));
     if(t)t.hi.push({a:h.action||'',d:h.date||'',b:String(h.by||'')});
   });
-  alog=(d.activity||[]).map(a=>({
-    id:parseInt(a.id)||0,u:String(a.userId||''),a:a.action||'',d:a.date||'',t:a.type||''
-  }));
+  alog=(d.activity||[]).map(a=>({id:parseInt(a.id)||0,u:String(a.userId||''),a:a.action||'',d:a.date||'',t:a.type||'task'}));
 
-  if(works.length)nW_=Math.max(...works.map(w=>w.id))+1;
-  if(tasks.length)nT_=Math.max(...tasks.map(t=>t.id))+1;
-  if(users.length)nU_=Math.max(...users.map(u=>parseInt(u.id.replace(/\D/g,''))||0))+1;
-  if(alog.length)nA_=Math.max(...alog.map(a=>a.id))+1;
+  nW_=works.length?Math.max(...works.map(w=>w.id))+1:1;
+  nT_=tasks.length?Math.max(...tasks.map(t=>t.id))+1:100;
+  nU_=users.length?Math.max(...users.map(u=>parseInt(u.id.replace(/\D/g,''))||0))+1:1;
+  nA_=alog.length?Math.max(...alog.map(a=>a.id))+1:1;
 
-  document.getElementById('syncSt').textContent='Synced: '+new Date().toLocaleTimeString();
+  document.getElementById('syncSt').textContent='Synced '+new Date().toLocaleTimeString();
   hideLD();return true;
 }
 
 async function syncFromSheet(){
-  if(!apiOk){toast('No API connection','error');return;}
-  showLD('Syncing...');
+  toast('Syncing...','in');
   const ok=await loadFromSheet();
-  if(ok){rA();toast('Synced!','success');}
-  else toast('Sync failed','error');
+  if(ok){rA();toast('Synced!','ok')}else toast('Sync failed','er');
 }
 
-// Save helpers
-const svU=u=>apiPost('addUser',{id:u.id,name:u.name,email:u.email,role:u.role,avatar:u.av,color:u.col,password:u.pass,access:u.acc.join(','),active:u.on?'TRUE':'FALSE'});
-const upU=u=>apiPost('updateUser',{id:u.id,name:u.name,email:u.email,role:u.role,avatar:u.av,color:u.col,password:u.pass,access:u.acc.join(','),active:u.on?'TRUE':'FALSE'});
-const svWk=w=>apiPost('addWork',{id:w.id,title:w.title,description:w.desc,priority:w.pri,createdAt:w.cat,createdBy:w.cb,hasTask:w.ht?'TRUE':'FALSE'});
-const upWk=w=>apiPost('updateWork',{id:w.id,title:w.title,description:w.desc,priority:w.pri,createdAt:w.cat,createdBy:w.cb,hasTask:w.ht?'TRUE':'FALSE'});
-const svTk=t=>apiPost('addTask',{id:t.id,workId:t.wk,assignee:t.as,status:t.st,startDate:t.sd,endDate:t.ed,reassignCount:t.rc,progress:t.pg});
-const upTk=t=>apiPost('updateTask',{id:t.id,workId:t.wk,assignee:t.as,status:t.st,startDate:t.sd,endDate:t.ed,reassignCount:t.rc,progress:t.pg});
-const svCm=(tid,c)=>apiPost('addComment',{id:Date.now(),taskId:tid,by:c.by,text:c.tx,date:c.dt});
-const svHi=(tid,h)=>apiPost('addHistory',{id:Date.now(),taskId:tid,action:h.a,date:h.d,by:h.b});
-const svAc=a=>apiPost('addActivity',{id:a.id,userId:a.u,action:a.a,date:a.d,type:a.t});
+// ── SAVE HELPERS (all background — UI is instant, sheet syncs async) ──
+const _uPl=u=>({id:u.id,name:u.name,email:u.email,role:u.role,avatar:u.av,color:u.col,password:u.pass,access:u.acc.join(','),active:u.on?'TRUE':'FALSE'});
+const _wPl=w=>({id:w.id,title:w.title,description:w.desc,priority:w.pri,createdAt:w.cat,createdBy:w.cb,hasTask:w.ht?'TRUE':'FALSE'});
+const _tPl=t=>({id:t.id,workId:t.wk,assignee:t.as,status:t.st,startDate:t.sd,endDate:t.ed,reassignCount:t.rc,progress:t.pg});
+const svU=u=>bgSave('addUser',_uPl(u));
+const upU=u=>bgSave('updateUser',_uPl(u));
+const svW=w=>bgSave('addWork',_wPl(w));
+const upW=w=>bgSave('updateWork',_wPl(w));
+const svT=t=>bgSave('addTask',_tPl(t));
+const upT=t=>bgSave('updateTask',_tPl(t));
+const svC=(tid,c)=>bgSave('addComment',{id:Date.now(),taskId:tid,by:c.by,text:c.tx,date:c.dt});
+const svH=(tid,h)=>bgSave('addHistory',{id:Date.now(),taskId:tid,action:h.a,date:h.d,by:h.b});
+const svA=a=>bgSave('addActivity',{id:a.id,userId:a.u,action:a.a,date:a.d,type:a.t});
 
 // ══════════════════════════════════════════════════════════
-// HELPERS
+//  HELPERS
 // ══════════════════════════════════════════════════════════
-const U=id=>{if(id==='admin')return MASTER;return users.find(u=>u.id===id)||null;};
+const U=id=>{if(id==='admin')return MASTER;return users.find(u=>u.id===id)||null};
 const W=id=>works.find(w=>w.id===id)||null;
 const T4W=wid=>tasks.find(t=>t.wk===wid)||null;
 const td=()=>new Date().toISOString().split('T')[0];
-const fD=d=>{if(!d)return'—';try{return new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});}catch{return d;}};
-const dDf=(a,b)=>{try{return Math.ceil((new Date(a+'T00:00:00')-new Date(b+'T00:00:00'))/86400000);}catch{return 0;}};
-const isOD=t=>t.ed&&new Date(t.ed+'T00:00:00')<new Date(td()+'T00:00:00')&&!['Approved','Completed'].includes(t.st);
+const fD=d=>{if(!d)return'—';return new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})};
+const dDf=(a,b)=>Math.ceil((new Date(a+'T00:00:00')-new Date(b+'T00:00:00'))/86400000);
+const isOD=t=>t.ed&&new Date(t.ed)<new Date(td()+'T00:00:00')&&!['Approved','Completed'].includes(t.st);
 const isTL=()=>CU?.role==='Team Lead';
 const hA=k=>CU?.acc?.includes(k);
 const aCt=uid=>tasks.filter(t=>t.as===uid&&['Assigned','In Progress','Reassigned'].includes(t.st)).length;
 
-function sB(s){
-  const x=SS[s]||{bg:'#eee',fg:'#666',d:'#999'};
-  return`<span class="bdg" style="background:${x.bg};color:${x.fg}"><span class="dt" style="background:${x.d}"></span>${s}</span>`;
-}
-function aH(u,sz=26){
-  if(!u)return'';
-  return`<div class="av" style="width:${sz}px;height:${sz}px;font-size:${sz<28?9:11}px;background:${u.col}18;color:${u.col}">${u.av}</div>`;
-}
-function pB(p){
-  return`<span style="font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;background:${PC[p]||'#999'}15;color:${PC[p]||'#999'}">${p}</span>`;
-}
-function timeL(ed){
-  if(!ed)return'';
-  const d=dDf(ed,td());
-  if(d<0)return`<span style="color:var(--red);font-weight:700">${Math.abs(d)}d overdue</span>`;
-  if(d===0)return`<span style="color:var(--red);font-weight:700">Due today!</span>`;
-  if(d<=2)return`<span style="color:var(--ylw);font-weight:700">${d}d left</span>`;
-  return`<span style="color:var(--tx3)">${d}d left</span>`;
-}
-function ring(pct,col,sz=54,sw=5){
-  const r=(sz-sw)/2,c=2*Math.PI*r,o=c-(pct/100)*c;
-  return`<div class="met-ring" style="width:${sz}px;height:${sz}px"><svg width="${sz}" height="${sz}"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="#eee" stroke-width="${sw}"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-dasharray="${c}" stroke-dashoffset="${o}" stroke-linecap="round"/></svg><div class="mr-val" style="color:${col}">${pct}%</div></div>`;
-}
-function toast(m,t='in'){
-  const w=document.getElementById('tW');
-  const e=document.createElement('div');
-  e.className=`tst ${t==='success'?'ok':t==='error'?'er':'in'}`;
-  e.innerHTML=m;w.appendChild(e);
-  setTimeout(()=>{e.style.opacity='0';e.style.transform='translateY(8px)';e.style.transition='all 0.3s';setTimeout(()=>e.remove(),300);},3000);
-}
-function addN(m,tid,fu){nots.unshift({id:Date.now(),msg:m,tm:'Just now',rd:false,tid,fu:fu||CU?.id||'admin'});rnB();}
-function logA(a,t){const ac={id:nA_++,u:CU.id,a,d:td(),t};alog.unshift(ac);if(apiOk)svAc(ac);}
+function sB(s){const x=SS[s]||{bg:'#eee',fg:'#666',d:'#999'};return`<span class="bdg" style="background:${x.bg};color:${x.fg}"><span class="dt" style="background:${x.d}"></span>${s}</span>`}
+function aH(u,sz=24){if(!u)return'';return`<div class="av" style="width:${sz}px;height:${sz}px;font-size:${sz<26?9:11}px;background:${u.col}14;color:${u.col}">${u.av}</div>`}
+function pB(p){return`<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:${PC[p]||'#ccc'}10;color:${PC[p]||'#ccc'}">${p||''}</span>`}
+function tL(ed){if(!ed)return'';const d=dDf(ed,td());if(d<0)return`<span style="color:var(--red);font-weight:700;font-size:9px">${Math.abs(d)}d overdue</span>`;if(d===0)return`<span style="color:var(--red);font-weight:700;font-size:9px">Due today!</span>`;if(d<=2)return`<span style="color:var(--ylw);font-weight:700;font-size:9px">${d}d left</span>`;return`<span style="color:var(--tx3);font-size:9px">${d}d left</span>`}
+function ring(pct,col,sz=52,sw=5){const r=(sz-sw)/2,c=2*Math.PI*r,o=c-(pct/100)*c;return`<div class="mr" style="width:${sz}px;height:${sz}px"><svg width="${sz}" height="${sz}"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="#eee" stroke-width="${sw}"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-dasharray="${c}" stroke-dashoffset="${o}" stroke-linecap="round"/></svg><div class="mrv" style="color:${col}">${pct}%</div></div>`}
+
+function toast(m,t='in'){const w=document.getElementById('tW');const e=document.createElement('div');e.className=`tst ${t==='ok'||t==='success'?'ok':t==='er'||t==='error'?'er':'in'}`;e.textContent=m;w.appendChild(e);setTimeout(()=>{e.style.opacity='0';setTimeout(()=>e.remove(),300)},3000)}
+function addN(m,tid,fu){nots.unshift({id:Date.now(),msg:m,tm:'Just now',rd:false,tid,fu:fu||CU?.id||'admin'});rnB()}
+function logA(a,t){const ac={id:nA_++,u:CU.id,a,d:td(),t};alog.unshift(ac);svA(ac)}
 
 function eC(uid){
   const et=tasks.filter(t=>t.as===uid);const now=td();
   const run=et.filter(t=>['Assigned','In Progress','Reassigned'].includes(t.st));
-  const comp=et.filter(t=>t.st==='Completed');
-  const appr=et.filter(t=>t.st==='Approved');
-  const onT=appr.filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));return ch&&t.ed&&ch.d<=t.ed;});
-  const dT=run.filter(t=>t.ed===now);
-  const d2=run.filter(t=>{const d=dDf(t.ed,now);return d>=0&&d<=2;});
-  return{
-    total:et.length,run:run.length,comp:comp.length,appr:appr.length,
-    reas:et.filter(t=>t.st==='Reassigned').length,od:run.filter(isOD).length,
-    onT:onT.length,dT:dT.length,d2:d2.length,
-    rate:appr.length?Math.round(onT.length/appr.length*100):0,
-    runT:run,dTT:dT,d2T:d2,odT:run.filter(isOD),compT:comp,apprT:appr
-  };
+  const comp=et.filter(t=>t.st==='Completed');const appr=et.filter(t=>t.st==='Approved');
+  const onT=appr.filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));return ch&&t.ed&&ch.d<=t.ed});
+  const dTT=run.filter(t=>t.ed===now);const d2T=run.filter(t=>{const d=dDf(t.ed,now);return d>=0&&d<=2});
+  const odT=run.filter(isOD);
+  return{total:et.length,run:run.length,comp:comp.length,appr:appr.length,reas:et.filter(t=>t.st==='Reassigned').length,od:odT.length,onT:onT.length,dT:dTT.length,d2:d2T.length,rate:appr.length?Math.round(onT.length/appr.length*100):0,runT:run,dTT,d2T,odT,compT:comp,apprT:appr};
 }
 function eCA(){
   const run=tasks.filter(t=>['Assigned','In Progress','Reassigned'].includes(t.st));
   const appr=tasks.filter(t=>t.st==='Approved');const now=td();
-  const onT=appr.filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));return ch&&t.ed&&ch.d<=t.ed;});
-  const dT=run.filter(t=>t.ed===now);
-  const d2=run.filter(t=>{const d=dDf(t.ed,now);return d>=0&&d<=2;});
-  return{
-    total:tasks.length,run:run.length,comp:tasks.filter(t=>t.st==='Completed').length,
-    appr:appr.length,reas:tasks.filter(t=>t.st==='Reassigned').length,
-    od:run.filter(isOD).length,onT:onT.length,dT:dT.length,d2:d2.length,
-    rate:appr.length?Math.round(onT.length/appr.length*100):0,
-    runT:run,dTT:dT,d2T:d2,odT:run.filter(isOD)
-  };
+  const onT=appr.filter(t=>{const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));return ch&&t.ed&&ch.d<=t.ed});
+  const dTT=run.filter(t=>t.ed===now);const d2T=run.filter(t=>{const d=dDf(t.ed,now);return d>=0&&d<=2});
+  const odT=run.filter(isOD);
+  return{total:tasks.length,run:run.length,comp:tasks.filter(t=>t.st==='Completed').length,appr:appr.length,reas:tasks.filter(t=>t.st==='Reassigned').length,od:odT.length,onT:onT.length,dT:dTT.length,d2:d2T.length,rate:appr.length?Math.round(onT.length/appr.length*100):0,runT:run,dTT,d2T,odT};
 }
 
 function urgC(title,cnt,col,bg,bdr,list){
-  let h=`<div class="urg-card" style="background:${bg};border-color:${bdr}"><h4>${title} <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:${col};color:#fff">${cnt}</span></h4>`;
-  if(!list.length)h+=`<div style="font-size:12px;color:var(--tx2);padding:4px 0">None — all clear! ✨</div>`;
-  else list.slice(0,4).forEach(t=>{
-    const w=W(t.wk);
-    h+=`<div class="urg-task" onclick="oTD(${t.id})"><div class="pb" style="height:14px;background:${PC[w?.pri]||'#ccc'}"></div><span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${w?.title||''}</span><span class="urg-time" style="color:${col}">${timeL(t.ed)}</span></div>`;
-  });
-  if(list.length>4)h+=`<div style="font-size:10px;color:${col};font-weight:600;margin-top:4px">+${list.length-4} more</div>`;
-  return h+`</div>`;
+  let h=`<div class="uc" style="background:${bg};border-color:${bdr}"><h4>${title}<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:${col};color:#fff;margin-left:6px">${cnt}</span></h4>`;
+  if(!list.length)h+=`<div style="font-size:11px;color:var(--tx2);padding:4px 0">None — all clear! ✨</div>`;
+  else list.slice(0,4).forEach(t=>{const w=W(t.wk);h+=`<div class="utask" onclick="oTD(${t.id})"><div class="pb" style="height:12px;background:${PC[w?.pri]||'#ccc'}"></div><span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${w?.title||''}</span><span class="utm" style="color:${col}">${tL(t.ed)}</span></div>`});
+  if(list.length>4)h+=`<div style="font-size:9px;color:${col};font-weight:600;margin-top:3px">+${list.length-4} more</div>`;
+  return h+'</div>'
 }
 
 // ══════════════════════════════════════════════════════════
-// LOGIN / LOGOUT
+//  LOGIN / LOGOUT
 // ══════════════════════════════════════════════════════════
 async function doLI(){
   const uname=document.getElementById('lU').value.trim();
   const pass=document.getElementById('lP').value;
-  if(!uname||!pass){document.getElementById('lE').style.display='block';document.getElementById('lE').textContent='Please enter username and password.';return;}
+  if(!uname||!pass){toast('Enter credentials','er');return}
 
-  // Master admin check
+  // Master admin — works offline too
   if(uname==='sioniqadmin'&&pass==='sio@123'){
     CU={...MASTER};
-    showLD('Welcome, Master Admin!');
-    if(apiOk)await loadFromSheet();
-    else hideLD();
-    launch();return;
-  }
-
-  // Load users from sheet first
-  if(apiOk){showLD('Authenticating...');await loadFromSheet();hideLD();}
-
-  const u=users.find(x=>{
-    const uEmail=(x.email||'').split('@')[0].toLowerCase();
-    return uEmail===uname.toLowerCase()||x.email.toLowerCase()===uname.toLowerCase()||x.name.toLowerCase()===uname.toLowerCase();
-  });
-  if(!u||pass!==u.pass||!u.on){
-    document.getElementById('lE').style.display='block';
-    document.getElementById('lE').textContent='Invalid credentials. Please try again.';
+    if(apiOk){await loadFromSheet()}
+    startApp();
+    toast(`Welcome, Master Admin! 👋`,'ok');
     return;
   }
+
+  // Regular user — needs sheet
+  if(!apiOk){toast('Cannot connect to server','er');return}
+  showLD('Authenticating...');
+  await loadFromSheet();hideLD();
+
+  const u=users.find(x=>x.email===uname||(x.email||'').split('@')[0]===uname||x.name.toLowerCase()===uname.toLowerCase());
+  if(!u||pass!==u.pass||!u.on){document.getElementById('lE').style.display='block';return}
   document.getElementById('lE').style.display='none';
-  CU=u;launch();
+  CU=u;
+  startApp();
+  toast(`Welcome, ${CU.name}! 👋`,'ok');
 }
 
-function launch(){
+function startApp(){
+  _saving=false; // reset any stale lock
   CV=CU.acc[0]||'dashboard';
   document.getElementById('LS').style.display='none';
   document.getElementById('AP').style.display='block';
-  if(apiOk){
-    syncInt=setInterval(async()=>{
-      if(!apiOk)return;
-      await loadFromSheet();
-      document.getElementById('syncSt').textContent='Synced: '+new Date().toLocaleTimeString();
-      rA();
-    },60000);
-  }
+  if(apiOk)syncInt=setInterval(()=>loadFromSheet().then(ok=>{if(ok){document.getElementById('syncSt').textContent='Synced '+new Date().toLocaleTimeString();rA()}}),60000);
   rA();
-  toast(`Welcome, ${CU.name}! 👋`,'success');
 }
 
 function doLO(){
+  _saving=false;
   if(syncInt)clearInterval(syncInt);syncInt=null;
-  CU=null;nots=[];
+  CU=null;
   document.getElementById('AP').style.display='none';
   document.getElementById('LS').style.display='flex';
   document.getElementById('lP').value='';
   document.getElementById('lU').value='';
-  closeSb();
 }
 
 // ══════════════════════════════════════════════════════════
-// SIDEBAR CONTROL
+//  APP RENDER
 // ══════════════════════════════════════════════════════════
-function openSb(){
-  document.getElementById('sb').classList.add('open');
-  document.getElementById('sbOv').classList.add('show');
-}
-function closeSb(){
-  document.getElementById('sb').classList.remove('open');
-  document.getElementById('sbOv').classList.remove('show');
-}
-
-// ══════════════════════════════════════════════════════════
-// RENDER APP
-// ══════════════════════════════════════════════════════════
-function rA(){rSb();rTb();rnB();rnL();rP();}
+function rA(){rSb();rTb();rnB();rnL();rP()}
 
 function rSb(){
-  const u=CU;
-  document.getElementById('sbU').innerHTML=`${aH(u,34)}<div style="flex:1;min-width:0"><div class="un">${u.name}</div><div class="ur">${u.role}</div></div>`;
-  const navDef=[
+  document.getElementById('sbU').innerHTML=`${aH(CU,32)}<div><div class="un">${CU.name}</div><div class="ur">${CU.role}</div></div>`;
+  const items=[
     {k:AC.D,l:'My Dashboard',i:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'},
     {k:AC.TD,l:'Team Dashboards',i:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>'},
     {k:AC.W,l:'Works',i:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>',c:works.filter(w=>!w.ht).length},
@@ -816,15 +643,15 @@ function rSb(){
     {k:AC.U,l:'Users',i:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'},
   ];
   let n='<div class="ss">Navigation</div>';
-  navDef.forEach(it=>{
+  items.forEach(it=>{
     if(!hA(it.k))return;
     const isOn=CV===it.k||(it.k===AC.TD&&(CV==='team_dashboard'||CV==='member_dash'));
-    n+=`<button class="sk${isOn?' on':''}" onclick="goTo('${it.k}');closeSb()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${it.i}</svg>${it.l}${it.c>0?`<span class="ct">${it.c}</span>`:''}</button>`;
+    n+=`<button class="sk${isOn?' on':''}" onclick="goTo('${it.k}')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${it.i}</svg>${it.l}${it.c>0?`<span class="ct">${it.c}</span>`:''}
+    </button>`;
     if(it.k===AC.TD&&hA(AC.TD)&&isOn){
-      n+=`<button class="sk sub${CV==='team_dashboard'&&!tdS?' on':''}" onclick="CV='team_dashboard';tdS=null;closeSb();rA()">📊 Combined</button>`;
-      users.filter(u=>u.on).forEach(m=>{
-        n+=`<button class="sk sub${CV==='member_dash'&&tdS===m.id?' on':''}" onclick="CV='member_dash';tdS='${m.id}';closeSb();rA()">${aH(m,16)} ${m.name.split(' ')[0]}</button>`;
-      });
+      n+=`<button class="sk sub${CV==='team_dashboard'&&!tdS?' on':''}" onclick="CV='team_dashboard';tdS=null;closeSb();rA()">📊 Combined View</button>`;
+      users.filter(u=>u.on).forEach(m=>{n+=`<button class="sk sub${CV==='member_dash'&&tdS===m.id?' on':''}" onclick="CV='member_dash';tdS='${m.id}';closeSb();rA()">${aH(m,15)} ${m.name.split(' ')[0]}</button>`});
     }
   });
   document.getElementById('sbN').innerHTML=n;
@@ -833,80 +660,44 @@ function rSb(){
 function rTb(){
   const titles={dashboard:'My Dashboard',works:'Works',tasks:'Tasks',kanban:'Kanban',reports:'Reports',activity:'Activity',users:'Users',team_dashboard:'Team Dashboards',member_dash:'Member Dashboard'};
   let s='';
-  if(CV==='member_dash'&&tdS){const m=U(tdS);if(m)s=`<small>${m.name}</small>`;}
+  if(CV==='member_dash'&&tdS){const m=U(tdS);s=`<small>${m?.name||''}</small>`}
   if(CV==='team_dashboard')s='<small>Combined</small>';
   document.getElementById('pT').innerHTML=(titles[CV]||'Dashboard')+s;
 }
 
 function goTo(v){
-  if(!hA(v)&&v!=='member_dash'&&v!=='team_dashboard'){toast('Access denied','error');return;}
+  if(!hA(v)&&v!=='member_dash'&&v!=='team_dashboard'){toast('No access to this module','er');return}
   CV=v;
-  if(v===AC.TD){CV='team_dashboard';tdS=null;}
-  rA();
+  if(v===AC.TD){CV='team_dashboard';tdS=null}
+  closeSb();rA();
 }
+
+function openSb(){document.getElementById('sb').classList.add('open');document.getElementById('sbOverlay').classList.add('show')}
+function closeSb(){document.getElementById('sb').classList.remove('open');document.getElementById('sbOverlay').classList.remove('show')}
 
 function rP(){
   const c=document.getElementById('MC');
-  const views={dashboard:rDash,team_dashboard:rTDa,member_dash:()=>rMDa(tdS),works:rWk,tasks:rTk,kanban:rKb,reports:rRp,activity:rAc,users:rUs};
-  c.innerHTML=(views[CV]||rDash)();
+  const v={dashboard:rDash,team_dashboard:rTDa,member_dash:()=>rMDa(tdS),works:rWk,tasks:rTk,kanban:rKb,reports:rRp,activity:rAc,users:rUs};
+  c.innerHTML=(v[CV]||rDash)();
 }
 
-// ══════════════════════════════════════════════════════════
-// NOTIFICATIONS
-// ══════════════════════════════════════════════════════════
-function tgN(){
-  const p=document.getElementById('nP');
-  p.classList.toggle('hide');
-  if(!p.classList.contains('hide')){
-    nots.forEach(n=>{if(n.fu===CU?.id||n.fu==='admin')n.rd=true;});
-    rnB();rnL();
-  }
-}
-function rnB(){
-  const c=nots.filter(n=>!n.rd&&(n.fu===CU?.id||n.fu==='admin')).length;
-  const b=document.getElementById('nB');
-  if(b){b.textContent=c;b.classList.toggle('hide',c===0);}
-}
-function rnL(){
-  const el=document.getElementById('nL');if(!el)return;
-  const my=nots.filter(n=>n.fu===CU?.id||n.fu==='admin');
-  el.innerHTML=my.length?my.slice(0,12).map(n=>`
-    <div style="padding:10px 14px;border-bottom:1px solid #f0efe8;cursor:pointer;font-size:12px;background:${n.rd?'var(--s)':'var(--acbg)'};line-height:1.4"
-      onclick="document.getElementById('nP').classList.add('hide');oTD(${n.tid})">
-      ${n.msg}
-      <div style="font-size:10px;color:var(--tx3);font-family:var(--mono);margin-top:2px">${n.tm}</div>
-    </div>`).join('')
-    :'<div style="padding:24px;text-align:center;color:var(--tx3);font-size:12px">No notifications</div>';
-}
-document.addEventListener('click',e=>{
-  const nw=document.getElementById('nWr');
-  if(nw&&!nw.contains(e.target))document.getElementById('nP')?.classList.add('hide');
-});
+// NOTIF
+function tgN(){const p=document.getElementById('nP');p.classList.toggle('hide');if(!p.classList.contains('hide')){nots.forEach(n=>{if(n.fu===CU?.id||n.fu==='admin')n.rd=true});rnB();rnL()}}
+function rnB(){const c=nots.filter(n=>!n.rd&&(n.fu===CU?.id||n.fu==='admin')).length;const b=document.getElementById('nB');if(b){b.textContent=c;b.classList.toggle('hide',c===0)}}
+function rnL(){const el=document.getElementById('nL');if(!el)return;const my=nots.filter(n=>n.fu===CU?.id||n.fu==='admin');el.innerHTML=my.length?my.slice(0,10).map(n=>`<div style="padding:9px 14px;border-bottom:1px solid #f0efe8;cursor:pointer;font-size:12px;background:${n.rd?'var(--s)':'var(--acbg)'}" onclick="oTD(${n.tid})">${n.msg}<div style="color:var(--tx3);font-size:9px;font-family:var(--mono);margin-top:2px">${n.tm}</div></div>`).join(''):'<div style="padding:20px;text-align:center;color:var(--tx3);font-size:12px">No notifications</div>'}
+document.addEventListener('click',e=>{const nw=document.getElementById('nWr');if(nw&&!nw.contains(e.target))document.getElementById('nP')?.classList.add('hide')});
 
-// ══════════════════════════════════════════════════════════
 // MODAL
-// ══════════════════════════════════════════════════════════
-function oM(h,mxW='600px'){
-  const o=document.getElementById('mO');
-  o.innerHTML=`<div class="mdl ai" style="max-width:${mxW}" onclick="event.stopPropagation()">${h}</div>`;
-  o.classList.remove('hide');
-  o.querySelector('.mdl').scrollTop=0;
-}
-function cM(){document.getElementById('mO').classList.add('hide');rA();}
+function oM(h,w='500px'){const o=document.getElementById('mO');o.innerHTML=`<div class="mdl ai" style="width:min(${w},calc(100vw - 24px))" onclick="event.stopPropagation()">${h}</div>`;o.classList.remove('hide')}
+function cM(){_saving=false;document.getElementById('mO').classList.add('hide');rA()}
 
 // ══════════════════════════════════════════════════════════
-// DASHBOARD — MY PERSONAL
+//  ★  MY DASHBOARD
 // ══════════════════════════════════════════════════════════
 function rDash(){
   const c=eC(CU.id);
   const empty=tasks.length===0&&works.length===0;
-  if(empty)return`
-    <div class="cd" style="padding:36px;text-align:center">
-      <div style="font-size:48px;margin-bottom:14px">🚀</div>
-      <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">Welcome to ResearchFlow!</h2>
-      <p style="color:var(--tx2);margin-bottom:20px">${isTL()?'Start by creating works, then assign them to your team.':'Ask your Team Lead to assign you tasks.'}</p>
-      ${isTL()?`<button class="btn ba" onclick="goTo('works')">Create First Work →</button>`:''}
-    </div>`;
+  if(empty)return`<div class="cd" style="padding:36px;text-align:center"><div style="font-size:40px;margin-bottom:14px">🚀</div><h2 style="margin-bottom:8px;font-size:18px">Welcome to ResearchFlow!</h2><p style="color:var(--tx2);margin-bottom:18px;font-size:13px">${isTL()?'Start by creating works and assigning tasks to your team.':'Your Team Lead will assign tasks to you. Check back soon!'}</p>${isTL()?`<button class="btn ba" onclick="goTo('works')">Create First Work →</button>`:''}</div>`;
 
   let h=`<div class="urg ai">
     ${urgC('🔴 Due Today',c.dT,'#dc2626','#fef2f2','#fecaca',c.dTT)}
@@ -914,154 +705,97 @@ function rDash(){
     ${urgC('⚫ Overdue',c.od,'#991b1b','#fef2f2','#fca5a5',c.odT)}
   </div>`;
 
-  h+=`<div class="met-row ai">
-    <div class="met-card">${ring(c.rate,'#16a34a')}<div><div style="font-size:18px;font-weight:800;color:var(--grn)">${c.onT}/${c.appr}</div><div style="font-size:11px;color:var(--tx2);margin-top:2px">On-Time Rate</div></div></div>
-    <div class="met-card"><div style="width:50px;height:50px;border-radius:12px;background:var(--blubg);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🚀</div><div><div style="font-size:18px;font-weight:800;color:var(--blu)">${c.run}</div><div style="font-size:11px;color:var(--tx2)">Active Tasks</div></div></div>
-    <div class="met-card"><div style="width:50px;height:50px;border-radius:12px;background:var(--grnbg);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">✅</div><div><div style="font-size:18px;font-weight:800;color:var(--grn)">${c.appr}</div><div style="font-size:11px;color:var(--tx2)">Approved</div></div></div>
-    <div class="met-card"><div style="width:50px;height:50px;border-radius:12px;background:${c.od>0?'var(--redbg)':'var(--grnbg)'};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${c.od>0?'⏰':'🎯'}</div><div><div style="font-size:18px;font-weight:800;color:${c.od>0?'var(--red)':'var(--grn)'}">${c.od}</div><div style="font-size:11px;color:var(--tx2)">${c.od>0?'Overdue':'On Track!'}</div></div></div>
+  h+=`<div class="mtr ai">
+    <div class="mc">${ring(c.rate,'#16a34a')}<div><div style="font-size:17px;font-weight:800;color:var(--grn)">${c.onT}/${c.appr}</div><div style="font-size:10px;color:var(--tx2);margin-top:2px">On-Time Completion</div></div></div>
+    <div class="mc"><div style="width:52px;height:52px;border-radius:13px;background:var(--blubg);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🚀</div><div><div style="font-size:17px;font-weight:800;color:var(--blu)">${c.run}</div><div style="font-size:10px;color:var(--tx2);margin-top:2px">Active Tasks</div></div></div>
+    <div class="mc"><div style="width:52px;height:52px;border-radius:13px;background:var(--grnbg);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">✅</div><div><div style="font-size:17px;font-weight:800;color:var(--grn)">${c.appr}</div><div style="font-size:10px;color:var(--tx2);margin-top:2px">Approved</div></div></div>
+    <div class="mc"><div style="width:52px;height:52px;border-radius:13px;background:${c.od>0?'var(--redbg)':'var(--grnbg)'};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${c.od>0?'⏰':'🎯'}</div><div><div style="font-size:17px;font-weight:800;color:${c.od>0?'var(--red)':'var(--grn)'}">${c.od}</div><div style="font-size:10px;color:var(--tx2);margin-top:2px">${c.od>0?'Overdue':'On Track!'}</div></div></div>
   </div>`;
 
   h+=`<div class="sg ai">${[
-    {l:'Total',v:c.total,c_:'#4338ca',s:'tasks'},{l:'Active',v:c.run,c_:'#2563eb',s:'running'},
-    {l:'Review',v:c.comp,c_:'#db2777',s:'awaiting TL'},{l:'Done',v:c.appr,c_:'#16a34a',s:'approved'},
-    {l:'Reassigned',v:c.reas,c_:'#d97706',s:'rework'},
-    ...(isTL()?[{l:'Unassigned',v:works.filter(w=>!w.ht).length,c_:'#d97706',s:'works'}]:[])
-  ].map(s=>`<div class="sc"><div class="ob" style="background:${s.c_}"></div>
-    <div style="font-size:11px;color:var(--tx2);margin-bottom:4px">${s.l}</div>
-    <div style="font-size:26px;font-weight:800;font-family:var(--mono);color:${s.c_}">${s.v}</div>
-    <div style="font-size:9px;color:var(--tx3);margin-top:1px">${s.s}</div>
-  </div>`).join('')}</div>`;
+    {l:'Total Tasks',v:c.total,c_:'#4338ca',s:'assigned'},
+    {l:'Active',v:c.run,c_:'#2563eb',s:'running'},
+    {l:'Pending Review',v:c.comp,c_:'#db2777',s:'awaiting TL'},
+    {l:'Approved',v:c.appr,c_:'#16a34a',s:'done'},
+    {l:'Reassigned',v:c.reas,c_:'#d97706',s:'reworking'},
+    ...(isTL()?[{l:'Unassigned Works',v:works.filter(w=>!w.ht).length,c_:'#d97706',s:'need assignment'}]:[]),
+  ].map(s=>`<div class="sc"><div class="ob" style="background:${s.c_}"></div><div style="font-size:10px;color:var(--tx2);margin-bottom:4px">${s.l}</div><div style="font-size:24px;font-weight:800;font-family:var(--mono);color:${s.c_}">${s.v}</div><div style="font-size:9px;color:var(--tx3)">${s.s}</div></div>`).join('')}</div>`;
 
+  // Pipeline (TL only)
   if(isTL()){
-    const inP=tasks.filter(t=>t.st==='In Progress').length;
-    const co=tasks.filter(t=>t.st==='Completed').length;
-    const ap=tasks.filter(t=>t.st==='Approved').length;
-    h+=`<div class="cd ai" style="margin-bottom:14px"><div style="padding:14px 18px">
-      <div style="font-size:9px;color:var(--tx3);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;font-family:var(--mono);margin-bottom:8px">Pipeline</div>
-      <div class="flw" style="overflow-x:auto">
-        ${[{l:'Works',v:works.length,c_:'#4338ca'},0,{l:'Tasks',v:tasks.length,c_:'#2563eb'},0,{l:'Active',v:inP,c_:'#7c3aed'},0,{l:'Review',v:co,c_:'#db2777'},0,{l:'Done',v:ap,c_:'#16a34a'}].map(x=>x===0?'<div class="flwa">→</div>':`<div class="flwn" style="background:${x.c_}08;border:1px solid ${x.c_}18"><div class="fv" style="color:${x.c_}">${x.v}</div><div class="fl">${x.l}</div></div>`).join('')}
-      </div>
-    </div></div>`;
+    const inP=tasks.filter(t=>t.st==='In Progress').length,co=tasks.filter(t=>t.st==='Completed').length,ap=tasks.filter(t=>t.st==='Approved').length;
+    h+=`<div class="cd ai" style="margin-bottom:14px"><div style="padding:13px 18px"><div style="font-size:8px;color:var(--tx3);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;font-family:var(--mono);margin-bottom:8px">Pipeline</div>
+      <div class="flw">${[{l:'Works',v:works.length,c_:'#4338ca'},0,{l:'Tasks',v:tasks.length,c_:'#2563eb'},0,{l:'Active',v:inP,c_:'#7c3aed'},0,{l:'Review',v:co,c_:'#db2777'},0,{l:'Done',v:ap,c_:'#16a34a'}].map(x=>x===0?'<div class="flwa">→</div>':`<div class="flwn" style="background:${x.c_}08;border:1px solid ${x.c_}18"><div class="fv" style="color:${x.c_}">${x.v}</div><div class="fl">${x.l}</div></div>`).join('')}</div></div></div>`;
   }
 
-  const myAct=c.runT;
-  h+=`<div class="cd ai" style="margin-bottom:14px"><div class="cdh"><h3>My Active Tasks (${myAct.length})</h3><button class="bgh bsm" onclick="goTo('${AC.T}')">View All →</button></div>
-    ${myAct.length===0?'<div style="padding:24px;text-align:center;color:var(--tx3);font-size:12px">No active tasks 🎉</div>':
-    myAct.map(t=>{const w=W(t.wk);return`
-      <div style="padding:10px 18px;border-bottom:1px solid #f0efe8;cursor:pointer;display:flex;align-items:center;gap:10px"
-        onclick="oTD(${t.id})" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='var(--s)'">
-        <div class="pb" style="height:28px;background:${PC[w?.pri]||'#ccc'}"></div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w?.title||''}</div>
-          <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
-            <div style="height:3px;border-radius:2px;background:#eee;width:60px;flex-shrink:0"><div style="height:100%;border-radius:2px;background:var(--ac);width:${t.pg||0}%"></div></div>
-            <span style="font-size:9px;color:var(--tx2);font-family:var(--mono)">${t.pg||0}%</span>
-          </div>
-        </div>
-        ${sB(t.st)}<span style="font-size:10px;flex-shrink:0">${timeL(t.ed)}</span>
-      </div>`}).join('')}</div>`;
+  // My active tasks
+  h+=`<div class="cd ai" style="margin-bottom:14px"><div class="cdh"><h3>My Active Tasks (${c.run})</h3><button class="bgh bsm" onclick="goTo('${AC.T}')">All →</button></div>
+    ${c.runT.length?c.runT.map(t=>{const w=W(t.wk);return`<div style="padding:9px 18px;border-bottom:1px solid #f0efe8;cursor:pointer;display:flex;align-items:center;gap:9px" onclick="oTD(${t.id})" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='var(--s)'">
+      <div class="pb" style="height:26px;background:${PC[w?.pri]||'#ccc'}"></div>
+      <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w?.title||''}</div>
+      <div style="display:flex;align-items:center;gap:5px;margin-top:3px"><div style="height:3px;border-radius:2px;background:#eee;width:60px"><div style="height:100%;border-radius:2px;background:var(--ac);width:${t.pg||0}%"></div></div><span style="font-size:9px;color:var(--tx2);font-family:var(--mono)">${t.pg||0}%</span></div></div>
+      ${sB(t.st)}<span>${tL(t.ed)}</span></div>`}).join(''):'<div style="padding:18px;text-align:center;color:var(--tx3);font-size:12px">No active tasks 🎉</div>'}</div>`;
 
+  // Pending approvals (TL)
   const pA=tasks.filter(t=>t.st==='Completed');
-  if(isTL()&&pA.length){
-    h+=`<div class="cd ai" style="margin-bottom:14px"><div class="cdh"><h3>Pending Approvals <span style="background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:99px;padding:2px 7px">${pA.length}</span></h3></div>
-    ${pA.map(t=>{const w=W(t.wk);const a=U(t.as);return`
-      <div style="padding:10px 18px;border-bottom:1px solid #f0efe8;cursor:pointer;display:flex;align-items:center;gap:10px"
-        onclick="oTD(${t.id})" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background='var(--s)'">
-        ${aH(a)}<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w?.title||''}</div><div style="font-size:10px;color:var(--tx2)">by ${a?.name||''}</div></div>
-        <button class="btn bg bsm" onclick="event.stopPropagation();doAp(${t.id})" style="flex-shrink:0">✓</button>
-        <button class="btn br bsm" onclick="event.stopPropagation();oTD(${t.id})" style="flex-shrink:0">✕</button>
-      </div>`}).join('')}</div>`;
-  }
+  if(isTL()&&pA.length)h+=`<div class="cd ai" style="margin-bottom:14px"><div class="cdh"><h3>Pending Approvals<span style="background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:99px;padding:1px 7px;margin-left:6px">${pA.length}</span></h3></div>${pA.map(t=>{const w=W(t.wk);const a=U(t.as);return`<div style="padding:9px 18px;border-bottom:1px solid #f0efe8;cursor:pointer;display:flex;align-items:center;gap:9px" onclick="oTD(${t.id})">${aH(a,24)}<div style="flex:1"><div style="font-size:12px;font-weight:600">${w?.title||''}</div><div style="font-size:10px;color:var(--tx2)">${a?.name||''}</div></div><button class="btn bg bsm" onclick="event.stopPropagation();doAp(${t.id})">✓ Approve</button></div>`}).join('')}</div>`;
 
-  if(isTL()&&hA(AC.TD)&&users.length){
-    h+=`<div class="cd ai"><div class="cdh"><h3>Team Quick View</h3><button class="bgh bsm" onclick="goTo('${AC.TD}')">Full View →</button></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;padding:12px">
-      ${users.filter(u=>u.on).map(m=>{const mc=eC(m.id);const ld=mc.run>=3?{c:'#dc2626',l:'Overloaded'}:mc.run>=1?{c:'#d97706',l:'Busy'}:{c:'#16a34a',l:'Free'};
-        return`<div style="padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--s2);cursor:pointer;transition:all 0.15s"
-          onclick="CV='member_dash';tdS='${m.id}';rA()" onmouseover="this.style.boxShadow='var(--sh2)'" onmouseout="this.style.boxShadow='none'">
-          <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">${aH(m,26)}<div style="min-width:0"><div style="font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.name}</div></div></div>
-          <div style="font-size:9px;display:flex;gap:8px"><span style="color:var(--blu)"><b>${mc.run}</b> active</span><span style="color:var(--grn)"><b>${mc.appr}</b> done</span></div>
-          <div style="font-size:9px;color:${ld.c};font-weight:600;margin-top:4px">⬤ ${ld.l} · ${mc.rate}%</div>
-        </div>`;}).join('')}
-    </div></div>`;
-  }
+  // Team quick view (TL)
+  if(isTL()&&hA(AC.TD)&&users.length)h+=`<div class="cd ai"><div class="cdh"><h3>Team Quick View</h3><button class="bgh bsm" onclick="goTo('${AC.TD}')">Full →</button></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;padding:12px">${users.filter(u=>u.on).map(m=>{const mc=eC(m.id);const ld=mc.run>=3?{c:'#dc2626',l:'Overloaded'}:mc.run>=1?{c:'#d97706',l:'Busy'}:{c:'#16a34a',l:'Free'};return`<div style="padding:10px;border-radius:9px;border:1px solid var(--bd);background:var(--s2);cursor:pointer;transition:all 0.15s" onclick="CV='member_dash';tdS='${m.id}';rA()" onmouseover="this.style.boxShadow='var(--sh2)'" onmouseout="this.style.boxShadow='none'"><div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">${aH(m,24)}<div style="font-size:11px;font-weight:600">${m.name.split(' ')[0]}</div></div><div style="font-size:9px;display:flex;gap:8px"><span style="color:var(--blu)"><b>${mc.run}</b> active</span><span style="color:var(--grn)"><b>${mc.appr}</b> done</span></div><div style="font-size:9px;color:${ld.c};font-weight:600;margin-top:4px">⬤ ${ld.l} · ${mc.rate}%</div></div>`}).join('')}</div></div>`;
+
   return h;
 }
 
 // ══════════════════════════════════════════════════════════
-// TEAM DASHBOARD — COMBINED
+//  ★  TEAM DASHBOARD — COMBINED
 // ══════════════════════════════════════════════════════════
 function rTDa(){
-  if(!users.filter(u=>u.on).length)return`<div class="cd" style="padding:36px;text-align:center"><h3>No team members yet</h3><p style="color:var(--tx2);margin-top:8px">Add users in User Management.</p></div>`;
-  const gc=eCA();
-  const avgP=tasks.length?Math.round(tasks.reduce((s,t)=>s+(t.pg||0),0)/tasks.length):0;
+  if(!users.filter(u=>u.on).length)return`<div class="cd" style="padding:36px;text-align:center"><h3>No team members yet</h3><p style="color:var(--tx2);margin-top:8px;font-size:13px">Add users from the User Management module.</p>${hA(AC.U)?`<button class="btn ba" style="margin-top:14px" onclick="goTo('${AC.U}')">Add Users →</button>`:''}</div>`;
+  const gc=eCA();const avgP=tasks.length?Math.round(tasks.reduce((s,t)=>s+(t.pg||0),0)/tasks.length):0;
 
   let h=`<div class="urg ai">
-    ${urgC('🔴 Due Today (Team)',gc.dT,'#dc2626','#fef2f2','#fecaca',gc.dTT)}
+    ${urgC('🔴 Team Due Today',gc.dT,'#dc2626','#fef2f2','#fecaca',gc.dTT)}
     ${urgC('🟡 Due in 2 Days',gc.d2,'#d97706','#fffbeb','#fde68a',gc.d2T)}
-    ${urgC('⚫ Overdue (Team)',gc.od,'#991b1b','#fef2f2','#fca5a5',gc.odT)}
+    ${urgC('⚫ Team Overdue',gc.od,'#991b1b','#fef2f2','#fca5a5',gc.odT)}
   </div>`;
 
-  h+=`<div class="met-row ai">
-    <div class="met-card">${ring(gc.rate,'#16a34a')}<div><div style="font-size:18px;font-weight:800;color:var(--grn)">${gc.onT}/${gc.appr}</div><div style="font-size:11px;color:var(--tx2)">Team On-Time</div></div></div>
-    <div class="met-card">${ring(avgP,'#4338ca')}<div><div style="font-size:18px;font-weight:800;color:var(--ac)">${avgP}%</div><div style="font-size:11px;color:var(--tx2)">Avg Progress</div></div></div>
-    <div class="met-card"><div style="width:50px;height:50px;border-radius:12px;background:var(--blubg);display:flex;align-items:center;justify-content:center;font-size:20px">📊</div><div><div style="font-size:18px;font-weight:800">${gc.total}</div><div style="font-size:11px;color:var(--tx2)">Total Tasks</div></div></div>
-    <div class="met-card"><div style="width:50px;height:50px;border-radius:12px;background:${gc.od>0?'var(--redbg)':'var(--grnbg)'};display:flex;align-items:center;justify-content:center;font-size:20px">${gc.od>0?'⏰':'🎯'}</div><div><div style="font-size:18px;font-weight:800;color:${gc.od>0?'var(--red)':'var(--grn)'}">${gc.od}</div><div style="font-size:11px;color:var(--tx2)">Team Overdue</div></div></div>
+  h+=`<div class="mtr ai">
+    <div class="mc">${ring(gc.rate,'#16a34a')}<div><div style="font-size:17px;font-weight:800;color:var(--grn)">${gc.onT}/${gc.appr}</div><div style="font-size:10px;color:var(--tx2)">Team On-Time Rate</div></div></div>
+    <div class="mc">${ring(avgP,'#4338ca')}<div><div style="font-size:17px;font-weight:800;color:var(--ac)">${avgP}%</div><div style="font-size:10px;color:var(--tx2)">Avg Progress</div></div></div>
+    <div class="mc"><div style="width:52px;height:52px;border-radius:13px;background:var(--blubg);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">📊</div><div><div style="font-size:17px;font-weight:800">${gc.total}</div><div style="font-size:10px;color:var(--tx2)">Total Tasks</div></div></div>
+    <div class="mc"><div style="width:52px;height:52px;border-radius:13px;background:var(--redbg);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🔥</div><div><div style="font-size:17px;font-weight:800;color:var(--red)">${gc.od}</div><div style="font-size:10px;color:var(--tx2)">Team Overdue</div></div></div>
   </div>`;
 
-  h+=`<div style="font-size:14px;font-weight:700;margin-bottom:12px">Individual Dashboards <span style="font-size:10px;color:var(--tx2);font-weight:500">Tap to expand</span></div>`;
-  h+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-bottom:18px">`;
+  h+=`<div style="font-size:13px;font-weight:700;margin-bottom:10px">Individual Dashboards <span style="font-size:10px;color:var(--tx2);font-weight:500">— click to expand</span></div>`;
+  h+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:18px">`;
   users.filter(u=>u.on).forEach(m=>{
     const mc=eC(m.id);
     const ld=mc.run>=3?{c:'#dc2626',l:'Overloaded',bg:'var(--redbg)'}:mc.run>=1?{c:'#d97706',l:'Busy',bg:'var(--ylwbg)'}:{c:'#16a34a',l:'Free',bg:'var(--grnbg)'};
     h+=`<div class="mdc" onclick="CV='member_dash';tdS='${m.id}';rA()">
-      <div class="mdc-h">${aH(m,38)}<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.name}</div><div style="font-size:11px;color:var(--tx2)">${m.role}</div></div><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;background:${ld.bg};color:${ld.c};flex-shrink:0">${ld.l}</span></div>
-      <div class="mdc-s">
-        <div class="mdc-si"><div class="v" style="color:var(--blu)">${mc.run}</div><div class="l">Active</div></div>
-        <div class="mdc-si"><div class="v" style="color:var(--grn)">${mc.appr}</div><div class="l">Done</div></div>
-        <div class="mdc-si"><div class="v" style="color:${mc.od>0?'var(--red)':'var(--tx3)'}">${mc.od}</div><div class="l">Overdue</div></div>
-        <div class="mdc-si"><div class="v" style="color:var(--grn)">${mc.rate}%</div><div class="l">On-Time</div></div>
-      </div>
-      ${mc.runT.length?`<div class="mdc-t"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Active</div>
-        ${mc.runT.slice(0,3).map(t=>{const w=W(t.wk);return`<div class="mdc-ti"><div class="pb" style="height:12px;background:${PC[w?.pri]||'#ccc'}"></div><span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${w?.title||''}</span><span style="font-size:9px;flex-shrink:0">${timeL(t.ed)}</span></div>`;}).join('')}
-      </div>`:''}</div>`;
+      <div class="mdch">${aH(m,36)}<div style="flex:1"><div style="font-size:13px;font-weight:700">${m.name}</div><div style="font-size:10px;color:var(--tx2)">${m.role}</div></div><span style="font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;background:${ld.bg};color:${ld.c}">${ld.l}</span></div>
+      <div class="mdcs"><div class="mdcsi"><div class="v" style="color:var(--blu)">${mc.run}</div><div class="l">Active</div></div><div class="mdcsi"><div class="v" style="color:var(--grn)">${mc.appr}</div><div class="l">Done</div></div><div class="mdcsi"><div class="v" style="color:${mc.od>0?'var(--red)':'var(--tx3)'}">${mc.od}</div><div class="l">Overdue</div></div><div class="mdcsi"><div class="v" style="color:var(--grn)">${mc.rate}%</div><div class="l">On-Time</div></div></div>
+      ${mc.runT.length?`<div class="mdct"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px">Active Tasks</div>${mc.runT.slice(0,3).map(t=>{const w=W(t.wk);return`<div class="mdcti"><div class="pb" style="height:10px;background:${PC[w?.pri]||'#ccc'}"></div><span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${w?.title||''}</span><span style="margin-left:6px">${tL(t.ed)}</span></div>`}).join('')}</div>`:''}</div>`;
   });
   h+=`</div>`;
 
+  // Comparison chart
   const bM=Math.max(...users.filter(u=>u.on).map(m=>tasks.filter(t=>t.as===m.id).length),1);
-  h+=`<div class="cd ai"><div class="cdh"><h3>Performance Comparison</h3></div><div style="padding:16px">
-    ${users.filter(u=>u.on).map(m=>{const mc=eC(m.id);return`
-      <div style="margin-bottom:14px">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">${aH(m,22)}<span style="font-size:12px;font-weight:600;min-width:100px">${m.name}</span><span style="font-size:10px;color:var(--tx3)">${m.role}</span><span style="font-size:9px;color:var(--grn);font-weight:600;margin-left:auto">${mc.rate}% on-time</span></div>
-        <div class="brt">
-          ${mc.run>0?`<div class="brs" style="width:${(mc.run/bM)*100}%;background:#2563eb"></div>`:''}
-          ${mc.reas>0?`<div class="brs" style="width:${(mc.reas/bM)*100}%;background:#d97706"></div>`:''}
-          ${mc.comp>0?`<div class="brs" style="width:${(mc.comp/bM)*100}%;background:#db2777"></div>`:''}
-          ${mc.appr>0?`<div class="brs" style="width:${(mc.appr/bM)*100}%;background:#16a34a"></div>`:''}
-        </div>
-      </div>`}).join('')}
-    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)">
-      ${[{c:'#2563eb',l:'Active'},{c:'#d97706',l:'Reassigned'},{c:'#db2777',l:'Pending'},{c:'#16a34a',l:'Approved'}].map(x=>`<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--tx2)"><div style="width:8px;height:8px;border-radius:2px;background:${x.c}"></div>${x.l}</div>`).join('')}
-    </div>
-  </div></div>`;
+  h+=`<div class="cd ai"><div class="cdh"><h3>Team Comparison</h3></div><div style="padding:16px">${users.filter(u=>u.on).map(m=>{const mc=eC(m.id);return`<div style="margin-bottom:13px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">${aH(m,22)}<span style="font-size:11px;font-weight:600;min-width:100px">${m.name}</span><span style="font-size:9px;color:var(--tx3)">${m.role}</span><span style="font-size:9px;color:var(--grn);font-weight:600;margin-left:auto">${mc.rate}% on-time</span></div><div class="brt">${mc.run>0?`<div class="brs" style="width:${(mc.run/bM)*100}%;background:#2563eb"></div>`:''}${mc.reas>0?`<div class="brs" style="width:${(mc.reas/bM)*100}%;background:#d97706"></div>`:''}${mc.comp>0?`<div class="brs" style="width:${(mc.comp/bM)*100}%;background:#db2777"></div>`:''}${mc.appr>0?`<div class="brs" style="width:${(mc.appr/bM)*100}%;background:#16a34a"></div>`:''}</div><div style="display:flex;gap:10px;margin-top:3px;margin-left:34px"><span style="font-size:9px;color:#2563eb">● Active ${mc.run}</span><span style="font-size:9px;color:#d97706">● Reassign ${mc.reas}</span><span style="font-size:9px;color:#db2777">● Pending ${mc.comp}</span><span style="font-size:9px;color:#16a34a">● Done ${mc.appr}</span></div></div>`}).join('')}</div></div>`;
   return h;
 }
 
 // ══════════════════════════════════════════════════════════
-// MEMBER DASHBOARD — INDIVIDUAL
+//  ★  INDIVIDUAL MEMBER DASHBOARD
 // ══════════════════════════════════════════════════════════
 function rMDa(uid){
   const m=U(uid);if(!m)return'';
-  const c=eC(uid);
-  const avgP=c.total?Math.round(tasks.filter(t=>t.as===uid).reduce((s,t)=>s+(t.pg||0),0)/c.total):0;
+  const c=eC(uid);const avgP=c.total?Math.round(tasks.filter(t=>t.as===uid).reduce((s,t)=>s+(t.pg||0),0)/c.total):0;
   const ld=c.run>=3?{c:'#dc2626',l:'Overloaded',bg:'var(--redbg)'}:c.run>=1?{c:'#d97706',l:'Busy',bg:'var(--ylwbg)'}:{c:'#16a34a',l:'Free',bg:'var(--grnbg)'};
 
-  let h=`<div class="mdh ai">
-    <div class="mda" style="width:56px;height:56px;font-size:18px;background:${m.col}15;color:${m.col}">${m.av}</div>
-    <div style="flex:1;min-width:0"><h2 style="font-size:18px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.name}</h2><p style="font-size:12px;color:var(--tx2);margin-top:2px">${m.role} · ${m.email}</p></div>
-    <span style="font-size:10px;font-weight:700;padding:4px 10px;border-radius:7px;background:${ld.bg};color:${ld.c};flex-shrink:0">${ld.l}</span>
-    <button class="btn bo bsm" onclick="goTo('${AC.TD}')">← Team</button>
-  </div>`;
+  let h=`<div class="mdh ai"><div class="mda" style="background:${m.col}12;color:${m.col}">${m.av}</div>
+    <div style="flex:1"><h2 style="font-size:18px;font-weight:800;letter-spacing:-0.02em">${m.name}</h2><p style="font-size:11px;color:var(--tx2)">${m.role} · ${m.email}</p></div>
+    <span style="font-size:10px;font-weight:700;padding:5px 11px;border-radius:7px;background:${ld.bg};color:${ld.c}">${ld.l}</span>
+    <button class="btn bo bsm" onclick="goTo('${AC.TD}')">← Team</button></div>`;
 
   h+=`<div class="urg ai">
     ${urgC('Due Today 🔴',c.dT,'#dc2626','#fef2f2','#fecaca',c.dTT)}
@@ -1069,470 +803,338 @@ function rMDa(uid){
     ${urgC('Overdue ⚫',c.od,'#991b1b','#fef2f2','#fca5a5',c.odT)}
   </div>`;
 
-  h+=`<div class="met-row ai">
-    <div class="met-card">${ring(c.rate,'#16a34a')}<div><div style="font-size:16px;font-weight:800;color:var(--grn)">${c.onT}/${c.appr}</div><div style="font-size:11px;color:var(--tx2)">On-Time Rate</div></div></div>
-    <div class="met-card">${ring(avgP,'#4338ca')}<div><div style="font-size:16px;font-weight:800;color:var(--ac)">${avgP}%</div><div style="font-size:11px;color:var(--tx2)">Avg Progress</div></div></div>
-    <div class="met-card"><div style="width:46px;height:46px;border-radius:11px;background:var(--blubg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">📋</div><div><div style="font-size:16px;font-weight:800">${c.total}</div><div style="font-size:11px;color:var(--tx2)">Total Tasks</div></div></div>
+  h+=`<div class="mtr ai">
+    <div class="mc">${ring(c.rate,'#16a34a')}<div><div style="font-size:16px;font-weight:800;color:var(--grn)">${c.onT}/${c.appr}</div><div style="font-size:10px;color:var(--tx2)">On-Time Rate</div></div></div>
+    <div class="mc">${ring(avgP,'#4338ca')}<div><div style="font-size:16px;font-weight:800;color:var(--ac)">${avgP}%</div><div style="font-size:10px;color:var(--tx2)">Avg Progress</div></div></div>
+    <div class="mc"><div style="width:50px;height:50px;border-radius:12px;background:var(--blubg);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📋</div><div><div style="font-size:16px;font-weight:800">${c.total}</div><div style="font-size:10px;color:var(--tx2)">Total Tasks</div></div></div>
   </div>`;
 
-  h+=`<div class="sg ai">${[
-    {l:'Active',v:c.run,c_:'#2563eb'},{l:'Pending',v:c.comp,c_:'#db2777'},
-    {l:'Approved',v:c.appr,c_:'#16a34a'},{l:'Reassigned',v:c.reas,c_:'#d97706'},
-    {l:'Overdue',v:c.od,c_:'#dc2626'},{l:'On-Time',v:c.onT,c_:'#059669'}
-  ].map(s=>`<div class="sc"><div class="ob" style="background:${s.c_}"></div><div style="font-size:10px;color:var(--tx2);margin-bottom:3px">${s.l}</div><div style="font-size:22px;font-weight:800;font-family:var(--mono);color:${s.c_}">${s.v}</div></div>`).join('')}</div>`;
+  h+=`<div class="sg ai">${[{l:'Active',v:c.run,c_:'#2563eb'},{l:'Pending',v:c.comp,c_:'#db2777'},{l:'Done',v:c.appr,c_:'#16a34a'},{l:'Reassign',v:c.reas,c_:'#d97706'},{l:'Overdue',v:c.od,c_:'#dc2626'},{l:'On-Time',v:c.onT,c_:'#059669'}].map(s=>`<div class="sc"><div class="ob" style="background:${s.c_}"></div><div style="font-size:10px;color:var(--tx2);margin-bottom:3px">${s.l}</div><div style="font-size:22px;font-weight:800;font-family:var(--mono);color:${s.c_}">${s.v}</div></div>`).join('')}</div>`;
 
-  h+=`<div class="cd ai" style="margin-bottom:14px"><div class="cdh"><h3>Active Tasks (${c.run})</h3></div>
-    ${c.runT.length?c.runT.map(t=>{const w=W(t.wk);return`
-      <div class="rw ck" onclick="oTD(${t.id})" style="margin:6px 10px">
-        <div class="pb" style="height:34px;background:${PC[w?.pri]||'#ccc'}"></div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w?.title||''} ${isOD(t)?'<span style="font-size:8px;background:var(--redbg);color:var(--red);padding:1px 5px;border-radius:3px;font-weight:700">OVERDUE</span>':''}</div>
-          <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
-            <div style="height:3px;border-radius:2px;background:#eee;width:70px"><div style="height:100%;border-radius:2px;background:var(--ac);width:${t.pg||0}%"></div></div>
-            <span style="font-size:9px;font-family:var(--mono)">${t.pg||0}%</span>
-          </div>
-        </div>
-        ${sB(t.st)}<span style="font-size:10px;flex-shrink:0">${timeL(t.ed)}</span>
-      </div>`}).join(''):'<div style="padding:20px;text-align:center;color:var(--tx3);font-size:12px">No active tasks</div>'}</div>`;
+  h+=`<div class="cd ai" style="margin-bottom:12px"><div class="cdh"><h3>Active Tasks (${c.run})</h3></div>
+    ${c.runT.length?c.runT.map(t=>{const w=W(t.wk);return`<div class="rw ck" onclick="oTD(${t.id})" style="margin:5px 8px"><div class="pb" style="height:30px;background:${PC[w?.pri]||'#ccc'}"></div>
+      <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600">${w?.title||''} ${isOD(t)?'<span style="font-size:8px;background:var(--redbg);color:var(--red);padding:1px 4px;border-radius:3px;font-weight:700">OVERDUE</span>':''}</div>
+      <div style="display:flex;align-items:center;gap:5px;margin-top:3px"><div style="height:3px;border-radius:2px;background:#eee;width:70px"><div style="height:100%;border-radius:2px;background:var(--ac);width:${t.pg||0}%"></div></div><span style="font-size:9px;font-family:var(--mono)">${t.pg||0}%</span></div></div>
+      ${sB(t.st)}<span>${tL(t.ed)}</span></div>`}).join(''):'<div style="padding:16px;text-align:center;color:var(--tx3);font-size:11px">None</div>'}</div>`;
 
-  h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-    <div class="cd ai"><div class="cdh"><h3>Pending (${c.comp})</h3></div>
-      ${c.compT.length?c.compT.map(t=>{const w=W(t.wk);return`<div style="padding:8px 14px;border-bottom:1px solid #f0efe8;font-size:11px;display:flex;align-items:center;gap:6px;cursor:pointer" onclick="oTD(${t.id})"><div class="pb" style="height:14px;background:${PC[w?.pri]||'#ccc'}"></div><span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w?.title||''}</span>${isTL()?`<button class="btn bg bsm" style="padding:2px 8px;font-size:9px" onclick="event.stopPropagation();doAp(${t.id})">✓</button>`:''}</div>`;}).join(''):'<div style="padding:14px;text-align:center;color:var(--tx3);font-size:11px">None</div>'}</div>
-    <div class="cd ai"><div class="cdh"><h3>Approved (${c.appr})</h3></div>
-      ${c.apprT.length?c.apprT.map(t=>{const w=W(t.wk);const ch=t.hi.find(x=>x.a.toLowerCase().includes('complete'));const onT=ch&&t.ed&&ch.d<=t.ed;return`<div style="padding:8px 14px;border-bottom:1px solid #f0efe8;font-size:11px;display:flex;align-items:center;gap:6px"><div class="pb" style="height:14px;background:${PC[w?.pri]||'#ccc'}"></div><span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w?.title||''}</span><span style="font-size:9px;font-weight:600;color:${onT?'var(--grn)':'var(--red)'};flex-shrink:0">${onT?'✓ On-time':'⚠ Late'}</span></div>`;}).join(''):'<div style="padding:14px;text-align:center;color:var(--tx3);font-size:11px">None</div>'}</div>
+  h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+    <div class="cd ai"><div class="cdh"><h3>Pending Review (${c.comp})</h3></div>${c.compT.length?c.compT.map(t=>{const w=W(t.wk);return`<div style="padding:8px 14px;border-bottom:1px solid #f0efe8;font-size:11px;display:flex;align-items:center;gap:6px;cursor:pointer" onclick="oTD(${t.id})"><div class="pb" style="height:14px;background:${PC[w?.pri]||'#ccc'}"></div><span style="flex:1;font-weight:500">${w?.title||''}</span>${isTL()?`<button class="btn bg bsm" style="padding:2px 8px;font-size:9px" onclick="event.stopPropagation();doAp(${t.id})">✓</button>`:''}</div>`}).join(''):'<div style="padding:14px;text-align:center;color:var(--tx3);font-size:11px">None</div>'}</div>
+    <div class="cd ai"><div class="cdh"><h3>Approved (${c.appr})</h3></div>${c.apprT.length?c.apprT.map(t=>{const w=W(t.wk);const ch=t.hi.find(x=>x.a.toLowerCase().includes('complete'));const onT=ch&&t.ed&&ch.d<=t.ed;return`<div style="padding:8px 14px;border-bottom:1px solid #f0efe8;font-size:11px;display:flex;align-items:center;gap:6px"><div class="pb" style="height:14px;background:${PC[w?.pri]||'#ccc'}"></div><span style="flex:1;font-weight:500">${w?.title||''}</span><span style="font-size:9px;font-weight:600;color:${onT?'var(--grn)':'var(--red)'}">  ${onT?'✓ On-time':'⚠ Late'}</span></div>`}).join(''):'<div style="padding:14px;text-align:center;color:var(--tx3);font-size:11px">None</div>'}</div>
   </div>`;
 
   const mA=alog.filter(a=>a.u===uid).slice(0,6);
-  h+=`<div class="cd ai"><div class="cdh"><h3>Activity</h3></div><div style="padding:14px">
-    ${mA.length?mA.map(a=>{const au=U(a.u);return`<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid #f0efe8"><div style="width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0;background:${({work:'#4338ca',task:'#2563eb',approve:'#16a34a',reject:'#dc2626'})[a.t]||'#ccc'}"></div><div style="flex:1;font-size:12px"><b>${au?.name||''}</b> ${a.a}<div style="font-size:10px;color:var(--tx3);font-family:var(--mono);margin-top:1px">${fD(a.d)}</div></div></div>`;}).join('')
-    :'<div style="text-align:center;color:var(--tx3);font-size:11px;padding:12px">No activity</div>'}
-  </div></div>`;
+  h+=`<div class="cd ai"><div class="cdh"><h3>Recent Activity</h3></div><div style="padding:12px">${mA.length?mA.map(a=>{const u=U(a.u);return`<div style="display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-bottom:1px solid #f0efe8"><div style="width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0;background:${{work:'#4338ca',task:'#2563eb',approve:'#16a34a',reject:'#dc2626',user:'#d97706'}[a.t]||'#ccc'}"></div><div style="flex:1;font-size:11px"><b>${u?.name||''}</b> ${a.a}<div style="font-size:9px;color:var(--tx3);font-family:var(--mono);margin-top:1px">${fD(a.d)}</div></div></div>`}).join(''):'<div style="text-align:center;color:var(--tx3);font-size:11px;padding:12px">No activity</div>'}</div></div>`;
   return h;
 }
 
 // ══════════════════════════════════════════════════════════
-// WORKS
+//  WORKS
 // ══════════════════════════════════════════════════════════
 function rWk(){
-  const f=works.filter(w=>{if(wF==='unassigned')return!w.ht;if(wF==='assigned')return w.ht;return true;});
-  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+  const f=works.filter(w=>{if(wF==='unassigned')return!w.ht;if(wF==='assigned')return w.ht;return true});
+  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
     <div class="fb">${['all','unassigned','assigned'].map(x=>`<button class="fbt ${wF===x?'on':''}" onclick="wF='${x}';rA()">${x==='all'?`All (${works.length})`:x==='unassigned'?`Unassigned (${works.filter(w=>!w.ht).length})`:`Assigned (${works.filter(w=>w.ht).length})`}</button>`).join('')}</div>
     ${isTL()?`<button class="btn ba" onclick="oCW()">+ New Work</button>`:''}
   </div>`;
-  if(!f.length)h+=`<div class="cd" style="padding:28px;text-align:center;color:var(--tx3)">No works yet</div>`;
-  else f.forEach(w=>{
-    const tk=T4W(w.id);const a=tk?U(tk.as):null;
-    h+=`<div class="rw${tk?' ck':''}" ${tk?`onclick="oTD(${tk.id})"`:''}">
-      <div class="pb" style="height:38px;background:${PC[w.pri]||'#ccc'}"></div>
-      <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap">
-          <span style="font-weight:700;font-size:13px">${w.title}</span>${pB(w.pri)}
-        </div>
-        <div style="font-size:11px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w.desc}</div>
-      </div>
-      <div style="flex-shrink:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        ${tk?`<div style="display:flex;align-items:center;gap:5px">${aH(a,22)}<span style="font-size:11px;color:var(--tx2)">${a?.name||''}</span></div>${sB(tk.st)}`:`<span class="bdg" style="background:var(--ylwbg);color:#92400e">⏳ Unassigned</span>${isTL()?`<button class="btn ba bsm" onclick="event.stopPropagation();oAW(${w.id})">Assign →</button>`:''}`}
-      </div>
-    </div>`;
-  });
+  if(!f.length)h+=`<div class="cd" style="padding:28px;text-align:center;color:var(--tx3);font-size:12px">No works yet. ${isTL()?'Click "+ New Work" to get started.':''}</div>`;
+  else f.forEach(w=>{const tk=T4W(w.id);const a=tk?U(tk.as):null;
+    h+=`<div class="rw${tk?' ck':''}" ${tk?`onclick="oTD(${tk.id})"`:''}><div class="pb" style="height:38px;background:${PC[w.pri]}"></div>
+      <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="font-weight:700;font-size:13px">${w.title}</span>${pB(w.pri)}</div><div style="font-size:11px;color:var(--tx2)">${w.desc}</div></div>
+      <div style="flex-shrink:0;display:flex;align-items:center;gap:7px">${tk?`${aH(a,22)}<span style="font-size:11px;color:var(--tx2)">${a?.name||''}</span>${sB(tk.st)}`:`<span class="bdg" style="background:var(--ylwbg);color:#92400e">⏳ Unassigned</span>${isTL()?`<button class="btn ba bsm" onclick="event.stopPropagation();oAW(${w.id})">Assign →</button>`:''}`}</div></div>`});
   return h;
 }
 
 // ══════════════════════════════════════════════════════════
-// TASKS
+//  TASKS
 // ══════════════════════════════════════════════════════════
 function rTk(){
   let pool=isTL()?tasks:tasks.filter(t=>t.as===CU.id);
-  const f=pool.filter(t=>{if(tF!=='all'&&t.st!==tF)return false;if(tS){const w=W(t.wk);if(w&&!w.title.toLowerCase().includes(tS.toLowerCase()))return false;}return true;});
-  let h=`<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
-    <div class="srch"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input class="inp" style="width:200px;padding-left:34px" placeholder="Search..." value="${tS}" oninput="tS=this.value;rA()"></div>
+  const f=pool.filter(t=>{if(tF!=='all'&&t.st!==tF)return false;if(tS){const w=W(t.wk);if(w&&!w.title.toLowerCase().includes(tS.toLowerCase()))return false}return true});
+  let h=`<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
+    <div class="srch"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input class="inp" style="width:200px;padding-left:32px" placeholder="Search tasks..." value="${tS}" oninput="tS=this.value;rA()"></div>
     <div class="fb">${['all','Assigned','In Progress','Completed','Approved','Reassigned'].map(s=>`<button class="fbt ${tF===s?'on':''}" onclick="tF='${s}';rA()">${s==='all'?'All':s}</button>`).join('')}</div>
     ${hA(AC.K)?`<button class="btn bo bsm" onclick="goTo('${AC.K}')">⊞ Kanban</button>`:''}
   </div>`;
-  if(!f.length)h+=`<div class="cd" style="padding:28px;text-align:center;color:var(--tx3)">No tasks</div>`;
-  else f.forEach(t=>{
-    const w=W(t.wk);const a=U(t.as);const isMe=t.as===CU.id;
-    h+=`<div class="rw ck" onclick="oTD(${t.id})">
-      <div class="pb" style="height:38px;background:${PC[w?.pri]||'#ccc'}"></div>
-      <div style="flex:1;min-width:0">
-        <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w?.title||''} ${isOD(t)?'<span style="font-size:8px;background:var(--redbg);color:var(--red);padding:1px 5px;border-radius:3px;font-weight:700">OVERDUE</span>':''}</div>
-        <div style="font-size:10px;color:var(--tx3);font-family:var(--mono);margin-top:2px">${fD(t.sd)} → ${fD(t.ed)}</div>
-      </div>
-      ${sB(t.st)} ${a?`<div style="display:flex;align-items:center;gap:5px;flex-shrink:0">${aH(a)}<span style="font-size:11px;color:var(--tx2)">${a.name}</span></div>`:''}
-      <span style="font-size:9px;flex-shrink:0">${timeL(t.ed)}</span>
+  if(!f.length)h+=`<div class="cd" style="padding:28px;text-align:center;color:var(--tx3);font-size:12px">No tasks found</div>`;
+  else f.forEach(t=>{const w=W(t.wk);const a=U(t.as);const isMe=t.as===CU.id;
+    h+=`<div class="rw ck" onclick="oTD(${t.id})"><div class="pb" style="height:36px;background:${PC[w?.pri]||'#ccc'}"></div>
+      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:12px">${w?.title||''} ${isOD(t)?'<span style="font-size:8px;background:var(--redbg);color:var(--red);padding:1px 4px;border-radius:3px;font-weight:700">OD</span>':''}</div>
+      <div style="font-size:9px;color:var(--tx3);font-family:var(--mono);margin-top:2px">${fD(t.sd)}→${fD(t.ed)}</div></div>
+      ${sB(t.st)} ${a?`${aH(a,20)}<span style="font-size:10px;color:var(--tx2)">${a.name.split(' ')[0]}</span>`:''} <span>${tL(t.ed)}</span>
       ${isMe&&(t.st==='Assigned'||t.st==='Reassigned')?`<button class="btn ba bsm" onclick="event.stopPropagation();doSt(${t.id})">▶</button>`:''}
-      ${isMe&&t.st==='In Progress'?`<button class="btn bg bsm" onclick="event.stopPropagation();doCo(${t.id})">✓</button>`:''}
-    </div>`;
-  });
+      ${isMe&&t.st==='In Progress'?`<button class="btn bg bsm" onclick="event.stopPropagation();doCo(${t.id})">✓</button>`:''}</div>`});
   return h;
 }
 
 // ══════════════════════════════════════════════════════════
-// KANBAN
+//  KANBAN
 // ══════════════════════════════════════════════════════════
 function rKb(){
   const pool=isTL()?tasks:tasks.filter(t=>t.as===CU.id);
   const cols=[{k:'Assigned',c:'#2563eb'},{k:'In Progress',c:'#7c3aed'},{k:'Reassigned',c:'#d97706'},{k:'Completed',c:'#db2777'},{k:'Approved',c:'#16a34a'}];
-  let h=`<div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
-    <button class="btn bo bsm" onclick="goTo('${AC.T}')">☰ List View</button>
-  </div><div class="kb">`;
-  cols.forEach(col=>{
-    const ct=pool.filter(t=>t.st===col.k);
-    h+=`<div class="kbc"><div class="kbch"><span style="width:7px;height:7px;border-radius:50%;background:${col.c};display:inline-block"></span><b style="font-size:12px">${col.k}</b><span style="font-size:10px;font-weight:700;background:rgba(0,0,0,0.05);border-radius:99px;padding:1px 7px">${ct.length}</span></div>`;
-    ct.forEach(t=>{
-      const w=W(t.wk);const a=U(t.as);
-      h+=`<div class="kbcc" onclick="oTD(${t.id})">
-        <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px">${pB(w?.pri||'Medium')}<span style="font-size:9px;color:var(--tx3);font-family:var(--mono)">#${t.id}</span></div>
-        <div style="font-size:12px;font-weight:600;margin-bottom:7px;line-height:1.3">${w?.title||''}</div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          ${a?`<div style="display:flex;align-items:center;gap:4px">${aH(a,18)}<span style="font-size:10px;color:var(--tx2)">${a.name.split(' ')[0]}</span></div>`:'<span></span>'}
-          <span style="font-size:9px">${timeL(t.ed)}</span>
-        </div>
-        <div style="margin-top:5px;height:3px;border-radius:2px;background:#eee"><div style="height:100%;border-radius:2px;background:${col.c};width:${t.pg||0}%"></div></div>
-      </div>`;
-    });
-    h+=`</div>`;
-  });
+  let h=`<div style="margin-bottom:10px"><button class="btn bo bsm" onclick="goTo('${AC.T}')">☰ List View</button></div><div class="kb">`;
+  cols.forEach(col=>{const ct=pool.filter(t=>t.st===col.k);
+    h+=`<div class="kbc"><div class="kbch"><span class="dt" style="width:7px;height:7px;border-radius:50%;background:${col.c};display:inline-block"></span><b style="font-size:11px">${col.k}</b><span style="font-size:9px;font-weight:700;background:rgba(0,0,0,0.05);border-radius:99px;padding:1px 6px;margin-left:4px">${ct.length}</span></div>`;
+    ct.forEach(t=>{const w=W(t.wk);const a=U(t.as);h+=`<div class="kbcc" onclick="oTD(${t.id})"><div style="font-size:11px;font-weight:600;margin-bottom:5px;line-height:1.3">${w?.title||''}</div><div style="display:flex;justify-content:space-between;align-items:center">${a?`<div style="display:flex;align-items:center;gap:4px">${aH(a,17)}<span style="font-size:9px;color:var(--tx2)">${a.name.split(' ')[0]}</span></div>`:''}<span>${tL(t.ed)}</span></div><div style="margin-top:5px;height:2px;border-radius:2px;background:#eee"><div style="height:100%;border-radius:2px;background:${col.c};width:${t.pg||0}%"></div></div></div>`});
+    h+=`</div>`});
   return h+'</div>';
 }
 
 // ══════════════════════════════════════════════════════════
-// REPORTS
+//  REPORTS
 // ══════════════════════════════════════════════════════════
 function rRp(){
   const gc=isTL()?eCA():eC(CU.id);
-  let h=`<div class="cd ai" style="margin-bottom:16px"><div style="padding:18px"><div style="font-weight:800;font-size:14px;margin-bottom:14px">${isTL()?'Team':'My'} Summary</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:8px">
-      ${[{l:'Total',v:gc.total,c:'#4338ca'},{l:'Active',v:gc.run,c:'#2563eb'},{l:'Reassigned',v:gc.reas,c:'#d97706'},{l:'Pending',v:gc.comp,c:'#db2777'},{l:'Approved',v:gc.appr,c:'#16a34a'},{l:'On-Time',v:gc.onT,c:'#059669'},{l:'Overdue',v:gc.od,c:'#dc2626'},{l:'Rate',v:gc.rate+'%',c:'#16a34a'}].map(s=>`
-        <div style="text-align:center;padding:12px 6px;border-radius:8px;background:${s.c}06;border:1px solid ${s.c}10">
-          <div style="font-size:20px;font-weight:800;color:${s.c};font-family:var(--mono)">${s.v}</div>
-          <div style="font-size:9px;color:var(--tx2);margin-top:2px">${s.l}</div>
-        </div>`).join('')}
-    </div></div></div>`;
-
-  if(isTL()&&users.length){
-    const bM=Math.max(...users.filter(u=>u.on).map(m=>tasks.filter(t=>t.as===m.id).length),1);
-    h+=`<div class="cd ai" style="margin-bottom:16px"><div style="padding:18px"><div style="font-weight:800;font-size:14px;margin-bottom:16px">Distribution</div>
-      ${users.filter(u=>u.on).map(m=>{const mc=eC(m.id);return`
-        <div style="margin-bottom:14px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">${aH(m,22)}<span style="font-size:12px;font-weight:600;min-width:100px">${m.name}</span><span style="font-size:10px;color:var(--tx3)">${m.role}</span><span style="font-size:9px;color:var(--grn);font-weight:600;margin-left:auto">${mc.rate}% on-time</span></div>
-          <div class="brt">
-            ${mc.run>0?`<div class="brs" style="width:${(mc.run/bM)*100}%;background:#2563eb"></div>`:''}
-            ${mc.reas>0?`<div class="brs" style="width:${(mc.reas/bM)*100}%;background:#d97706"></div>`:''}
-            ${mc.comp>0?`<div class="brs" style="width:${(mc.comp/bM)*100}%;background:#db2777"></div>`:''}
-            ${mc.appr>0?`<div class="brs" style="width:${(mc.appr/bM)*100}%;background:#16a34a"></div>`:''}
-          </div>
-        </div>`}).join('')}
-    </div></div>`;
-
-    h+=`<div class="cd ai"><div class="cdh"><h3>Employee Table</h3><select class="inp" style="width:auto;padding:5px 10px;font-size:11px" onchange="eF=this.value;rA()"><option value="all">All</option>${users.filter(u=>u.on).map(m=>`<option value="${m.id}" ${eF===m.id?'selected':''}>${m.name}</option>`).join('')}</select></div>
-    <div style="overflow-x:auto"><table class="rt"><thead><tr>${['Employee','Total','Active','Done','On-Time','Overdue','Rate'].map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>
-      ${users.filter(u=>u.on).filter(m=>eF==='all'||m.id===eF).map(m=>{const c=eC(m.id);return`
-        <tr><td><div style="display:flex;align-items:center;gap:6px">${aH(m,22)}<span style="font-weight:600">${m.name}</span></div></td>
-        ${[c.total,c.run,c.appr,c.onT,c.od,c.rate+'%'].map((v,i)=>`<td style="font-weight:700;font-family:var(--mono);color:${['#333','#2563eb','#16a34a','#059669',typeof v==='number'&&v>0?'#dc2626':'#ccc','#16a34a'][i]}">${v}</td>`).join('')}</tr>`;}).join('')}
-    </tbody></table></div></div>`;
-  }
+  let h=`<div class="cd ai" style="margin-bottom:16px"><div style="padding:18px"><div style="font-weight:800;font-size:14px;margin-bottom:12px">${isTL()?'Team':'My'} Summary</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:8px">${[{l:'Total',v:gc.total,c:'#4338ca'},{l:'Active',v:gc.run,c:'#2563eb'},{l:'Reassign',v:gc.reas,c:'#d97706'},{l:'Pending',v:gc.comp,c:'#db2777'},{l:'Approved',v:gc.appr,c:'#16a34a'},{l:'On-Time',v:gc.onT,c:'#059669'},{l:'Overdue',v:gc.od,c:'#dc2626'},{l:'Rate',v:gc.rate+'%',c:'#16a34a'}].map(s=>`<div style="text-align:center;padding:10px 4px;border-radius:8px;background:${s.c}06;border:1px solid ${s.c}10"><div style="font-size:20px;font-weight:800;color:${s.c};font-family:var(--mono)">${s.v}</div><div style="font-size:9px;color:var(--tx2);margin-top:2px">${s.l}</div></div>`).join('')}</div></div></div>`;
+  if(isTL()&&users.length){const bM=Math.max(...users.filter(u=>u.on).map(m=>tasks.filter(t=>t.as===m.id).length),1);
+    h+=`<div class="cd ai"><div class="cdh"><h3>Employee Report</h3></div><div style="overflow-x:auto"><table class="rt"><thead><tr>${['Employee','Total','Active','Done','On-Time','Overdue','Rate'].map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${users.filter(u=>u.on).map(m=>{const c=eC(m.id);return`<tr><td><div style="display:flex;align-items:center;gap:6px">${aH(m,22)}<span style="font-weight:600">${m.name}</span></div></td>${[c.total,c.run,c.appr,c.onT,c.od,c.rate+'%'].map((v,i)=>`<td style="font-weight:700;font-family:var(--mono);color:${['#333','#2563eb','#16a34a','#059669',typeof v==='number'&&v>0?'#dc2626':'#ccc','#16a34a'][i]}">${v}</td>`).join('')}</tr>`}).join('')}</tbody></table></div></div>`}
   return h;
 }
 
 // ══════════════════════════════════════════════════════════
-// ACTIVITY
+//  ACTIVITY
 // ══════════════════════════════════════════════════════════
 function rAc(){
   const tc={work:'#4338ca',task:'#2563eb',approve:'#16a34a',reject:'#dc2626',user:'#d97706'};
-  return`<div class="cd ai"><div class="cdh"><h3>Activity Log</h3></div><div style="padding:14px">
-    ${!alog.length?'<div style="text-align:center;color:var(--tx3);padding:16px">No activity yet</div>':
-    alog.slice(0,30).map(a=>{const u=U(a.u);return`
-      <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid #f0efe8">
-        <div style="width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0;background:${tc[a.t]||'#ccc'}"></div>
-        ${u?aH(u,22):''}
-        <div style="flex:1;font-size:12px"><b>${u?.name||''}</b> ${a.a}<div style="font-size:10px;color:var(--tx3);font-family:var(--mono);margin-top:1px">${fD(a.d)}</div></div>
-      </div>`}).join('')}
-  </div></div>`;
+  return`<div class="cd ai"><div class="cdh"><h3>Activity Log</h3></div><div style="padding:14px">${!alog.length?'<div style="text-align:center;color:var(--tx3);padding:14px;font-size:12px">No activity yet</div>':alog.slice(0,30).map(a=>{const u=U(a.u);return`<div style="display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-bottom:1px solid #f0efe8"><div style="width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0;background:${tc[a.t]||'#ccc'}"></div>${u?aH(u,22):''}<div style="flex:1;font-size:11px"><b>${u?.name||''}</b> ${a.a}<div style="font-size:9px;color:var(--tx3);font-family:var(--mono);margin-top:1px">${fD(a.d)}</div></div></div>`}).join('')}</div></div>`
 }
 
 // ══════════════════════════════════════════════════════════
-// USERS
+//  USERS
 // ══════════════════════════════════════════════════════════
 function rUs(){
-  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-    <span style="font-size:13px;color:var(--tx2)">${users.filter(u=>u.on).length} active / ${users.length} total</span>
-    <button class="btn ba" onclick="oCU()">+ Add User</button>
-  </div>`;
-  if(!users.length)h+=`<div class="cd" style="padding:28px;text-align:center;color:var(--tx3)">No users yet. Add your first team member!</div>`;
-  else users.forEach(u=>{
-    h+=`<div class="rw ck" onclick="oEU('${u.id}')">
-      ${aH(u,38)}
-      <div style="flex:1;min-width:0">
-        <div style="font-weight:700;font-size:13px">${u.name} ${!u.on?'<span style="font-size:9px;background:var(--redbg);color:var(--red);padding:1px 5px;border-radius:3px">Inactive</span>':''}</div>
-        <div style="font-size:11px;color:var(--tx2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.email} · ${u.role}</div>
-      </div>
-      <div style="display:flex;gap:3px;flex-wrap:wrap;max-width:200px">${u.acc.map(a=>`<span style="font-size:8px;padding:2px 6px;border-radius:3px;background:var(--acbg);color:var(--ac);font-weight:600">${a}</span>`).join('')}</div>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    </div>`;
-  });
+  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-size:12px;color:var(--tx2)">${users.filter(u=>u.on).length} active / ${users.length} total</span><button class="btn ba" onclick="oCU()">+ Add User</button></div>`;
+  users.forEach(u=>{h+=`<div class="rw ck" onclick="oEU('${u.id}')">${aH(u,34)}<div style="flex:1"><div style="font-weight:700;font-size:13px">${u.name}${!u.on?' <span style="font-size:9px;background:var(--redbg);color:var(--red);padding:1px 5px;border-radius:3px">Inactive</span>':''}</div><div style="font-size:11px;color:var(--tx2)">${u.email} · ${u.role}</div></div><div style="display:flex;gap:3px;flex-wrap:wrap">${u.acc.map(a=>`<span style="font-size:8px;padding:2px 5px;border-radius:3px;background:var(--acbg);color:var(--ac);font-weight:600">${a}</span>`).join('')}</div></div>`});
   return h;
 }
 
 // ══════════════════════════════════════════════════════════
-// MODALS: CREATE WORK
+//  MODALS: CREATE WORK
 // ══════════════════════════════════════════════════════════
 function oCW(){
   window._cp='Medium';
-  oM(`<div class="mdlh"><div style="font-weight:800;font-size:17px">Create Work</div><button style="background:none;border:none;color:var(--tx3);font-size:20px;cursor:pointer" onclick="cM()">✕</button></div>
-  <div class="mdlb">
-    <div style="margin-bottom:14px"><label class="lbl">Title <span class="rq">*</span></label><input class="inp" id="cwT" placeholder="Work title"></div>
-    <div style="margin-bottom:14px"><label class="lbl">Description</label><textarea class="inp" id="cwD" rows="3" placeholder="Describe..."></textarea></div>
-    <div style="margin-bottom:14px"><label class="lbl">Priority</label><div class="pbs">${['Low','Medium','High','Urgent'].map(p=>`<button class="pbt" id="cwP_${p}" onclick="sP('${p}')" style="${p==='Medium'?`border-color:${PC[p]};color:${PC[p]};background:${PC[p]}08`:''}">${p}</button>`).join('')}</div></div>
-  </div>
-  <div class="mdlf"><button class="btn bo" onclick="cM()">Cancel</button><button class="btn ba" onclick="dCW()">Create Work</button></div>`);
+  oM(`<div class="mdlh"><div><div style="font-size:9px;color:var(--ac);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px">Step 1</div><div style="font-weight:800;font-size:17px">Create New Work</div></div><button style="background:none;border:none;color:var(--tx3);font-size:18px" onclick="cM()">✕</button></div>
+  <div class="mdlb"><div style="margin-bottom:13px"><label class="lbl">Title <span class="rq">*</span></label><input class="inp" id="cwT" placeholder="Work title"></div>
+  <div style="margin-bottom:13px"><label class="lbl">Description</label><textarea class="inp" id="cwD" rows="3" placeholder="Describe the work..."></textarea></div>
+  <div style="margin-bottom:4px"><label class="lbl">Priority</label><div class="pbs">${['Low','Medium','High','Urgent'].map(p=>`<button class="pbt" id="cwP_${p}" onclick="sP('${p}')" style="${p==='Medium'?`border-color:${PC[p]};color:${PC[p]};background:${PC[p]}08`:''}">${p}</button>`).join('')}</div></div></div>
+  <div class="mdlf"><button class="btn bo" onclick="cM()">Cancel</button><button class="btn ba" id="cwSubmit" onclick="dCW()">Create Work</button></div>`)
 }
-function sP(p){
-  window._cp=p;
-  ['Low','Medium','High','Urgent'].forEach(x=>{
-    const b=document.getElementById('cwP_'+x);if(!b)return;
-    const s=x===p;b.style.borderColor=s?PC[x]:'';b.style.color=s?PC[x]:'';b.style.background=s?PC[x]+'08':'';
-  });
-}
-async function dCW(){
-  const t=document.getElementById('cwT')?.value.trim();
-  if(!t){toast('Title required','error');return;}
-  const w={id:nW_++,title:t,desc:document.getElementById('cwD')?.value||'',pri:window._cp||'Medium',cat:td(),cb:CU.id,ht:false};
-  works.push(w);
-  if(apiOk)await svWk(w);
+function sP(p){window._cp=p;['Low','Medium','High','Urgent'].forEach(x=>{const b=document.getElementById('cwP_'+x);if(b){const s=x===p;b.style.borderColor=s?PC[x]:'';b.style.color=s?PC[x]:'';b.style.background=s?PC[x]+'08':''}})}
+function dCW(){
+  if(_saving)return; // block duplicate clicks
+  const t=document.getElementById('cwT').value.trim();
+  if(!t){toast('Title required','er');return}
+  if(!setBtnSaving('cwSubmit','Creating...'))return;
+  const w={id:nW_++,title:t,desc:document.getElementById('cwD').value,pri:window._cp||'Medium',cat:td(),cb:CU.id,ht:false};
+  works.push(w);          // ← instant: UI updates now
   logA(`created work '${t}'`,'work');
-  toast('Work created!','success');cM();
+  toast('Work created!','ok');
+  cM();                   // ← close modal instantly
+  svW(w);                 // ← background: save to sheet (no waiting)
+  clearBtnSaving('cwSubmit');
 }
 
-// ASSIGN WORK → CREATE TASK
+// ══════════════════════════════════════════════════════════
+//  MODALS: ASSIGN WORK
+// ══════════════════════════════════════════════════════════
 function oAW(wid){
-  const w=W(wid);if(!w)return;
-  window._aw=w;window._aa='';
-  oM(`<div class="mdlh"><div><div style="font-size:9px;color:var(--ac);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px">Assign → Create Task</div><div style="font-weight:800;font-size:17px">${w.title}</div></div><button style="background:none;border:none;color:var(--tx3);font-size:20px;cursor:pointer" onclick="cM()">✕</button></div>
-  <div class="mdlb">
-    <label class="lbl">Assign To <span class="rq">*</span></label>
-    ${users.filter(u=>u.on).map(m=>{
-      const a=aCt(m.id);const ld=a>=3?'Overloaded':a>=1?'Active':'Free';const lc=a>=3?'#dc2626':a>=1?'#d97706':'#16a34a';
-      return`<div class="tpk" id="aP_${m.id}" onclick="sAs('${m.id}')">${aH(m,28)}<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600">${m.name}</div><div style="font-size:10px;color:var(--tx2)">${m.role}</div></div><div style="font-size:10px;font-weight:600;color:${lc};flex-shrink:0">${a} · ${ld}</div><div id="aC_${m.id}" class="hide" style="width:18px;height:18px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></div>`;
-    }).join('')}
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
-      <div><label class="lbl">Start Date <span class="rq">*</span></label><input type="date" class="inp" id="aS" value="${td()}"></div>
-      <div><label class="lbl">End Date <span class="rq">*</span></label><input type="date" class="inp" id="aE"></div>
-    </div>
-  </div>
-  <div class="mdlf"><button class="btn bo" onclick="cM()">Cancel</button><button class="btn ba" onclick="dAW()">Assign & Create Task</button></div>`,'580px');
+  const w=W(wid);window._aw=w;window._aa='';
+  oM(`<div class="mdlh"><div><div style="font-size:9px;color:var(--ac);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px">Step 2 · Assign → Create Task</div><div style="font-weight:800;font-size:17px">${w.title}</div></div><button style="background:none;border:none;color:var(--tx3);font-size:18px" onclick="cM()">✕</button></div>
+  <div class="mdlb"><label class="lbl">Assign To <span class="rq">*</span></label>
+  ${users.filter(u=>u.on).map(m=>{const a=aCt(m.id);const ld=a>=3?'Busy':a>=1?'Active':'Free';const lc=a>=3?'#dc2626':a>=1?'#d97706':'#16a34a';return`<div class="tpk" id="aP_${m.id}" onclick="sAs('${m.id}')">${aH(m,28)}<div style="flex:1"><div style="font-size:12px;font-weight:600">${m.name}</div><div style="font-size:10px;color:var(--tx2)">${m.role}</div></div><div style="font-size:10px;font-weight:600;color:${lc}">${a} · ${ld}</div><div id="aC_${m.id}" class="hide" style="width:18px;height:18px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></div>`}).join('')}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:13px"><div><label class="lbl">Start Date <span class="rq">*</span></label><input type="date" class="inp" id="aS" value="${td()}"></div><div><label class="lbl">End Date <span class="rq">*</span></label><input type="date" class="inp" id="aE"></div></div></div>
+  <div class="mdlf"><button class="btn bo" onclick="cM()">Cancel</button><button class="btn ba" id="awSubmit" onclick="dAW()">Assign & Create Task</button></div>`,'540px')
 }
-function sAs(id){
-  window._aa=id;
-  users.forEach(m=>{
-    const el=document.getElementById('aP_'+m.id);const ck=document.getElementById('aC_'+m.id);
-    if(el)el.className='tpk'+(m.id===id?' sel':'');
-    if(ck){ck.classList.toggle('hide',m.id!==id);if(m.id===id)ck.style.display='flex';}
-  });
-}
-async function dAW(){
-  const a=window._aa,s=document.getElementById('aS')?.value,e=document.getElementById('aE')?.value;
-  if(!a||!s||!e){toast('All fields required','error');return;}
+function sAs(id){window._aa=id;users.forEach(m=>{const el=document.getElementById('aP_'+m.id);const ck=document.getElementById('aC_'+m.id);if(el)el.className='tpk'+(m.id===id?' sel':'');if(ck){ck.classList.toggle('hide',m.id!==id);if(m.id===id)ck.style.display='flex'}})}
+function dAW(){
+  if(_saving)return;
+  const a=window._aa,s=document.getElementById('aS').value,e=document.getElementById('aE').value;
+  if(!a||!s||!e){toast('All fields required','er');return}
+  if(!setBtnSaving('awSubmit','Assigning...'))return;
   const w=window._aw;
-  const hi={a:`Assigned to ${U(a)?.name||a}`,d:td(),b:CU.id};
+  const hi={a:`Assigned to ${U(a).name}`,d:td(),b:CU.id};
   const t={id:nT_++,wk:w.id,as:a,st:'Assigned',sd:s,ed:e,rc:0,pg:0,cm:[],hi:[hi]};
-  tasks.push(t);
+  tasks.push(t);                          // instant
   const wi=works.findIndex(x=>x.id===w.id);if(wi>=0)works[wi].ht=true;
-  if(apiOk){await svTk(t);await upWk(works[wi]);await svHi(t.id,hi);}
   addN(`Task '${w.title}' assigned to you`,t.id,a);
-  logA(`assigned '${w.title}' to ${U(a)?.name||a}`,'task');
-  toast('Task created & assigned!','success');cM();
+  logA(`assigned '${w.title}' to ${U(a).name}`,'task');
+  toast('Task created & assigned!','ok');
+  cM();                                   // close instantly
+  // save all 3 records IN PARALLEL in background
+  bgSaveAll(['addTask',_tPl(t)],['updateWork',_wPl(works[wi])],['addHistory',{id:Date.now(),taskId:t.id,action:hi.a,date:hi.d,by:hi.b}]);
+  clearBtnSaving('awSubmit');
 }
 
-// TASK DETAIL MODAL
+// ══════════════════════════════════════════════════════════
+//  MODALS: TASK DETAIL
+// ══════════════════════════════════════════════════════════
 function oTD(tid){
   const t=tasks.find(x=>x.id===tid);if(!t)return;
   const w=W(t.wk);const a=U(t.as);const od=isOD(t);const isMe=t.as===CU.id;
   document.getElementById('nP')?.classList.add('hide');
-
-  oM(`<div style="padding:18px 20px;border-bottom:1px solid #eee">
-    <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap">
-      ${sB(t.st)} ${pB(w?.pri||'')}
-      ${od?'<span style="font-size:9px;background:var(--redbg);color:var(--red);padding:2px 6px;border-radius:5px;font-weight:700">OVERDUE</span>':''}
-      ${t.rc>0?`<span style="font-size:9px;background:var(--ylwbg);color:#a16207;padding:2px 6px;border-radius:5px">×${t.rc} reassigned</span>`:''}
-      <span style="font-size:10px;font-weight:600;margin-left:auto">${timeL(t.ed)}</span>
-    </div>
-    <div style="font-weight:800;font-size:17px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
-      <span>${w?.title||''}</span>
-      <button style="background:none;border:none;cursor:pointer;color:var(--tx3);font-size:20px;flex-shrink:0" onclick="cM()">✕</button>
-    </div>
-    <div style="font-size:9px;color:var(--ac);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-top:3px">TASK #${t.id}</div>
-  </div>
+  oM(`<div style="padding:17px 20px;border-bottom:1px solid #eee">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap">${sB(t.st)} ${pB(w?.pri||'')} ${od?'<span style="font-size:8px;background:var(--redbg);color:var(--red);padding:2px 5px;border-radius:5px;font-weight:700">OVERDUE</span>':''} ${t.rc>0?`<span style="font-size:8px;background:var(--ylwbg);color:#a16207;padding:2px 5px;border-radius:5px">×${t.rc}</span>`:''} <span style="margin-left:auto">${tL(t.ed)}</span></div>
+    <div style="font-weight:800;font-size:17px;display:flex;justify-content:space-between;align-items:flex-start">${w?.title||''}<button style="background:none;border:none;cursor:pointer;color:var(--tx3);font-size:18px;flex-shrink:0" onclick="cM()">✕</button></div></div>
   <div style="padding:18px 20px">
-    <div style="margin-bottom:14px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <span style="font-size:11px;font-weight:600;color:var(--tx2)">Progress</span>
-        <span style="font-size:11px;font-weight:700;font-family:var(--mono);color:var(--ac)" id="pgLabel">${t.pg||0}%</span>
-      </div>
-      <div style="height:5px;border-radius:3px;background:#eee"><div id="pgBar" style="height:100%;border-radius:3px;background:var(--ac);width:${t.pg||0}%"></div></div>
-      ${isMe&&t.st==='In Progress'?`<input type="range" min="0" max="100" value="${t.pg||0}" style="width:100%;margin-top:6px;accent-color:var(--ac)" oninput="uPg(${t.id},this.value)">`:''}</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
-      <div style="padding:10px;border-radius:9px;background:var(--s2);border:1px solid var(--bd)"><div style="font-size:9px;color:var(--tx3);margin-bottom:2px;font-weight:600">Assigned</div>${a?`<div style="display:flex;align-items:center;gap:4px">${aH(a,18)}<span style="font-size:11px;font-weight:600">${a.name}</span></div>`:'—'}</div>
-      <div style="padding:10px;border-radius:9px;background:var(--s2);border:1px solid var(--bd)"><div style="font-size:9px;color:var(--tx3);margin-bottom:2px;font-weight:600">Start</div><div style="font-size:11px;font-weight:600;font-family:var(--mono)">${fD(t.sd)}</div></div>
-      <div style="padding:10px;border-radius:9px;background:var(--s2);border:1px solid ${od?'#fca5a5':'var(--bd)'}"><div style="font-size:9px;color:var(--tx3);margin-bottom:2px;font-weight:600">Deadline</div><div style="font-size:11px;font-weight:600;font-family:var(--mono);color:${od?'var(--red)':'var(--tx)'}">${fD(t.ed)}</div></div>
-    </div>
-    ${w?.desc?`<div style="margin-bottom:14px;padding:12px;border-radius:9px;background:var(--s2);border:1px solid var(--bd);font-size:12px;color:#555;line-height:1.5">${w.desc}</div>`:''}
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
-      ${isMe&&(t.st==='Assigned'||t.st==='Reassigned')?`<button class="btn ba" onclick="doSt(${t.id})">▶ Start Working</button>`:''}
-      ${isMe&&t.st==='In Progress'?`<button class="btn bg" onclick="doCo(${t.id})">✓ Mark Complete</button>`:''}
-      ${isTL()&&t.st==='Completed'?`<button class="btn bg" onclick="doAp(${t.id})">✓ Approve</button><button class="btn br" onclick="document.getElementById('rjF').classList.toggle('hide')">✕ Reject</button>`:''}
-    </div>
-    <div id="rjF" class="hide" style="margin-bottom:14px;padding:14px;border-radius:10px;background:var(--redbg);border:1px solid #fecaca">
+    <div style="margin-bottom:13px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;font-weight:600;color:var(--tx2)">Progress</span><span style="font-size:11px;font-weight:700;font-family:var(--mono);color:var(--ac)">${t.pg||0}%</span></div>
+    <div style="height:5px;border-radius:3px;background:#eee"><div style="height:100%;border-radius:3px;background:var(--ac);width:${t.pg||0}%"></div></div>
+    ${isMe&&t.st==='In Progress'?`<input type="range" min="0" max="100" value="${t.pg||0}" style="width:100%;margin-top:5px;accent-color:var(--ac)" oninput="uPg(${t.id},this.value)">`:''}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:13px">
+      <div style="padding:10px;border-radius:8px;background:var(--s2);border:1px solid var(--bd)"><div style="font-size:8px;color:var(--tx3);margin-bottom:2px;font-weight:600;text-transform:uppercase">Assigned</div>${a?`<div style="display:flex;align-items:center;gap:4px">${aH(a,17)}<span style="font-size:11px;font-weight:600">${a.name}</span></div>`:'—'}</div>
+      <div style="padding:10px;border-radius:8px;background:var(--s2);border:1px solid var(--bd)"><div style="font-size:8px;color:var(--tx3);margin-bottom:2px;font-weight:600;text-transform:uppercase">Start</div><div style="font-size:11px;font-weight:600;font-family:var(--mono)">${fD(t.sd)}</div></div>
+      <div style="padding:10px;border-radius:8px;background:var(--s2);border:1px solid ${od?'#fca5a5':'var(--bd)'}"><div style="font-size:8px;color:var(--tx3);margin-bottom:2px;font-weight:600;text-transform:uppercase">Deadline</div><div style="font-size:11px;font-weight:600;font-family:var(--mono);color:${od?'var(--red)':'var(--tx)'}">${fD(t.ed)}</div></div></div>
+    ${w?.desc?`<div style="margin-bottom:13px;padding:11px;border-radius:8px;background:var(--s2);border:1px solid var(--bd);font-size:12px;color:#555;line-height:1.5">${w.desc}</div>`:''}
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px">
+      ${isMe&&(t.st==='Assigned'||t.st==='Reassigned')?`<button class="btn ba" id="stBtn_${t.id}" onclick="doSt(${t.id})">▶ Start Working</button>`:''}
+      ${isMe&&t.st==='In Progress'?`<button class="btn bg" id="coBtn_${t.id}" onclick="doCo(${t.id})">✓ Mark Complete</button>`:''}
+      ${isTL()&&t.st==='Completed'?`<button class="btn bg" id="apBtn_${t.id}" onclick="doAp(${t.id})">✓ Approve</button><button class="btn br" onclick="document.getElementById('rjF').classList.toggle('hide')">✕ Reject</button>`:''}</div>
+    <div id="rjF" class="hide" style="margin-bottom:13px;padding:13px;border-radius:9px;background:var(--redbg);border:1px solid #fecaca">
       <div style="margin-bottom:8px"><label class="lbl">Rejection Reason</label><input class="inp" id="rjR" placeholder="Why is this rejected?"></div>
       <div style="margin-bottom:10px"><label class="lbl">Reassign To</label><select class="inp" id="rjA"><option value="">Select member</option>${users.filter(u=>u.on).map(m=>`<option value="${m.id}">${m.name} (${m.role})</option>`).join('')}</select></div>
-      <button class="btn br" onclick="doRj(${t.id})">Confirm Reject & Reassign</button>
-    </div>
-    <div class="tbs">
-      <button class="tbt on" onclick="sTT('c',this)">Comments (${(t.cm||[]).length})</button>
-      <button class="tbt" onclick="sTT('h',this)">History (${t.hi.length})</button>
-    </div>
-    <div id="td-c">
-      ${(t.cm||[]).map(c=>{const cu=U(c.by);return`<div style="display:flex;gap:7px;margin-bottom:10px">${cu?aH(cu,22):''}<div style="flex:1;background:var(--s2);border-radius:9px;padding:9px 11px;border:1px solid var(--bd)"><div style="font-size:11px;font-weight:600;margin-bottom:2px">${cu?.name||''}</div><div style="font-size:12px;color:#555;line-height:1.4">${c.tx}</div><div style="font-size:9px;color:var(--tx3);font-family:var(--mono);margin-top:2px">${fD(c.dt)}</div></div></div>`;}).join('')}
-      <div style="display:flex;gap:6px;margin-top:6px">
-        <input class="inp" id="cmI" placeholder="Add a comment..." style="flex:1" onkeydown="if(event.key==='Enter')aCm(${t.id})">
-        <button class="btn ba bsm" onclick="aCm(${t.id})">Send</button>
-      </div>
-    </div>
-    <div id="td-h" class="hide">
-      <div class="tl">${t.hi.map((h,i)=>`<div class="tli"><div class="tld ${i===t.hi.length-1?'on':''}"></div><div style="font-size:12px;font-weight:500;color:#333">${h.a}</div><div style="font-size:10px;color:var(--tx3);font-family:var(--mono);margin-top:1px">${fD(h.d)} · ${U(h.b)?.name||h.b}</div></div>`).join('')}</div>
-    </div>
-  </div>`,'620px');
+      <button class="btn br" id="rjBtn_${t.id}" onclick="doRj(${t.id})">Confirm Reject & Reassign</button></div>
+    <div class="tbs"><button class="tbt on" onclick="sTT('c',this)">Comments (${(t.cm||[]).length})</button><button class="tbt" onclick="sTT('h',this)">History (${t.hi.length})</button></div>
+    <div id="td-c">${(t.cm||[]).map(c=>{const cu=U(c.by);return`<div style="display:flex;gap:7px;margin-bottom:10px">${cu?aH(cu,22):''}<div style="flex:1;background:var(--s2);border-radius:9px;padding:9px 11px;border:1px solid var(--bd)"><div style="font-size:11px;font-weight:600">${cu?.name||''}</div><div style="font-size:12px;color:#555;line-height:1.4">${c.tx}</div><div style="font-size:9px;color:var(--tx3);font-family:var(--mono);margin-top:2px">${fD(c.dt)}</div></div></div>`}).join('')}
+    <div style="display:flex;gap:6px;margin-top:6px"><input class="inp" id="cmI" placeholder="Write a comment..." style="flex:1" onkeydown="if(event.key==='Enter')aCm(${t.id})"><button class="btn ba bsm" id="cmBtn_${t.id}" onclick="aCm(${t.id})">Send</button></div></div>
+    <div id="td-h" class="hide"><div class="tl">${t.hi.map((h,i)=>`<div class="tli"><div class="tld ${i===t.hi.length-1?'on':''}"></div><div style="font-size:12px;font-weight:500;color:#333">${h.a}</div><div style="font-size:9px;color:var(--tx3);font-family:var(--mono);margin-top:1px">${fD(h.d)} · ${U(h.b)?.name||''}</div></div>`).join('')}</div></div>
+  </div>`,'600px')
 }
+function sTT(t,b){document.querySelectorAll('.tbt').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('td-c').classList.toggle('hide',t!=='c');document.getElementById('td-h').classList.toggle('hide',t!=='h')}
+function uPg(tid,v){const i=tasks.findIndex(t=>t.id===tid);if(i>=0){tasks[i].pg=parseInt(v);clearTimeout(window._pt);window._pt=setTimeout(()=>bgSave('updateTask',_tPl(tasks[i])),1200)}}
 
-function sTT(t,b){
-  document.querySelectorAll('.tbt').forEach(x=>x.classList.remove('on'));b.classList.add('on');
-  document.getElementById('td-c').classList.toggle('hide',t!=='c');
-  document.getElementById('td-h').classList.toggle('hide',t!=='h');
-}
-
-function uPg(tid,v){
-  const i=tasks.findIndex(t=>t.id===tid);
-  if(i>=0){
-    tasks[i].pg=parseInt(v);
-    document.getElementById('pgLabel').textContent=v+'%';
-    document.getElementById('pgBar').style.width=v+'%';
-    clearTimeout(window._pt);
-    window._pt=setTimeout(()=>{if(apiOk)upTk(tasks[i]);},1000);
-  }
-}
-
-async function aCm(tid){
+function aCm(tid){
+  if(_saving)return;
   const inp=document.getElementById('cmI');const tx=inp?.value?.trim();if(!tx)return;
-  const i=tasks.findIndex(t=>t.id===tid);
-  if(i>=0){
-    const cm={by:CU.id,tx,dt:td()};
-    tasks[i].cm.push(cm);
-    if(apiOk)await svCm(tid,cm);
-    toast('Comment added','success');oTD(tid);
-  }
+  const i=tasks.findIndex(t=>t.id===tid);if(i<0)return;
+  if(!setBtnSaving('cmBtn_'+tid,'...'))return;
+  const cm={by:CU.id,tx,dt:td()};
+  tasks[i].cm.push(cm);   // instant
+  inp.value='';
+  toast('Comment added','ok');
+  oTD(tid);               // refresh modal instantly
+  bgSave('addComment',{id:Date.now(),taskId:tid,by:cm.by,text:cm.tx,date:cm.dt});
+  clearBtnSaving('cmBtn_'+tid);
 }
 
-// TASK ACTIONS
-async function doSt(tid){
+// TASK ACTIONS — all optimistic (instant UI, background sheet sync)
+function doSt(tid){
+  if(_saving)return;
   const i=tasks.findIndex(t=>t.id===tid);if(i<0)return;
+  if(!setBtnSaving('stBtn_'+tid,'Starting...'))return;
   tasks[i].st='In Progress';tasks[i].pg=tasks[i].pg||10;
   const hi={a:'Started work',d:td(),b:CU.id};tasks[i].hi.push(hi);
-  if(apiOk){await upTk(tasks[i]);await svHi(tid,hi);}
-  logA(`started '${W(tasks[i].wk)?.title}'`,'task');
-  toast('Task started!','success');cM();
+  const ttl=W(tasks[i].wk)?.title||'';
+  logA(`started '${ttl}'`,'task');
+  toast('Task started!','ok');
+  cM();
+  bgSaveAll(['updateTask',_tPl(tasks[i])],['addHistory',{id:Date.now(),taskId:tid,action:hi.a,date:hi.d,by:hi.b}]);
+  clearBtnSaving('stBtn_'+tid);
 }
-async function doCo(tid){
+
+function doCo(tid){
+  if(_saving)return;
   const i=tasks.findIndex(t=>t.id===tid);if(i<0)return;
+  if(!setBtnSaving('coBtn_'+tid,'Saving...'))return;
   const w=W(tasks[i].wk);
   tasks[i].st='Completed';tasks[i].pg=100;
-  const hi={a:'Marked as complete',d:td(),b:CU.id};tasks[i].hi.push(hi);
-  if(apiOk){await upTk(tasks[i]);await svHi(tid,hi);}
-  addN(`${CU.name} completed '${w?.title}'`,tid,'admin');
+  const hi={a:'Marked complete',d:td(),b:CU.id};tasks[i].hi.push(hi);
+  addN(`${CU.name} completed '${w?.title}'`,tid,CU.id==='admin'?'admin':'u1');
   logA(`completed '${w?.title}'`,'task');
-  toast('Task marked complete!','success');cM();
+  toast('Marked complete!','ok');
+  cM();
+  bgSaveAll(['updateTask',_tPl(tasks[i])],['addHistory',{id:Date.now(),taskId:tid,action:hi.a,date:hi.d,by:hi.b}]);
+  clearBtnSaving('coBtn_'+tid);
 }
-async function doAp(tid){
+
+function doAp(tid){
+  if(_saving)return;
   const i=tasks.findIndex(t=>t.id===tid);if(i<0)return;
+  if(!setBtnSaving('apBtn_'+tid,'Approving...'))return;
   const w=W(tasks[i].wk);
   tasks[i].st='Approved';
   const hi={a:'Approved by TL',d:td(),b:CU.id};tasks[i].hi.push(hi);
-  if(apiOk){await upTk(tasks[i]);await svHi(tid,hi);}
   addN(`TL approved '${w?.title}'`,tid,tasks[i].as);
   logA(`approved '${w?.title}'`,'approve');
-  toast('Task approved!','success');cM();
+  toast('Task approved!','ok');
+  cM();
+  bgSaveAll(['updateTask',_tPl(tasks[i])],['addHistory',{id:Date.now(),taskId:tid,action:hi.a,date:hi.d,by:hi.b}]);
+  clearBtnSaving('apBtn_'+tid);
 }
-async function doRj(tid){
+
+function doRj(tid){
+  if(_saving)return;
   const r=document.getElementById('rjR')?.value?.trim();
   const na=document.getElementById('rjA')?.value;
-  if(!r||!na){toast('Fill all fields','error');return;}
+  if(!r||!na){toast('Fill all fields','er');return}
   const i=tasks.findIndex(t=>t.id===tid);if(i<0)return;
+  if(!setBtnSaving('rjBtn_'+tid,'Saving...'))return;
   const w=W(tasks[i].wk);
-  tasks[i].st='Reassigned';tasks[i].as=na;
-  tasks[i].rc=(tasks[i].rc||0)+1;tasks[i].pg=0;
+  tasks[i].st='Reassigned';tasks[i].as=na;tasks[i].rc=(tasks[i].rc||0)+1;tasks[i].pg=0;
   const h1={a:`Rejected – ${r}`,d:td(),b:CU.id};
-  const h2={a:`Reassigned to ${U(na)?.name||na}`,d:td(),b:CU.id};
+  const h2={a:`Reassigned to ${U(na).name}`,d:td(),b:CU.id};
   tasks[i].hi.push(h1,h2);
-  if(apiOk){await upTk(tasks[i]);await svHi(tid,h1);await svHi(tid,h2);}
   addN(`TL rejected & reassigned '${w?.title}'`,tid,na);
-  logA(`rejected '${w?.title}', reassigned to ${U(na)?.name||na}`,'reject');
-  toast('Task rejected & reassigned','in');cM();
+  logA(`rejected '${w?.title}', reassigned to ${U(na).name}`,'reject');
+  toast('Task reassigned','in');
+  cM();
+  bgSaveAll(
+    ['updateTask',_tPl(tasks[i])],
+    ['addHistory',{id:Date.now(),taskId:tid,action:h1.a,date:h1.d,by:h1.b}],
+    ['addHistory',{id:Date.now()+1,taskId:tid,action:h2.a,date:h2.d,by:h2.b}]
+  );
+  clearBtnSaving('rjBtn_'+tid);
 }
 
 // ══════════════════════════════════════════════════════════
-// CREATE USER
+//  MODALS: CREATE USER
 // ══════════════════════════════════════════════════════════
 function oCU(){
   window._na=[AC.D,AC.T];
-  oM(`<div class="mdlh"><div style="font-weight:800;font-size:17px">Create User</div><button style="background:none;border:none;color:var(--tx3);font-size:20px;cursor:pointer" onclick="cM()">✕</button></div>
+  oM(`<div class="mdlh"><div style="font-weight:800;font-size:17px">Create New User</div><button style="background:none;border:none;color:var(--tx3);font-size:18px" onclick="cM()">✕</button></div>
   <div class="mdlb">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-      <div><label class="lbl">Name <span class="rq">*</span></label><input class="inp" id="nuN" placeholder="Full name"></div>
-      <div><label class="lbl">Email <span class="rq">*</span></label><input class="inp" id="nuE" placeholder="email@company.com"></div>
+      <div><label class="lbl">Full Name <span class="rq">*</span></label><input class="inp" id="nuN" placeholder="e.g. Priya Sharma"></div>
+      <div><label class="lbl">Email <span class="rq">*</span></label><input class="inp" id="nuE" placeholder="priya@company.com"></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
       <div><label class="lbl">Role</label><select class="inp" id="nuR"><option>Junior</option><option>Senior</option><option>Team Lead</option></select></div>
-      <div><label class="lbl">Password <span class="rq">*</span></label><input class="inp" id="nuP" placeholder="Set password"></div>
+      <div><label class="lbl">Password <span class="rq">*</span></label><input class="inp" id="nuP" placeholder="Set a password"></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-      <div><label class="lbl">Initials (2 letters)</label><input class="inp" id="nuA" maxlength="2" placeholder="AB"></div>
-      <div><label class="lbl">Color</label><input type="color" id="nuC" value="#7c3aed" style="width:100%;height:42px;border:1px solid var(--bd);border-radius:8px;cursor:pointer;background:var(--s2);padding:4px"></div>
+      <div><label class="lbl">Initials (2 chars)</label><input class="inp" id="nuA" maxlength="2" placeholder="PS"></div>
+      <div><label class="lbl">Avatar Color</label><input type="color" id="nuC" value="#7c3aed" style="width:100%;height:40px;border:1px solid var(--bd);border-radius:8px;cursor:pointer;background:var(--s2)"></div>
     </div>
-    <label class="lbl" style="margin-bottom:8px">Module Access</label>
-    <div class="acg">${ACCESS_ITEMS.map(a=>`<div class="aci ${[AC.D,AC.T].includes(a.k)?'on':''}" onclick="tNA('${a.k}',this)"><div style="font-size:14px;width:28px;text-align:center">${a.i}</div><div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600">${a.l}</div><div style="font-size:10px;color:var(--tx2)">${a.d}</div></div><div class="atg ${[AC.D,AC.T].includes(a.k)?'on':''}"></div></div>`).join('')}
+    <label class="lbl">Module Access</label>
+    <div class="acg">${[{k:AC.D,l:'Dashboard',i:'📊'},{k:AC.W,l:'Works',i:'📦'},{k:AC.T,l:'Tasks',i:'📋'},{k:AC.K,l:'Kanban',i:'⊞'},{k:AC.R,l:'Reports',i:'📈'},{k:AC.A,l:'Activity',i:'📝'},{k:AC.U,l:'Users',i:'⚙️'},{k:AC.TD,l:'Team Dash',i:'👥'}].map(a=>`<div class="aci ${[AC.D,AC.T].includes(a.k)?'on':''}" onclick="tNA('${a.k}',this)"><div style="font-size:14px;width:26px;text-align:center">${a.i}</div><div style="flex:1;font-size:11px;font-weight:600">${a.l}</div><div class="atg ${[AC.D,AC.T].includes(a.k)?'on':''}"></div></div>`).join('')}
     </div>
   </div>
-  <div class="mdlf"><button class="btn bo" onclick="cM()">Cancel</button><button class="btn ba" onclick="dCU()">Create User</button></div>`,'580px');
+  <div class="mdlf"><button class="btn bo" onclick="cM()">Cancel</button><button class="btn ba" id="cuSubmit" onclick="dCU()">Create User</button></div>`,'560px')
 }
-function tNA(k,el){
-  const i=window._na.indexOf(k);
-  if(i>=0)window._na.splice(i,1);else window._na.push(k);
-  el.classList.toggle('on');el.querySelector('.atg').classList.toggle('on');
-}
-async function dCU(){
-  const n=document.getElementById('nuN')?.value.trim();
-  const e=document.getElementById('nuE')?.value.trim();
-  const p=document.getElementById('nuP')?.value.trim();
-  if(!n||!e||!p){toast('Name, email & password required','error');return;}
-  const av=document.getElementById('nuA')?.value.toUpperCase()||n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-  const u={id:'u'+(nU_++),name:n,email:e,role:document.getElementById('nuR')?.value||'Junior',av,col:document.getElementById('nuC')?.value||'#4338ca',pass:p,acc:[...window._na],on:true};
-  users.push(u);
-  if(apiOk)await svU(u);
+function tNA(k,el){const i=window._na.indexOf(k);if(i>=0)window._na.splice(i,1);else window._na.push(k);el.classList.toggle('on');el.querySelector('.atg').classList.toggle('on')}
+function dCU(){
+  if(_saving)return;
+  const n=document.getElementById('nuN').value.trim(),e=document.getElementById('nuE').value.trim(),p=document.getElementById('nuP').value.trim();
+  if(!n||!e||!p){toast('Name, email & password required','er');return}
+  if(!setBtnSaving('cuSubmit','Creating...'))return;
+  const u={id:'u'+(nU_++),name:n,email:e,role:document.getElementById('nuR').value,av:document.getElementById('nuA').value.toUpperCase()||n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(),col:document.getElementById('nuC').value,pass:p,acc:[...window._na],on:true};
+  users.push(u);          // instant
   logA(`created user ${n}`,'user');
-  toast(`${n} added!`,'success');cM();
+  toast(`User ${n} created!`,'ok');
+  cM();
+  svU(u);                 // background
+  clearBtnSaving('cuSubmit');
 }
 
-// EDIT USER
+// ══════════════════════════════════════════════════════════
+//  MODALS: EDIT USER
+// ══════════════════════════════════════════════════════════
 function oEU(uid){
-  const u=users.find(x=>x.id===uid);if(!u)return;
-  window._ea=[...u.acc];
-  oM(`<div class="mdlh"><div style="font-weight:800;font-size:17px">Edit: ${u.name}</div><button style="background:none;border:none;color:var(--tx3);font-size:20px;cursor:pointer" onclick="cM()">✕</button></div>
+  const u=users.find(x=>x.id===uid);if(!u)return;window._ea=[...u.acc];
+  oM(`<div class="mdlh"><div><div style="font-weight:800;font-size:17px">Edit User</div></div><button style="background:none;border:none;color:var(--tx3);font-size:18px" onclick="cM()">✕</button></div>
   <div class="mdlb">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:12px;border-radius:10px;background:var(--s2);border:1px solid var(--bd)">
-      ${aH(u,44)}<div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:700">${u.name}</div><div style="font-size:11px;color:var(--tx2)">${u.email}</div></div>
-      <div style="text-align:center">
-        <div class="atg ${u.on?'on':''}" onclick="tUA('${u.id}',this)" style="cursor:pointer;margin:0 auto"></div>
-        <div style="font-size:9px;color:var(--tx2);margin-top:2px" id="uSt">${u.on?'Active':'Inactive'}</div>
-      </div>
+      ${aH(u,42)}<div style="flex:1"><div style="font-size:15px;font-weight:700">${u.name}</div><div style="font-size:11px;color:var(--tx2)">${u.email}</div></div>
+      <div style="text-align:center"><div class="atg ${u.on?'on':''}" onclick="tUA('${u.id}',this)" style="cursor:pointer;margin:0 auto"></div><div style="font-size:9px;color:var(--tx2);margin-top:3px" id="uSt">${u.on?'Active':'Off'}</div></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
       <div><label class="lbl">Name</label><input class="inp" id="euN" value="${u.name}"></div>
@@ -1542,112 +1144,104 @@ function oEU(uid){
       <div><label class="lbl">Role</label><select class="inp" id="euR"><option ${u.role==='Junior'?'selected':''}>Junior</option><option ${u.role==='Senior'?'selected':''}>Senior</option><option ${u.role==='Team Lead'?'selected':''}>Team Lead</option></select></div>
       <div><label class="lbl">New Password</label><input class="inp" id="euP" placeholder="Leave blank to keep"></div>
     </div>
-    <label class="lbl" style="margin-bottom:8px">Module Access</label>
-    <div class="acg">${ACCESS_ITEMS.map(a=>`<div class="aci ${u.acc.includes(a.k)?'on':''}" onclick="tEA('${a.k}',this)"><div style="font-size:14px;width:28px;text-align:center">${a.i}</div><div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600">${a.l}</div><div style="font-size:10px;color:var(--tx2)">${a.d}</div></div><div class="atg ${u.acc.includes(a.k)?'on':''}"></div></div>`).join('')}</div>
+    <label class="lbl">Module Access</label>
+    <div class="acg">${[{k:AC.D,l:'Dashboard',i:'📊'},{k:AC.W,l:'Works',i:'📦'},{k:AC.T,l:'Tasks',i:'📋'},{k:AC.K,l:'Kanban',i:'⊞'},{k:AC.R,l:'Reports',i:'📈'},{k:AC.A,l:'Activity',i:'📝'},{k:AC.U,l:'Users',i:'⚙️'},{k:AC.TD,l:'Team Dash',i:'👥'}].map(a=>`<div class="aci ${u.acc.includes(a.k)?'on':''}" onclick="tEA('${a.k}',this)"><div style="font-size:14px;width:26px;text-align:center">${a.i}</div><div style="flex:1;font-size:11px;font-weight:600">${a.l}</div><div class="atg ${u.acc.includes(a.k)?'on':''}"></div></div>`).join('')}
+    </div>
   </div>
-  <div class="mdlf"><button class="btn bo" onclick="cM()">Cancel</button><button class="btn ba" onclick="dEU('${u.id}')">Save Changes</button></div>`,'580px');
+  <div class="mdlf"><button class="btn bo" onclick="cM()">Cancel</button><button class="btn ba" id="euSubmit" onclick="dEU('${u.id}')">Save Changes</button></div>`,'560px')
 }
-function tUA(uid,el){
-  const i=users.findIndex(u=>u.id===uid);
-  if(i>=0){users[i].on=!users[i].on;el.classList.toggle('on');document.getElementById('uSt').textContent=users[i].on?'Active':'Inactive';}
-}
-function tEA(k,el){
-  const i=window._ea.indexOf(k);
-  if(i>=0)window._ea.splice(i,1);else window._ea.push(k);
-  el.classList.toggle('on');el.querySelector('.atg').classList.toggle('on');
-}
-async function dEU(uid){
+function tUA(uid,el){const i=users.findIndex(u=>u.id===uid);if(i>=0){users[i].on=!users[i].on;el.classList.toggle('on');document.getElementById('uSt').textContent=users[i].on?'Active':'Off'}}
+function tEA(k,el){const i=window._ea.indexOf(k);if(i>=0)window._ea.splice(i,1);else window._ea.push(k);el.classList.toggle('on');el.querySelector('.atg').classList.toggle('on')}
+function dEU(uid){
+  if(_saving)return;
   const i=users.findIndex(u=>u.id===uid);if(i<0)return;
-  users[i].name=document.getElementById('euN')?.value.trim()||users[i].name;
-  users[i].email=document.getElementById('euE')?.value.trim()||users[i].email;
-  users[i].role=document.getElementById('euR')?.value||users[i].role;
-  const np=document.getElementById('euP')?.value.trim();if(np)users[i].pass=np;
+  if(!setBtnSaving('euSubmit','Saving...'))return;
+  users[i].name=document.getElementById('euN').value.trim()||users[i].name;
+  users[i].email=document.getElementById('euE').value.trim()||users[i].email;
+  users[i].role=document.getElementById('euR').value;
+  const np=document.getElementById('euP').value.trim();if(np)users[i].pass=np;
   users[i].acc=[...window._ea];
   if(CU.id===uid)CU=users[i];
-  if(apiOk)await upU(users[i]);
   logA(`updated user ${users[i].name}`,'user');
-  toast('User saved!','success');cM();
+  toast('Saved!','ok');
+  cM();
+  upU(users[i]);           // background
+  clearBtnSaving('euSubmit');
 }
 
 // ══════════════════════════════════════════════════════════
-// PWA: SERVICE WORKER + INSTALL PROMPT
+//  PWA — SERVICE WORKER + INSTALL PROMPT
 // ══════════════════════════════════════════════════════════
-let deferredInstall=null;
-let swReg=null;
+let deferredPrompt=null;
 
 if('serviceWorker' in navigator){
   window.addEventListener('load',async()=>{
     try{
-      swReg=await navigator.serviceWorker.register('/sw.js',{scope:'/'});
-      console.log('[PWA] SW registered');
-      swReg.addEventListener('updatefound',()=>{
-        const nw=swReg.installing;
-        nw.addEventListener('statechange',()=>{
-          if(nw.state==='activated'&&navigator.serviceWorker.controller)
-            toast('App updated! Pull down to refresh.','in');
-        });
+      const reg=await navigator.serviceWorker.register('/sw.js');
+      console.log('[PWA] SW registered:',reg.scope);
+      reg.addEventListener('updatefound',()=>{
+        const nw=reg.installing;
+        nw.addEventListener('statechange',()=>{if(nw.state==='activated')toast('App updated — refresh for latest','in')});
       });
-    }catch(e){console.warn('[PWA] SW failed:',e);}
-    navigator.serviceWorker.addEventListener('message',ev=>{
-      if(ev.data?.type==='SYNC_READY'&&CU&&apiOk)syncFromSheet();
-    });
+    }catch(e){console.warn('[PWA] SW registration failed:',e)}
   });
+  navigator.serviceWorker.addEventListener('message',e=>{if(e.data?.type==='SYNC_READY'&&CU&&apiOk)syncFromSheet()});
 }
 
 window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault();deferredInstall=e;
-  showPwaBar();
+  e.preventDefault();deferredPrompt=e;
+  if(!window.matchMedia('(display-mode: standalone)').matches)showPWABar();
 });
-window.addEventListener('appinstalled',()=>{deferredInstall=null;hidePwaBar();toast('App installed! Find it on home screen 📱','success');});
 
-function showPwaBar(){
-  if(window.matchMedia('(display-mode: standalone)').matches)return;
+function showPWABar(){
   if(document.getElementById('pwaBar'))return;
-  const b=document.createElement('div');b.id='pwaBar';
-  b.innerHTML=`
-    <div style="width:40px;height:40px;border-radius:11px;background:var(--ac);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;font-size:15px;font-family:var(--mono);color:#fff">RF</div>
-    <div style="flex:1;min-width:0">
-      <div style="font-weight:700;font-size:13px">Install ResearchFlow</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:1px">Add to home screen</div>
-    </div>
-    <button onclick="installPWA()" style="padding:8px 14px;border-radius:8px;border:none;background:var(--ac);color:#fff;font-weight:700;font-size:12px;cursor:pointer;flex-shrink:0">Install</button>
-    <button onclick="hidePwaBar()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:18px;cursor:pointer;padding:4px;flex-shrink:0">✕</button>`;
-  document.body.appendChild(b);
+  const bar=document.createElement('div');bar.id='pwaBar';
+  bar.innerHTML=`<div class="pi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+    <div class="pt"><b>Install ResearchFlow</b><span>Add to home screen</span></div>
+    <button onclick="installPWA()" style="padding:7px 14px;border-radius:7px;border:none;background:var(--ac);color:#fff;font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap">Install</button>
+    <button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:17px;cursor:pointer;padding:2px 4px">✕</button>`;
+  document.body.appendChild(bar);
 }
-async function installPWA(){
-  if(!deferredInstall){toast('Open in Chrome/Edge browser to install','in');return;}
-  deferredInstall.prompt();
-  const r=await deferredInstall.userChoice;
-  if(r.outcome==='accepted')toast('Installing...','success');
-  deferredInstall=null;hidePwaBar();
-}
-function hidePwaBar(){const b=document.getElementById('pwaBar');if(b)b.remove();}
 
-// OFFLINE / ONLINE DETECTION
-window.addEventListener('offline',()=>{
-  isOnline=false;
-  document.getElementById('offlineBanner').classList.add('show');
-});
+async function installPWA(){
+  if(!deferredPrompt){toast('Open in Chrome/Edge to install','in');return}
+  deferredPrompt.prompt();
+  const r=await deferredPrompt.userChoice;
+  if(r.outcome==='accepted')toast('Installed! Find it on your home screen 🎉','ok');
+  deferredPrompt=null;document.getElementById('pwaBar')?.remove();
+}
+
+window.addEventListener('appinstalled',()=>{deferredPrompt=null;document.getElementById('pwaBar')?.remove()});
+
+// Online / Offline
 window.addEventListener('online',()=>{
-  isOnline=true;
-  document.getElementById('offlineBanner').classList.remove('show');
-  if(CU&&apiOk){toast('Back online — syncing...','success');syncFromSheet();}
+  document.getElementById('offBanner').style.display='none';
+  toast('Back online! Syncing...','ok');
+  if(CU&&apiOk)syncFromSheet();
+});
+window.addEventListener('offline',()=>{
+  document.getElementById('offBanner').style.display='flex';
+  toast('You are offline','er');
 });
 
 // ══════════════════════════════════════════════════════════
-// INIT
+//  INIT
 // ══════════════════════════════════════════════════════════
 (function init(){
-  // Check connection on page load
-  checkConn();
-  // Handle not-online state
-  if(!navigator.onLine)document.getElementById('offlineBanner').classList.add('show');
-  // Responsive: hamburger always visible on mobile
-  function checkMobile(){
-    document.getElementById('mT')?.classList.toggle('hide',window.innerWidth>768);
+  // Responsive sidebar toggle button
+  function chkMobile(){
+    const m=window.innerWidth<=900;
+    document.getElementById('mT').style.display=m?'flex':'none';
   }
-  checkMobile();
-  window.addEventListener('resize',checkMobile);
+  window.addEventListener('resize',chkMobile);chkMobile();
+
+  // Check Google Sheets connection
+  checkConn();
+
+  // iOS Safari safe area colors
+  if(CSS&&CSS.supports('padding-top: env(safe-area-inset-top)')){
+    document.documentElement.style.setProperty('--safe-bottom','env(safe-area-inset-bottom,16px)');
+  }
 })();
 </script>
 </body>
