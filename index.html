@@ -1098,7 +1098,8 @@ function rKb(){
     } else {
       ct.forEach(t=>{
         const w=W(t.wk);const a=U(t.as);const od=isOD(t);const dDays=t.ed?dDf(cleanDate(t.ed),td()):null;
-        h+=`<div class="kbcc" onclick="oTD(${t.id})" style="${od?'border-left:3px solid var(--red);':dDays===0?'border-left:3px solid #d97706;':dDays<=2&&dDays>=0?'border-left:3px solid #eab308;':''}">
+        const canEdit=isTL()&&!['Approved'].includes(t.st);
+        h+=`<div class="kbcc" onclick="event.target.tagName!=='INPUT'&&oTD(${t.id})" style="${od?'border-left:3px solid var(--red);':dDays===0?'border-left:3px solid #d97706;':dDays<=2&&dDays>=0?'border-left:3px solid #eab308;':''}">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
             ${pB(w?.pri||'Medium')}
             <span style="font-size:9px">${tL(t.ed)}</span>
@@ -1106,7 +1107,21 @@ function rKb(){
           <div style="font-size:11px;font-weight:600;margin-bottom:6px;line-height:1.3">${w?.title||''}</div>
           ${a?`<div style="display:flex;align-items:center;gap:4px;margin-bottom:5px">${aH(a,17)}<span style="font-size:9px;color:var(--tx2)">${a.name}</span></div>`:''}
           <div style="height:2px;border-radius:2px;background:#eee"><div style="height:100%;border-radius:2px;background:${col.c};width:${t.pg||0}%"></div></div>
-          <div style="display:flex;justify-content:space-between;margin-top:4px"><span style="font-size:8px;color:var(--tx3);font-family:var(--mono)">${fD(t.ed)}</span><span style="font-size:8px;font-family:var(--mono);color:var(--tx3)">${t.pg||0}%</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+            ${canEdit
+              ? `<div style="display:flex;flex-direction:column;gap:2px">
+                   <span style="font-size:7px;font-weight:700;color:var(--ac);text-transform:uppercase;letter-spacing:0.05em">Deadline</span>
+                   <input type="date"
+                     value="${cleanDate(t.ed)||''}"
+                     min="${td()}"
+                     onclick="event.stopPropagation()"
+                     onchange="chgDL(${t.id},this.value,this)"
+                     style="font-size:9px;font-family:var(--mono);border:1px solid ${od?'var(--red)':'var(--acbd)'};border-radius:5px;padding:3px 6px;background:${od?'var(--redbg)':'var(--acbg)'};color:${od?'var(--red)':'var(--ac)'};font-weight:600;cursor:pointer;outline:none;width:100%">
+                 </div>`
+              : `<span style="font-size:8px;color:${od?'var(--red)':'var(--tx3)'};font-family:var(--mono);font-weight:${od?'700':'400'}">${fD(t.ed)}</span>`
+            }
+            <span style="font-size:8px;font-family:var(--mono);color:var(--tx3)">${t.pg||0}%</span>
+          </div>
         </div>`;
       });
     }
@@ -1115,9 +1130,59 @@ function rKb(){
   return h+'</div>';
 }
 
-// ══════════════════════════════════════════════════════════
-//  REPORTS — Detailed with full filtration
-// ══════════════════════════════════════════════════════════
+// ── KANBAN + MODAL: TL-only inline deadline change ──
+function chgDL(tid, newDate, inputEl){
+  if(!isTL()){toast('Only Team Lead can change deadline','er');return}
+  if(!newDate)return;
+  const now=td();
+  if(newDate<now){
+    toast('Deadline cannot be set in the past','er');
+    // Reset input to old value
+    const t=tasks.find(x=>x.id===tid);
+    if(inputEl&&t)inputEl.value=cleanDate(t.ed)||'';
+    return;
+  }
+  const i=tasks.findIndex(t=>t.id===tid);
+  if(i<0)return;
+  const oldDate=cleanDate(tasks[i].ed)||tasks[i].ed;
+  if(oldDate===newDate)return; // no change
+  const w=W(tasks[i].wk);
+  tasks[i].ed=newDate;
+  const hi={a:`Deadline changed from ${fD(oldDate)} to ${fD(newDate)}`,d:now,b:CU.id};
+  tasks[i].hi.push(hi);
+
+  // Update input styling based on new overdue state
+  if(inputEl){
+    const od=isOD(tasks[i]);
+    inputEl.style.borderColor=od?'var(--red)':'var(--acbd)';
+    inputEl.style.background=od?'var(--redbg)':'var(--acbg)';
+    inputEl.style.color=od?'var(--red)':'var(--ac)';
+    // Update kanban card border if in kanban view
+    const card=inputEl.closest('.kbcc');
+    if(card){
+      const dDays=dDf(newDate,now);
+      card.style.borderLeft=od?'3px solid var(--red)':dDays===0?'3px solid #d97706':dDays<=2?'3px solid #eab308':'none';
+    }
+  }
+
+  // If modal is open for this task, update the overdue badge & time-left label
+  const modOv=document.getElementById('mO');
+  if(modOv&&!modOv.classList.contains('hide')){
+    // Refresh the tL span in modal header
+    const tlSpan=modOv.querySelector('.tl-refresh');
+    if(tlSpan)tlSpan.innerHTML=tL(newDate);
+  }
+
+  toast(`Deadline updated to ${fD(newDate)}`,'ok');
+  logA(`changed deadline of '${w?.title||'task'}' to ${fD(newDate)}`,'task');
+
+  // Save to sheet in background (parallel)
+  bgSaveAll(
+    ['updateTask',_tPl(tasks[i])],
+    ['addHistory',{id:Date.now(),taskId:tid,action:hi.a,date:hi.d,by:hi.b}]
+  );
+  rnB();
+}
 function rRp(){
   // Build filtered task pool
   let pool=isTL()?tasks:tasks.filter(t=>t.as===CU.id);
@@ -1407,7 +1472,7 @@ function oAW(wid){
   oM(`<div class="mdlh"><div><div style="font-size:9px;color:var(--ac);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px">Step 2 · Assign → Create Task</div><div style="font-weight:800;font-size:17px">${w.title}</div></div><button style="background:none;border:none;color:var(--tx3);font-size:18px" onclick="cM()">✕</button></div>
   <div class="mdlb"><label class="lbl">Assign To <span class="rq">*</span></label>
   ${users.filter(u=>u.on).map(m=>{const a=aCt(m.id);const ld=a>=3?'Busy':a>=1?'Active':'Free';const lc=a>=3?'#dc2626':a>=1?'#d97706':'#16a34a';return`<div class="tpk" id="aP_${m.id}" onclick="sAs('${m.id}')">${aH(m,28)}<div style="flex:1"><div style="font-size:12px;font-weight:600">${m.name}</div><div style="font-size:10px;color:var(--tx2)">${m.role}</div></div><div style="font-size:10px;font-weight:600;color:${lc}">${a} · ${ld}</div><div id="aC_${m.id}" class="hide" style="width:18px;height:18px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></div>`}).join('')}
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:13px"><div><label class="lbl">Start Date <span class="rq">*</span></label><input type="date" class="inp" id="aS" value="${td()}"></div><div><label class="lbl">End Date <span class="rq">*</span></label><input type="date" class="inp" id="aE"></div></div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:13px"><div><label class="lbl">Start Date <span class="rq">*</span></label><input type="date" class="inp" id="aS" value="${td()}" min="${td()}" onchange="document.getElementById('aE').min=this.value;if(document.getElementById('aE').value&&document.getElementById('aE').value<this.value)document.getElementById('aE').value=this.value"></div><div><label class="lbl">End Date <span class="rq">*</span></label><input type="date" class="inp" id="aE" min="${td()}"></div></div></div>
   <div class="mdlf"><button class="btn bo" onclick="cM()">Cancel</button><button class="btn ba" id="awSubmit" onclick="dAW()">Assign & Create Task</button></div>`,'540px')
 }
 function sAs(id){window._aa=id;users.forEach(m=>{const el=document.getElementById('aP_'+m.id);const ck=document.getElementById('aC_'+m.id);if(el)el.className='tpk'+(m.id===id?' sel':'');if(ck){ck.classList.toggle('hide',m.id!==id);if(m.id===id)ck.style.display='flex'}})}
@@ -1415,6 +1480,9 @@ function dAW(){
   if(_saving)return;
   const a=window._aa,s=document.getElementById('aS').value,e=document.getElementById('aE').value;
   if(!a||!s||!e){toast('All fields required','er');return}
+  if(s<td()){toast('Start date cannot be in the past','er');return}
+  if(e<td()){toast('End date cannot be in the past','er');return}
+  if(e<s){toast('End date must be after start date','er');return}
   if(!setBtnSaving('awSubmit','Assigning...'))return;
   const w=window._aw;
   const hi={a:`Assigned to ${U(a).name}`,d:td(),b:CU.id};
@@ -1438,7 +1506,7 @@ function oTD(tid){
   const w=W(t.wk);const a=U(t.as);const od=isOD(t);const isMe=t.as===CU.id;
   document.getElementById('nP')?.classList.add('hide');
   oM(`<div style="padding:17px 20px;border-bottom:1px solid #eee">
-    <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap">${sB(t.st)} ${pB(w?.pri||'')} ${od?'<span style="font-size:8px;background:var(--redbg);color:var(--red);padding:2px 5px;border-radius:5px;font-weight:700">OVERDUE</span>':''} ${t.rc>0?`<span style="font-size:8px;background:var(--ylwbg);color:#a16207;padding:2px 5px;border-radius:5px">×${t.rc}</span>`:''} <span style="margin-left:auto">${tL(t.ed)}</span></div>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap">${sB(t.st)} ${pB(w?.pri||'')} ${od?'<span style="font-size:8px;background:var(--redbg);color:var(--red);padding:2px 5px;border-radius:5px;font-weight:700">OVERDUE</span>':''} ${t.rc>0?`<span style="font-size:8px;background:var(--ylwbg);color:#a16207;padding:2px 5px;border-radius:5px">×${t.rc}</span>`:''} <span class="tl-refresh" style="margin-left:auto">${tL(t.ed)}</span></div>
     <div style="font-weight:800;font-size:17px;display:flex;justify-content:space-between;align-items:flex-start">${w?.title||''}<button style="background:none;border:none;cursor:pointer;color:var(--tx3);font-size:18px;flex-shrink:0" onclick="cM()">✕</button></div></div>
   <div style="padding:18px 20px">
     <div style="margin-bottom:13px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;font-weight:600;color:var(--tx2)">Progress</span><span style="font-size:11px;font-weight:700;font-family:var(--mono);color:var(--ac)">${t.pg||0}%</span></div>
@@ -1447,7 +1515,21 @@ function oTD(tid){
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:13px">
       <div style="padding:10px;border-radius:8px;background:var(--s2);border:1px solid var(--bd)"><div style="font-size:8px;color:var(--tx3);margin-bottom:2px;font-weight:600;text-transform:uppercase">Assigned</div>${a?`<div style="display:flex;align-items:center;gap:4px">${aH(a,17)}<span style="font-size:11px;font-weight:600">${a.name}</span></div>`:'—'}</div>
       <div style="padding:10px;border-radius:8px;background:var(--s2);border:1px solid var(--bd)"><div style="font-size:8px;color:var(--tx3);margin-bottom:2px;font-weight:600;text-transform:uppercase">Start</div><div style="font-size:11px;font-weight:600;font-family:var(--mono)">${fD(t.sd)}</div></div>
-      <div style="padding:10px;border-radius:8px;background:var(--s2);border:1px solid ${od?'#fca5a5':'var(--bd)'}"><div style="font-size:8px;color:var(--tx3);margin-bottom:2px;font-weight:600;text-transform:uppercase">Deadline</div><div style="font-size:11px;font-weight:600;font-family:var(--mono);color:${od?'var(--red)':'var(--tx)'}">${fD(t.ed)}</div></div></div>
+      <div style="padding:10px;border-radius:8px;background:var(--s2);border:1px solid ${od?'#fca5a5':'var(--bd)'}">
+        <div style="font-size:8px;color:${isTL()&&t.st!=='Approved'?'var(--ac)':'var(--tx3)'};margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em">
+          Deadline${isTL()&&t.st!=='Approved'?` <span style="font-size:7px;background:var(--acbg);color:var(--ac);padding:1px 5px;border-radius:3px;font-weight:600;margin-left:3px">Editable</span>`:''}
+        </div>
+        ${isTL()&&t.st!=='Approved'
+          ? `<input type="date"
+               id="dlInput_${t.id}"
+               value="${cleanDate(t.ed)||''}"
+               min="${td()}"
+               onchange="chgDL(${t.id},this.value,this)"
+               style="width:100%;font-size:11px;font-weight:600;font-family:var(--mono);border:1px solid ${od?'var(--red)':'var(--acbd)'};border-radius:6px;padding:4px 7px;background:${od?'var(--redbg)':'var(--acbg)'};color:${od?'var(--red)':'var(--ac)'};cursor:pointer;outline:none;transition:border 0.15s">`
+          : `<div style="font-size:11px;font-weight:600;font-family:var(--mono);color:${od?'var(--red)':'var(--tx)'}">${fD(t.ed)}</div>`
+        }
+      </div>
+    </div>
     ${w?.desc?`<div style="margin-bottom:13px;padding:11px;border-radius:8px;background:var(--s2);border:1px solid var(--bd);font-size:12px;color:#555;line-height:1.5">${w.desc}</div>`:''}
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px">
       ${isMe&&(t.st==='Assigned'||t.st==='Reassigned')?`<button class="btn ba" id="stBtn_${t.id}" onclick="doSt(${t.id})">▶ Start Working</button>`:''}
