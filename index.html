@@ -525,7 +525,7 @@ async function loadFromSheet(){
 
   works=(d.works||[]).map(w=>({
     id:parseInt(w.id)||0, title:w.title||'', desc:w.description||'',
-    pri:w.priority||'Medium', cat:w.createdAt||'', cb:w.createdBy||'',
+    pri:w.priority||'Medium', cat:cleanDate(w.createdAt)||w.createdAt||'', cb:w.createdBy||'',
     ht:w.hasTask===true||w.hasTask==='TRUE'
   }));
 
@@ -564,7 +564,7 @@ async function syncFromSheet(){
 
 // ── SAVE HELPERS (all background — UI is instant, sheet syncs async) ──
 const _uPl=u=>({id:u.id,name:u.name,email:u.email,role:u.role,avatar:u.av,color:u.col,password:u.pass,access:u.acc.join(','),active:u.on?'TRUE':'FALSE'});
-const _wPl=w=>({id:w.id,title:w.title,description:w.desc,priority:w.pri,createdAt:w.cat,createdBy:w.cb,hasTask:w.ht?'TRUE':'FALSE'});
+const _wPl=w=>({id:w.id,title:w.title,description:w.desc,priority:w.pri,createdAt:cleanDate(w.cat)||w.cat,createdBy:w.cb,hasTask:w.ht?'TRUE':'FALSE'});
 const _tPl=t=>({id:t.id,workId:t.wk,assignee:t.as,status:t.st,startDate:cleanDate(t.sd)||t.sd,endDate:cleanDate(t.ed)||t.ed,reassignCount:t.rc,progress:t.pg});
 const svU=u=>bgSave('addUser',_uPl(u));
 const upU=u=>bgSave('updateUser',_uPl(u));
@@ -1022,7 +1022,7 @@ function rTk(){
   } else {
     filtered.forEach(t=>{
       const w=W(t.wk);const a=U(t.as);const isMe=t.as===CU.id;const od=isOD(t);
-      const dDays=t.ed?dDf(t.ed,td()):null;
+      const dDays=t.ed?dDf(cleanDate(t.ed),td()):null;
       const dueBg=od?'#fef2f2':dDays===0?'#fff7f0':dDays<=2?'#fffbeb':'transparent';
       h+=`<div class="rw ck" onclick="oTD(${t.id})" style="border-left:3px solid ${PC[w?.pri]||'#ccc'};padding-left:14px;${dueBg!=='transparent'?`background:${dueBg}`:''}">
         <div style="flex:1;min-width:0">
@@ -1097,7 +1097,7 @@ function rKb(){
       h+=`<div style="padding:20px;text-align:center;color:var(--tx3);font-size:11px">No tasks</div>`;
     } else {
       ct.forEach(t=>{
-        const w=W(t.wk);const a=U(t.as);const od=isOD(t);const dDays=t.ed?dDf(t.ed,td()):null;
+        const w=W(t.wk);const a=U(t.as);const od=isOD(t);const dDays=t.ed?dDf(cleanDate(t.ed),td()):null;
         h+=`<div class="kbcc" onclick="oTD(${t.id})" style="${od?'border-left:3px solid var(--red);':dDays===0?'border-left:3px solid #d97706;':dDays<=2&&dDays>=0?'border-left:3px solid #eab308;':''}">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
             ${pB(w?.pri||'Medium')}
@@ -1245,7 +1245,7 @@ function rRp(){
 
       const sortKey=window._rpSort||'due';
       const sorted=[...pool].sort((a,b)=>{
-        if(sortKey==='due') return (a.ed||'9999')>(b.ed||'9999')?1:-1;
+        if(sortKey==='due') return (cleanDate(a.ed)||'9999')>(cleanDate(b.ed)||'9999')?1:-1;
         if(sortKey==='status') return a.st.localeCompare(b.st);
         if(sortKey==='priority'){const po={Urgent:0,High:1,Medium:2,Low:3};return (po[W(a.wk)?.pri]||2)-(po[W(b.wk)?.pri]||2);}
         if(sortKey==='progress') return (b.pg||0)-(a.pg||0);
@@ -1254,7 +1254,7 @@ function rRp(){
 
       sorted.forEach((t,idx)=>{
         const w=W(t.wk);const a=U(t.as);const od=isOD(t);
-        const dDays=t.ed?dDf(t.ed,now):null;
+        const dDays=t.ed?dDf(cleanDate(t.ed),now):null;
         const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));
         const wasOnTime=t.st==='Approved'&&ch&&cleanDate(t.ed)&&cleanDate(ch.d)&&cleanDate(ch.d)<=cleanDate(t.ed);
         const wasLate=t.st==='Approved'&&ch&&cleanDate(t.ed)&&cleanDate(ch.d)&&cleanDate(ch.d)>cleanDate(t.ed);
@@ -1343,7 +1343,7 @@ function exportReport(){
   const rows=[['#','Work Title','Assignee','Status','Priority','Start Date','End Date','Progress %','Days Left','On-Time','Reassign Count']];
   pool.forEach((t,i)=>{
     const w=W(t.wk);const a=U(t.as);
-    const dDays=t.ed?dDf(t.ed,now):null;
+    const dDays=t.ed?dDf(cleanDate(t.ed),now):null;
     const ch=t.hi.find(h=>h.a.toLowerCase().includes('complete'));
     const wasOnTime=t.st==='Approved'&&ch&&cleanDate(t.ed)&&cleanDate(ch.d)&&cleanDate(ch.d)<=cleanDate(t.ed);
     rows.push([i+1,w?.title||'',a?.name||'',t.st,w?.pri||'',cleanDate(t.sd)||t.sd,cleanDate(t.ed)||t.ed,t.pg||0,dDays===null?'':(isOD(t)?'-'+Math.abs(dDays):dDays),t.st==='Approved'?(wasOnTime?'Yes':'No'):'',t.rc||0]);
